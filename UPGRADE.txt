@@ -1,0 +1,248 @@
+31/01/2024
+ALTER TABLE `ospos_reminders` ADD `yob` VARCHAR(10) CHARACTER SET utf8 NOT NULL DEFAULT '0' AFTER `is_sms`;
+
+update `ospos_reminders` SET `yob` = (SELECT `age` FROM `ospos_people` WHERE `person_id` = `customer_id`);
+
+- Thêm tuổi vào reminder
+- Thêm hiển thị tuổi (thiết lập)
+
+06/01/2024
+- Update db
+-- 06/01/2024 update loại purchase {1: bình thường; 2: lens; ....}
+ALTER TABLE `ospos_purchases` ADD `kind` tinyint(1) NOT NULL DEFAULT 1 AFTER `v`;
+ALTER TABLE `ospos_purchases` ADD `category` varchar(50) NOT NULL DEFAULT '' AFTER `v`;
+
+- Update Roles, roles.php
+04/01/2024
+- update detail customer.
+03/01/2024
+- Update cho phép thiết lập hóa đợn, đơn kính.
+Update
+16/12/2023
+- Update code
+
+Update
+07/12/2023
+- Bổ sung thêm việc thanh toán cho đơn nhập hàng và quản lý công nợ nhập hàng
+- Cần cấp quyền receivings_manage
+ALTER TABLE `ospos_sales` ADD `completed_at` int(11) NOT NULL DEFAULT 0 AFTER `sync`;
+ALTER TABLE `ospos_items` ADD `created_time` int(11) NOT NULL DEFAULT 0 AFTER `ref_item_id`;
+ALTER TABLE `ospos_items` ADD `updated_time` int(11) NOT NULL DEFAULT 0 AFTER `ref_item_id`;
+
+
+-- Update công nhợ nhập hàng
+ALTER TABLE `ospos_receivings` ADD `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '{0: Đã thanh toán xong; 1: Chưa hoàn thành}' AFTER `mode`;
+ALTER TABLE `ospos_receivings` ADD `code` varchar(14) NOT NULL DEFAULT 0 COMMENT '{Mã phiếu nhập hàng}' AFTER `mode`;
+ALTER TABLE `ospos_receivings` ADD `receiving_uuid` varchar(36) NOT NULL DEFAULT uuid() COMMENT '{uuid của phiếu nhập hàng}' AFTER `mode`;
+ALTER TABLE `ospos_receivings` ADD `remain_amount` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT '{Số tiền còn nợ}' AFTER `mode`;
+
+ALTER TABLE `ospos_receivings` ADD `paid_amount` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT '{Số tiền đã thanh toán}' AFTER `mode`;
+ALTER TABLE `ospos_receivings` ADD `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT '{Tổng đơn}' AFTER `mode`;
+
+ALTER TABLE `ospos_receivings` MODIFY `remain_amount` decimal(15,2);
+ALTER TABLE `ospos_receivings` MODIFY `paid_amount` decimal(15,2);
+ALTER TABLE `ospos_receivings` MODIFY `receiving_uuid` varchar(36) NOT NULL DEFAULT uuid();
+
+DROP TABLE IF EXISTS `ospos_receivings_payments`;
+CREATE TABLE `ospos_receivings_payments` (
+  `receivings_id` int(11) NOT NULL DEFAULT 0,
+  `receivings_payments_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `note` varchar(255) NOT NULL DEFAULT '',
+  `payment_type` varchar(40) NOT NULL DEFAULT '',
+  `payment_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `payment_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `payment_id` int(10) NOT NULL AUTO_INCREMENT,
+  `payment_kind` varchar(40) NOT NULL DEFAULT '''''' COMMENT '{Thanh Toán='''';Đặt Trước}',
+  PRIMARY KEY (`payment_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
+INSERT INTO ospos_receivings_payments (receivings_id, note, payment_type, payment_amount, payment_kind)
+    SELECT
+        receiving_id,
+        'Khởi tạo',
+        'Chuyển khoản',
+        0.00,
+        ''
+    FROM
+        ospos_receivings;
+
+UPDATE ospos_receivings r
+      SET r.total_amount = (
+          SELECT IFNULL(SUM(ri.item_cost_price * ri.quantity_purchased), 0)
+          FROM ospos_receivings_items ri
+          WHERE ri.receiving_id = r.receiving_id
+      )
+      WHERE r.receiving_id IN (
+          SELECT receiving_id FROM ospos_receivings_items
+      );
+
+UPDATE ospos_receivings r SET r.remain_amount = total_amount;
+
+
+27/11/2023
+- Update đồng bộ (bổ sung cả master và client
+ALTER TABLE `ospos_items` ADD `created_time` int(11) NOT NULL DEFAULT 0 AFTER `ref_item_id`;
+ALTER TABLE `ospos_items` ADD `updated_time` int(11) NOT NULL DEFAULT 0 AFTER `ref_item_id`;
+ALTER TABLE `ospos_items` ADD `synched_time` int(11) NOT NULL DEFAULT 0 AFTER `ref_item_id`;
+
+
+26/11/2023
+- Fix lỗi Sale khi chọn giảm trừ
+- Fix kết toán (doanh thu ko tính giảm trừ)
+
+29/10/2023
+- Update config/autoload.php
+- updaTE config/app.PHP
+
+- Update gọi ddienj chăm sóc khách hàng
+- update cộng tác viên (nhóm CTV)
+
+INSERT INTO `ospos_roles` VALUES (8,'CTV','CTV','CTV','7b498149-5877-1117-a953-040300000000',0,0,0,0,'1');
+ALTER TABLE `ospos_employees` ADD `total_sale` decimal(10,2) NOT NULL DEFAULT 0.00 AFTER `log`;
+
+DROP TABLE IF EXISTS `ospos_history_ctv`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_history_ctv` (
+  `history_ctv_id` int(11) NOT NULL AUTO_INCREMENT,
+  `ctv_id` int(11) NOT NULL,
+  `sale_id` int(11) NOT NULL,
+  `employee_id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `ctv_name` varchar(255) DEFAULT NULL,
+  `ctv_code` varchar(255) DEFAULT NULL,
+  `ctv_phone` varchar(255) DEFAULT NULL,
+  `sale_code` varchar(50) DEFAULT NULL,
+  `employee_name` varchar(255) DEFAULT NULL,
+  `customer_name` varchar(255) DEFAULT NULL,
+  `created_time` int(11) DEFAULT current_timestamp(),
+  `payment_time` int(11) DEFAULT current_timestamp(),
+  `payment_amount` decimal(15,2) NOT NULL,
+  `comission_amount` decimal(15,2) NOT NULL,
+  `comission_rate` decimal(5,2) NOT NULL,
+  `history_ctv_uuid` varchar(50) NOT NULL DEFAULT uuid(),
+  `status` tinyint(1) DEFAULT 0 COMMENT '{0: moi tao; 1: Yeu cau thanh toan, 2: phê duyệt; 3: đã thanh toán }',
+  PRIMARY KEY (`history_ctv_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `ospos_history_reminder`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_history_reminder` (
+  `history_reminder_id` int(11) NOT NULL AUTO_INCREMENT,
+  `employeer_id` int(11) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `reminder_id` int(11) NOT NULL,
+  `customer_name` varchar(255) DEFAULT NULL,
+  `employee_name` varchar(255) DEFAULT NULL,
+  `content` varchar(255) DEFAULT '''',
+  `status` tinyint(1) DEFAULT 0 COMMENT '{0: chua lien lac duoc; 1: sai so dien thoai; 2: da hen; 3: chua sap xep dc}',
+  `created_time` int(11) DEFAULT current_timestamp(),
+  `history_reminder_uuid` varchar(50) NOT NULL DEFAULT uuid(),
+  PRIMARY KEY (`history_reminder_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1267 DEFAULT CHARSET=utf8;
+
+-- Cron update vào bảng này hàng ngày (sau 0h sáng)
+
+ALTER TABLE `ospos_reminders` ADD `address` VARCHAR(255) CHARACTER SET utf8 NOT NULL DEFAULT '' AFTER `test_id`; 
+ALTER TABLE `ospos_reminders` ADD `reminder_uuid` VARCHAR(36) DEFAULT UUID() AFTER `test_id`; 
+ALTER TABLE `ospos_test` ADD `duration_dvt` varchar(10) CHARACTER SET utf8 NOT NULL DEFAULT '' AFTER `test_uuid`;
+ALTER TABLE `ospos_reminders` ADD `duration_dvt` varchar(10) CHARACTER SET utf8 NOT NULL DEFAULT '' AFTER `test_id`;
+
+ALTER TABLE `ospos_reminders` ADD `duration` int(2) DEFAULT 6 AFTER `test_id`;
+ALTER TABLE `ospos_employees` ADD `comission_rate` decimal(5,2) NOT NULL DEFAULT 0 AFTER `log`;
+ALTER TABLE `ospos_employees` ADD `code` VARCHAR(20) NOT NULL DEFAULT '' AFTER `log`;
+ALTER TABLE `ospos_sales` ADD `sync` tinyint(1) DEFAULT 0 COMMENT '{0: moi tao; 1: Đã sync vào bảng history_ctv}' AFTER `updated_at`;
+ALTER TABLE `ospos_purchases` ADD `v` tinyint(3) NOT NULL DEFAULT 0 AFTER `edited_time`;
+ALTER TABLE `ospos_reminders` CHANGE `duration` `duration` INT(2) NULL DEFAULT NULL; 
+
+
+
+
+21/09/2023 
+v1.1_PK40
+Update báo cáo trả hàng nhà cung cấp.
+ALTER TABLE `ospos_receivings` ADD `mode` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '0: Nhập hàng; 1: Trả hàng' AFTER `reference`; 
+
+
+
+19/10/2022
+- Update QRCode on <i class="fas fa-money-bill    ">Bill</i>
+- Update Sales models
+- Update Verify controller 
+- Update receipt_default on view/sales
+- Update doctor and kxv 
+
+20/10/2022
+- Cho phép thanh toán bằng điểm
+- Điểm số lưu trữ trong session của đơn hàng; khi thông tin của khách hàng được thay đổi thì cũng load lại thông tin của khách hàng vào session. 
+Khi thanh toán = point thì point sẽ trừ điểm (points) trong session; khi xóa thanh toán sẽ + điểm vào (points); -->OK
+
+- Tối ưu hóa lại, tất cả thông tin về đơn hàng được cho vào session (sales_lib);
+    + Thông tin khách hàng: Chọn lại load lại;
+    + Thông tin thanh toán ( các loại thanh toánh): Thêm vào thì bổ sung, xóa thì remove;
+    + Thông tin về các sản phẩm
+    + Tổng tiền
+- Sau khi kết thúc đơn hàng thì clear All;    
+
+22/10/2022
+theUser - information of the logined user. It is deleting after logout. (cập nhậ thông in về tổng tiền và tổng điểm mỗi lần thay đổi)
+person_id store in session
+type store in session
+
+23/10/2022
+update user manager.
+
+Tạo được một số hàm thêm mới vào csdl của modules và permissions
+Tạo được các hàm lấy tự động modules trong hệ thống.
+Tạo được hàm lấy được permissions trong mỗi module;
+
+Tự động kiểm tra phân quyền theo các task của module. (các task thêm vào trong bảng permissions được quản lý. Mặc định sẽ không dược quản lý phân quyền nếu không đưa vào bảng permission)
+
+
+
+Kế hoạch (hết 29/10)
+- Xây dựng form nhập modules
+_ xây dựng form nhập permissions
+- Xây dựng form quản lý nhóm quyền (roles)
+- Cập nhật form tạo user
+- Cập nhật form thêm mới sản phẩm (lỗi do phân quyền)
+Roles/index
+Roles/create
+Roles/view
+Roles/edit
+Roels/per_index
+Roles/per_add
+Roles/per_view
+Roles/per_edit
+Roles/mod_index
+Roles/mod_add
+Roles/mod_view
+Roles/mod_edit
+
+--------------------------------------------
+--------------------------
+
+15/08/2023
+- Nâng cấp đơn thuốc phục vụ phòng khám.
+- Chuyển Tuổi sang năm sinh
+ALTER TABLE `ospos_people` CHANGE `age` `age` CHAR(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0'; 
+
+- Ẩn giá vốn báo cáo gọng/kính mát
+- Thêm năm sinh kết quả khám
+
+17/08/2023
+- Cập nhật kết quả khám.
++ app.php
++ /form_print.php
+18/08/2023
+- Cập nhật file app.php
+$config['Location_Barcode'] = '';
+- countrollers/Barcode.php
+
+
+------------
+UPDATE SL ve 0 theo danh mục sản phẩm.
+UPDATE `ospos_item_quantities` SET `quantity` = 0 WHERE `item_id` IN (SELECT ospos_items.item_id FROM ospos_items WHERE ospos_items.category = 'Gong T1');
+UPDATE `ospos_item_quantities` SET `quantity` = 0 WHERE `item_id` IN (SELECT ospos_items.item_id FROM ospos_items WHERE ospos_items.category = 'Gong T2'); 
+UPDATE `ospos_item_quantities` SET `quantity` = 0 WHERE `item_id` IN (SELECT ospos_items.item_id FROM ospos_items WHERE ospos_items.category = 'Gong T3');  
+

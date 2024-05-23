@@ -716,7 +716,7 @@ function check_dup(&$a, $field)
 function isEmptyRow($row,$maxCols) {
     for($i =0; $i < $maxCols; $i++){
 
-        if ('' !== trim($row[$i]) || $row[$i]== null) return false;
+        if ('' !== trim($row[$i]) || $row[$i] != NULL) return false;
     }
     return true;
 }

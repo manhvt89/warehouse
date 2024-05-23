@@ -790,8 +790,9 @@ function get_items_manage_table_headers()
 			array('cost_price' => $CI->lang->line('items_cost_price')),
 			array('unit_price' => $CI->lang->line('items_unit_price')),
 			array('quantity' => $CI->lang->line('items_quantity')),
-			array('tax_percents' => $CI->lang->line('items_tax_percents'), 'sortable' => FALSE),
-			array('standard_amount' => $CI->lang->line('items_standard_amount'), 'sortable' => FALSE),
+			//array('tax_percents' => $CI->lang->line('items_tax_percents'), 'sortable' => FALSE),
+			//array('standard_amount' => $CI->lang->line('items_standard_amount'), 'sortable' => FALSE),
+			array('inventory_uom_name' => $CI->lang->line('inventory_uom_name'), 'sortable' => FALSE),
 			array('inventory' => ''),
 			array('stock' => '')
 		);
@@ -893,6 +894,7 @@ function get_item_data_row($item, $controller)
 		'standard_amount' => to_quantity_decimals($item->standard_amount),
 		'inventory' => $inventory,		
 		'stock' => $stock,
+		'inventory_uom_name'=>$item->inventory_uom_name,
 		'edit' => $edit);
 	if($CI->Employee->has_grant('items_unitprice_hide'))
 	{

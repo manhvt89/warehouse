@@ -24,6 +24,7 @@ INSERT INTO `ospos_uoms` (`uom_name`, `uom_code`,`uom_abbreviation`, `status`) V
 ('Tạ', 'ta', 1.00, 1),
 ('Tấn', 'tan', 1.00, 1),
 ('Mét', 'm', 1.00, 1),
+('Cuộn', 'cuộn', 1.00, 1),
 ('Bao', 'bao', 1.00, 1);
 
 DROP TABLE IF EXISTS `ospos_items`;
@@ -61,6 +62,8 @@ CREATE TABLE `ospos_items` (
   `code` varchar(50) DEFAULT NULL,
   `category_code` varchar(50) NOT NULL DEFAULT '',
   `ref_item_id` varchar(50) NOT NULL DEFAULT '',
+  `updated_time` int(11) NOT NULL DEFAULT 0,
+  `created_time` int(11) NOT NULL DEFAULT 0,
   `normal_name` varchar(255) NOT NULL DEFAULT '',
   `short_name` varchar(255) NOT NULL DEFAULT '',
   `dpc_name` varchar(255) NOT NULL DEFAULT '',
@@ -147,7 +150,7 @@ CREATE TABLE `ospos_item_quantities` (
 
 ALTER TABLE `ospos_employees` ADD `log` varchar(10) NOT NULL DEFAULT '0' AFTER `type`;
 ALTER TABLE `ospos_employees` ADD `code` varchar(20) NOT NULL DEFAULT '' AFTER `type`;
-ALTER TABLE `ospos_employees` ADD `token` varchar(20) NOT NULL DEFAULT md5(rand()) AFTER `type`;
+ALTER TABLE `ospos_employees` ADD `token` varchar(20) NOT NULL DEFAULT md5(rand()) AFTER `type`; -- chưa đc
 ALTER TABLE `ospos_employees` ADD `position` varchar(20) NOT NULL DEFAULT '' AFTER `type`;
 ALTER TABLE `ospos_employees` ADD `date_started` varchar(20) NOT NULL DEFAULT '' AFTER `type`;
 ALTER TABLE `ospos_employees` ADD `comission_rate` decimal(5,2) NOT NULL DEFAULT 0 AFTER `log`;

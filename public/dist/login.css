@@ -11048,7 +11048,8 @@ h5,
 }
 
 .wrap .img {
-    height: 350px;
+    text-align: center;
+    padding-top: 15px;
 }
 
 .login-wrap {

@@ -1489,10 +1489,11 @@ class Items extends Secure_Controller
 			debug_log(count($sheet_data),'count($sheet_data)');
 			for($i = 1; $i < count($sheet_data); $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
-				debug_log($sheet_data[$i],'$sheet_data[$i]');
-				if(isEmptyRow($sheet_data[$i],$highestColumn)) { debug_log('done','continue');  continue; } // skip empty row
+				//debug_log($sheet_data[$i],'$sheet_data[$i]');
+				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
 				$data = $sheet_data[$i];
 				//var_dump($data);
+				debug_log($sheet_data[$i],'$sheet_data[$i]');
 				$item_data = array(
 					'name'					=> $data[1] != null ? $data[1]:'',
 					'description'			=> $data[11] != null ? $data[11]:0,

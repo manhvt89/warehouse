@@ -16,7 +16,7 @@
 		<div class="container">
 			<div class="row justify-content-center">
 				<div class="col-md-6 text-center mb-5">
-					<h2 class="heading-section">Phòng khám mắt 4.0</h2>
+					<h2 class="heading-section">Phần mềm dòng chảy SX</h2>
 				</div>
 			</div>
 			<div class="row justify-content-center">

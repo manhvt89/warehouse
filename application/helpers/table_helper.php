@@ -1267,4 +1267,62 @@ function transform_headers_raw1($array, $readonly = FALSE, $editable = TRUE)
 	}
 	return $result;
 }
+
+function get_locations_manage_table_headers()
+{
+	$CI =& get_instance();
+	//$person_id = $CI->session->userdata('person_id');
+	
+	$headers = array(
+			array('location_id' => $CI->lang->line('common_id')),			
+			array('location_name' => $CI->lang->line('location_name')),
+			array('location_code' => $CI->lang->line('location_code')),
+			array('location_phone' => $CI->lang->line('location_phone')),
+			array('deleted' => $CI->lang->line('location_deleted')),
+			array('location_address' => $CI->lang->line('location_address'))
+		);
+		
+	//var_dump($headers);
+	return transform_headers($headers);
+}
+function get_location_data_row($item, $controller)
+{
+	$CI =& get_instance();
+	
+	$controller_name = strtolower(get_class($CI));
+
+	if ($CI->Employee->has_grant($controller_name.'_view')) {
+		$edit = anchor(
+			$controller_name."/view/$item->location_uuid",
+			'<span class="glyphicon glyphicon-edit"></span>',
+			array('class' => 'modal-dlg', 'data-btn-submit' => $CI->lang->line('common_submit'), 'title' => $CI->lang->line($controller_name.'_update'))
+		);
+	} else {
+		$edit = '';
+	}
+
+	$deleted = '';
+	if($item->deleted == 0)
+	{
+		$deleted = 'Đang hoạt động';
+	} else {
+		$deleted = 'Tạm ngừng hoạt động';
+	}
+	
+	$return = array (
+		'location_id' => $item->location_id,
+		
+		'location_name' => $item->location_name,
+		'location_code' => $item->location_code,
+		'location_phone' => $item->location_phone,
+		'location_address' => $item->location_address,
+		'deleted' => $deleted,
+		'edit' => $edit);
+	if($CI->Employee->has_grant('items_unitprice_hide'))
+	{
+		//unset();
+		unset($return['cost_price']);
+	}	
+	return $return;
+}
 ?>

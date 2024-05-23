@@ -224,10 +224,17 @@ class Items extends Secure_Controller
         foreach($stock_locations as $location)
         {
 			$location = $this->xss_clean($location);
+			$oTheItemQuantity = $this->Item_quantity->get_item_quantity($item_id, $location['location_id']);
 
-			$quantity = $this->xss_clean($this->Item_quantity->get_item_quantity($item_id, $location['location_id'])->quantity);
-			$quantity = ($item_id == -1) ? 0 : $quantity;
-			$location_array[$location['location_id']] = array('location_name' => $location['location_name'], 'quantity' => $quantity);
+			$quantity = $this->xss_clean($oTheItemQuantity->quantity);
+			
+			$location_array[$location['location_id']] = [
+				'location_name' => $location['location_name'], 
+				'quantity' => $quantity,
+				'inventory_uom_name'=> $oTheItemQuantity->inventory_uom_name,
+				'inventory_uom_code' => $oTheItemQuantity->inventory_uom_code,
+				'item_location' => $oTheItemQuantity->item_location
+			];
 			$data['stock_locations'] = $location_array;
         }
 
@@ -1296,7 +1303,45 @@ class Items extends Secure_Controller
 								'custom7'				=> $data[20],
 								'custom8'				=> $data[21],
 								'custom9'				=> $data[22],
-								'custom10'				=> $data[23]
+								'custom10'				=> $data[23],
+								'code'=>$data[32],
+								'normal_name'=>$data[33],
+								'short_name'=>$data[34],
+								'dpc_name'=>$data[35],
+								'encode'=>$data[36],
+								'group'=>$data[37],
+								'group_category'=>$data[38],
+								'cas_no'=>$data[39],
+								'kind'=>$data[40],
+								'country'=>$data[41],
+								'brand'=>$data[42],
+								'manufactory'=>$data[43],
+								'ms'=>$data[44],
+								'type'=>$data[45],
+								'item_group'=>$data[46],
+								'catalogue_no'=>$data[47],
+								
+								'purchase_uom_name'=>$data[48],
+								'purchase_uom_code'=>$data[49],
+								'purchase_item_per_purchase_unit'=>$data[50],
+								'purchase_packing_uom_name'=>$data[51],
+								'purchase_quality_per_packge'=>$data[52],
+								'purchase_packing_length'=>$data[53],
+								'purchase_packing_height'=>$data[54],
+								'purchase_packing_width'=>$data[55],
+								'purchase_packing_volume'=>$data[56],
+								'purchase_packing_weigth'=>$data[57],
+								'sale_uom_name'=>$data[58],
+								'sale_uom_code'=>$data[59],
+								'sale_item_per_sale_unit'=>$data[60],
+								
+								'inventory_uom_name'=>$data[61],
+								'inventory_uom_code'=>$data[62],
+								'inventory_weigth_per_unit'=>$data[63],
+								'serial'=>$data[64],
+								'part_no'=>$data[65],
+								'uom_group_id'=>$data[66],
+								'leadtime' => $data[67]
 							);
 							$item_number = $data[0];
 							$invalidated = FALSE;

@@ -1,12 +1,24 @@
 <?php
 class Stock_location extends CI_Model
 {
-    public function exists($location_name = '')
+    public function exists($location_code = '',$location_uuid='')
     {
         $this->db->from('stock_locations');  
-        $this->db->where('location_name', $location_name);
-        
-        return ($this->db->get()->num_rows() >= 1);
+        $this->db->where('location_code', $location_code);
+
+		$row = $this->db->get()->row();
+		if(empty($row)) // nếu chưa tồn tại
+		{
+			return false;
+		} else { // nếu đã có bản ghi
+			if($row->location_uuid == $location_uuid) //nếu là chính nó thì bỏ qua
+			{
+				return false;
+			} else { // nếu trùng với bản khi khác thì đã tồn tại;
+				return true;
+			}
+		}
+
     }
     
     public function get_all($limit = 10000, $offset = 0)
@@ -21,16 +33,6 @@ class Stock_location extends CI_Model
     public function get_undeleted_all($module_id = 'items')
     {
         $this->db->from('stock_locations');
-        $this->db->join('permissions', 'permissions.location_id = stock_locations.location_id');
-		$this->db->join('grants', 'grants.permission_id = permissions.id');
-        // --> add by ManhVT 23/10/2022
-		$this->db->join('roles', 'roles.id = grants.role_id');
-		$this->db->join('user_roles', 'user_roles.role_id = roles.id');
-    	$this->db->where('user_id', $this->session->userdata('person_id'));
-		//$this->db->where('person_id', $this->session->userdata('person_id'));
-		$this->db->like('permissions.module_id', $module_id, 'after');
-		// <-- end 
-        //$this->db->like('permissions.id', $module_id, 'after');
         $this->db->where('deleted', 0);
         return $this->db->get();
     }
@@ -61,6 +63,7 @@ class Stock_location extends CI_Model
 
 	public function is_allowed_location($location_id, $module_id = 'items')
 	{
+		return true;
 		$this->db->from('stock_locations');
 		$this->db->join('permissions', 'permissions.location_id = stock_locations.location_id');
 		$this->db->join('grants', 'grants.permission_id = permissions.permission_id');
@@ -80,6 +83,7 @@ class Stock_location extends CI_Model
     public function get_default_location_id()
     {
     	$this->db->from('stock_locations');
+		/*
     	$this->db->join('permissions', 'permissions.location_id = stock_locations.location_id');
 		$this->db->join('grants', 'grants.permission_id = permissions.id');
 		// --> add by ManhVT 23/10/2022
@@ -88,6 +92,7 @@ class Stock_location extends CI_Model
     	$this->db->where('user_id', $this->session->userdata('person_id'));
 		//$this->db->where('person_id', $this->session->userdata('person_id'));
 		// <-- end 
+		*/
     	$this->db->where('deleted', 0);
 		$this->db->limit(1);
 		$rs = $this->db->get()->row();
@@ -106,40 +111,47 @@ class Stock_location extends CI_Model
     	return $this->db->get()->row()->location_name;
     }
     
-    public function save(&$location_data, $location_id) 
+    public function save(&$location_data, $location_uuid) 
     {
-		$location_name = $location_data['location_name'];
+		$location_code = $location_data['location_code'];
 
-    	if(!$this->exists($location_name))
-    	{
-    		$this->db->trans_start();
+		if($this->get_info($location_uuid)->location_id) // update
+		{
+			if(!$this->exists($location_code,$location_uuid))
+			{
+				$this->db->where('location_uuid', $location_uuid);
 
-    		$location_data = array('location_name'=>$location_name, 'deleted'=>0);
-   			$this->db->insert('stock_locations', $location_data);
-   			$location_id = $this->db->insert_id();
-   			 
-   			$this->_insert_new_permission('items', $location_id, $location_name);
-   			$this->_insert_new_permission('sales', $location_id, $location_name);
-   			$this->_insert_new_permission('receivings', $location_id, $location_name);
-    		
-   			// insert quantities for existing items
-   			$items = $this->Item->get_all();
-   			foreach($items->result_array() as $item)
-   			{
-   				$quantity_data = array('item_id' => $item['item_id'], 'location_id' => $location_id, 'quantity' => 0);
-   				$this->db->insert('item_quantities', $quantity_data);
-   			}
+				return $this->db->update('stock_locations', $location_data);
+			} else{
+				return false;	
+			}
+		} else { // tạo mới
 
-   			$this->db->trans_complete();
-			
-			return $this->db->trans_status();
-   		}
-    	else 
-    	{
-    		$this->db->where('location_id', $location_id);
-
-    		return $this->db->update('stock_locations', $location_data);
-    	}
+			if(!$this->exists($location_code,$location_uuid))
+			{
+				$this->db->trans_start();
+				$this->db->insert('stock_locations', $location_data);
+				$location_id = $this->db->insert_id();
+				// insert quantities for existing items
+				$items = $this->Item->get_all(); //Lấy tất cả sản phẩm hiện hữu trong phần mềm, thêm vào kho mới với số lượng = 0;
+				foreach($items->result_array() as $item)
+				{
+					$quantity_data = [
+						'item_id' => $item['item_id'], 
+						'location_id' => $location_id, 
+						'quantity' => 0.00,
+						'inventory_uom_name'=>$item['inventory_uom_name'],
+						'inventory_uom_code'=>$item['inventory_uom_code'],
+						'cost_price'=>$item['cost_price'],
+						'unit_price'=>$item['unit_price']
+					];
+					$this->db->insert('item_quantities', $quantity_data);
+				}
+				$this->db->trans_complete();
+				return $this->db->trans_status();
+			}
+		}
+    	
     }
     	
     private function _insert_new_permission($module, $location_id, $location_name)
@@ -176,5 +188,57 @@ class Stock_location extends CI_Model
 		
 		return $this->db->trans_status();
     }
+
+	public function search($search, $filters, $rows = 0, $limit_from = 0, $sort = 'stock_locations.location_name', $order = 'asc')
+	{
+		$this->db->from('stock_locations');
+	
+		// order by name of item
+		$this->db->order_by($sort, $order);
+
+		if($rows > 0) 
+		{	
+			$this->db->limit($rows, $limit_from);
+		}
+
+		return $this->db->get();
+	}
+
+	public function get_found_rows($search, $filters)
+	{
+		return $this->search($search, $filters)->num_rows();
+	}
+
+	public function get_info($location_id)
+	{
+		$this->db->select('stock_locations.*');
+		$this->db->from('stock_locations');
+		if(strlen($location_id) > 20)
+		{
+			$this->db->where('location_uuid', $location_id);
+		} else {
+			$this->db->where('location_id', $location_id);
+		}
+
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			$item_obj = new stdClass();
+
+			//Get all the fields from items table
+			foreach($this->db->list_fields('stock_locations') as $field)
+			{
+				$item_obj->$field = '';
+			}
+			
+			return $item_obj;
+		}
+	}
 }
 ?>

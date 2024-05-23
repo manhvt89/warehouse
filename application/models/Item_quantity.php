@@ -41,6 +41,15 @@ class Item_quantity extends CI_Model
             }
 
             $result->quantity = 0;
+            $result->item_quantitie_id  = 0;
+            $result->location_id        = 0;
+            $result->item_id            = 0;
+            $result->inventory_uom_name = '';
+            $result->inventory_uom_code = '';
+            $result->item_location      = '';
+            $result->cost_price         = 0.00;   
+            $result->unit_price         = 0.00;
+
         }
 		
         return $result;   

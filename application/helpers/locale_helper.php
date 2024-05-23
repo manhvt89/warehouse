@@ -1285,9 +1285,10 @@ function debug_log( $object = null, $name='' ) {
     {
         return;
     }
-
+    
     $debug_file = get_debug_log_filename();
 
+    //var_dump($debug_file); die();
     // add timestamp and newline
     $message = '[' . date( 'Y-m-d H:i:s' ) . '] ';
 

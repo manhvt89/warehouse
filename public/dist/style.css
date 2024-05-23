@@ -1270,4 +1270,13 @@ content: attr(data-th);
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         z-index: 1000;
     }
+    .modal-dlg .modal-dialog {
+        width: 1001px;
+    }
+}
+
+@media (min-width: 768px) {
+    .modal-dlg .modal-dialog {
+        width: 1001px;
+    }
 }

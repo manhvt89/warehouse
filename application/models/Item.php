@@ -183,7 +183,12 @@ class Item extends CI_Model
 		$this->db->select('suppliers.company_name');
 		$this->db->from('items');
 		$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
-		$this->db->where('item_id', $item_id);
+		if(strlen($item_id)> 20) // Nêu chuỗi lớn hơn 20 sẽ sử dụng item_uuid
+		{
+			$this->db->where('item_uuid', $item_id);
+		} else{
+			$this->db->where('item_id', $item_id); // support version cũ
+		}
 
 		$query = $this->db->get();
 
@@ -202,7 +207,34 @@ class Item extends CI_Model
 				$item_obj->$field = '';
 			}
 			$item_obj->unit_price = 0;
+			$item_obj->item_id = 0;
             $item_obj->cost_price = 0;
+			$item_obj->supplier_id = 0;
+			$item_obj->reorder_level = 0.000;
+			$item_obj->receiving_quantity = 1.000;
+			$item_obj->pic_id = 0;
+			$item_obj->allow_alt_description = 0;
+			$item_obj->is_serialized = 0;
+			$item_obj->deleted = 0;
+			$item_obj->standard_amount = 0.000;
+			$item_obj->status = 0;
+			$item_obj->purchase_item_per_purchase_unit = 1.00;
+			$item_obj->purchase_quality_per_packge     = 1.00;
+			$item_obj->purchase_packing_length         = 1.00;
+			$item_obj->purchase_packing_height         = 1.00;
+			$item_obj->purchase_packing_width          = 1.00;
+			$item_obj->purchase_packing_volume         = 1.00;
+			$item_obj->purchase_packing_weigth         = 1.00;
+			$item_obj->sale_item_per_sale_unit         = 1.00;
+			$item_obj->sale_quality_per_packge         = 1.00;
+			$item_obj->sale_packing_length             = 1.00;
+			$item_obj->sale_packing_height             = 1.00;
+			$item_obj->sale_packing_width              = 1.00;
+			$item_obj->sale_packing_volume             = 1.00;
+			$item_obj->sale_packing_weigth             = 1.00;
+			$item_obj->set_default_warehouse_id        = 0;
+			$item_obj->inventory_weigth_per_unit       = 1.00;
+			$item_obj->uom_group_id                    = 0;
 
 			return $item_obj;
 		}

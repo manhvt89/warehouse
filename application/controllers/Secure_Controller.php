@@ -2,6 +2,9 @@
 
 class Secure_Controller extends CI_Controller 
 {
+	public $module_id = '';
+	public $submodule_id = '';
+	public $task = '';
 	/*
 	* Controllers that are considered secure extend Secure_Controller, optionally a $module_id can
 	* be set to also check if a user can access a particular module in the system.
@@ -17,11 +20,13 @@ class Secure_Controller extends CI_Controller
 		{
 			redirect('login');
 		}
-
+		$this->module_id = $module_id;
+		$this->$submodule_id = $submodule_id;
 		//$this->router->fetch_class();
 		$action = $this->router->fetch_method();
 		//echo $action;
 		$task = $module_id."_".$action;
+		$this->task = $task;
 		$this->track_page($module_id, $action);
 		//echo $module_id . ' |' . $submodule_id;
 		$_astrManagedActions = $model->get_actions_by_module($module_id); // Cacs action duoc quan ly boi he thong phan quyen. CHỉ kiểm soát các actions này;

@@ -32,8 +32,8 @@ $(document).ready(function()
     <table id="table" data-sort-order="desc" data-sort-name="item_number" data-search="true">
         <thead>
         <th data-field="stt">STT</th>
-      <th data-field="name">Tên phân quyền</th>
-      <th data-field="actions">Actions</th>
+        <th data-field="name">Tên phân quyền</th>
+        <th data-field="actions">Actions</th>
         </thead>
         
     </table>

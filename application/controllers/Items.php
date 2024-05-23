@@ -1559,6 +1559,7 @@ class Items extends Secure_Controller
 					$invalidated = $this->Item->item_number_exists($item_number);
 				}
 				var_dump($item_data);die();
+				debug_log($item_data,'$item_data');
 				if(!$invalidated && $this->Item->save($item_data))
 						{
 							$items_taxes_data = NULL;

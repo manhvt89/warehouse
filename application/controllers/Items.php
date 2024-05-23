@@ -1470,7 +1470,7 @@ class Items extends Secure_Controller
 			$worksheet = $spreadsheet->getActiveSheet(0);
 			//var_dump($worksheet);
             
-			$highestColumn = 6;
+			$highestColumn = 2;
 			
 			$_iMaxColumn = 0;
 

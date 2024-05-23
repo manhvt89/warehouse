@@ -71,6 +71,16 @@ class Item extends CI_Model
 	*/
 	public function search($search, $filters, $rows = 0, $limit_from = 0, $sort = 'items.name', $order = 'asc')
 	{
+		$this->db->select('
+							items.item_id, 
+							items.item_number, 
+							items.name, 
+							items.category, 
+							items.unit_price, 
+							items.cost_price, 
+							items.inventory_uom_name, 
+							item_quantities.quantity, 
+							items.standard_amount');
 		$this->db->from('items');
 		$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
 		$this->db->join('inventory', 'inventory.trans_items = items.item_id');

@@ -72,6 +72,7 @@ class Items extends Secure_Controller
 		$data_rows = array();
 		foreach($items->result() as $item)
 		{
+			debug_log($item,'$item');
 			$data_rows[] = $this->xss_clean(get_item_data_row($item, $this));
 		}
 

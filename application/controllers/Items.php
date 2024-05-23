@@ -1486,10 +1486,11 @@ class Items extends Secure_Controller
 			}
 			$failCodes = [];
 			// Bỏ qua dòng đầu tiên, start với i=1
+			debug_log(count($sheet_data),'count($sheet_data)');
 			for($i = 1; $i < count($sheet_data); $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
 				
-				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
+				if(isEmptyRow($sheet_data[$i],$highestColumn)) { debug_log('done','continue');  continue; } // skip empty row
 				$data = $sheet_data[$i];
 				//var_dump($data);
 				$item_data = array(
@@ -1558,89 +1559,90 @@ class Items extends Secure_Controller
 					$item_data['item_number'] = $item_number;
 					$invalidated = $this->Item->item_number_exists($item_number);
 				}
+				$save_rs = $this->Item->save($item_data);
 				debug_log($item_data,'$item_data');
-				var_dump($item_data);die();
-				
-				if(!$invalidated && $this->Item->save($item_data))
+				debug_log($invalidated,'$invalidated');
+				debug_log($save_rs,'$save_rs');
+				if(!$invalidated && $save_rs)
+				{
+					$items_taxes_data = NULL;
+					//tax 1
+					if(is_numeric($data[7]) && $data[6] != '')
+					{
+						$items_taxes_data[] = array('name' => $data[6], 'percent' => $data[7] );
+					}
+
+					//tax 2
+					if(is_numeric($data[9]) && $data[8] != '')
+					{
+						$items_taxes_data[] = array('name' => $data[8], 'percent' => $data[9] );
+					}
+
+					// save tax values
+					if(count($items_taxes_data) > 0)
+					{
+						$this->Item_taxes->save($items_taxes_data, $item_data['item_id']);
+					}
+
+					// quantities & inventory Info
+					$employee_id = $this->Employee->get_logged_in_employee_info()->person_id;
+					$emp_info = $this->Employee->get_info($employee_id);
+					$comment =$this->lang->line('items_qty_file_import');
+
+					$cols = count($data);
+
+					// array to store information if location got a quantity
+					$allowed_locations = $this->Stock_location->get_allowed_locations();
+					for ($col = 24; $col < $cols; $col = $col + 2)
+					{
+						$location_id = $data[$col];
+						if(array_key_exists($location_id, $allowed_locations))
 						{
-							$items_taxes_data = NULL;
-							//tax 1
-							if(is_numeric($data[7]) && $data[6] != '')
-							{
-								$items_taxes_data[] = array('name' => $data[6], 'percent' => $data[7] );
-							}
+							$item_quantity_data = array(
+								'item_id' => $item_data['item_id'],
+								'location_id' => $location_id,
+								'quantity' => $data[$col + 1],
+							);
+							$this->Item_quantity->save($item_quantity_data, $item_data['item_id'], $location_id);
 
-							//tax 2
-							if(is_numeric($data[9]) && $data[8] != '')
-							{
-								$items_taxes_data[] = array('name' => $data[8], 'percent' => $data[9] );
-							}
+							$excel_data = array(
+								'trans_items' => $item_data['item_id'],
+								'trans_user' => $employee_id,
+								'trans_comment' => $comment,
+								'trans_location' => $data[$col],
+								'trans_inventory' => $data[$col + 1]
+							);
 
-							// save tax values
-							if(count($items_taxes_data) > 0)
-							{
-								$this->Item_taxes->save($items_taxes_data, $item_data['item_id']);
-							}
-
-							// quantities & inventory Info
-							$employee_id = $this->Employee->get_logged_in_employee_info()->person_id;
-							$emp_info = $this->Employee->get_info($employee_id);
-							$comment =$this->lang->line('items_qty_file_import');
-
-							$cols = count($data);
-
-							// array to store information if location got a quantity
-							$allowed_locations = $this->Stock_location->get_allowed_locations();
-							for ($col = 24; $col < $cols; $col = $col + 2)
-							{
-								$location_id = $data[$col];
-								if(array_key_exists($location_id, $allowed_locations))
-								{
-									$item_quantity_data = array(
-										'item_id' => $item_data['item_id'],
-										'location_id' => $location_id,
-										'quantity' => $data[$col + 1],
-									);
-									$this->Item_quantity->save($item_quantity_data, $item_data['item_id'], $location_id);
-
-									$excel_data = array(
-										'trans_items' => $item_data['item_id'],
-										'trans_user' => $employee_id,
-										'trans_comment' => $comment,
-										'trans_location' => $data[$col],
-										'trans_inventory' => $data[$col + 1]
-									);
-
-									$this->Inventory->insert($excel_data);
-									unset($allowed_locations[$location_id]);
-								}
-							}
-
-							/*
-							* now iterate through the array and check for which location_id no entry into item_quantities was made yet
-							* those get an entry with quantity as 0.
-							* unfortunately a bit duplicate code from above...
-							*/
-							foreach($allowed_locations as $location_id => $location_name)
-							{
-								$item_quantity_data = array(
-									'item_id' => $item_data['item_id'],
-									'location_id' => $location_id,
-									'quantity' => 0,
-								);
-								$this->Item_quantity->save($item_quantity_data, $item_data['item_id'], $data[$col]);
-
-								$excel_data = array(
-									'trans_items' => $item_data['item_id'],
-									'trans_user' => $employee_id,
-									'trans_comment' => $comment,
-									'trans_location' => $location_id,
-									'trans_inventory' => 0
-								);
-
-								$this->Inventory->insert($excel_data);
-							}
+							$this->Inventory->insert($excel_data);
+							unset($allowed_locations[$location_id]);
 						}
+					}
+
+					/*
+					* now iterate through the array and check for which location_id no entry into item_quantities was made yet
+					* those get an entry with quantity as 0.
+					* unfortunately a bit duplicate code from above...
+					*/
+					foreach($allowed_locations as $location_id => $location_name)
+					{
+						$item_quantity_data = array(
+							'item_id' => $item_data['item_id'],
+							'location_id' => $location_id,
+							'quantity' => 0,
+						);
+						$this->Item_quantity->save($item_quantity_data, $item_data['item_id'], $data[$col]);
+
+						$excel_data = array(
+							'trans_items' => $item_data['item_id'],
+							'trans_user' => $employee_id,
+							'trans_comment' => $comment,
+							'trans_location' => $location_id,
+							'trans_inventory' => 0
+						);
+
+						$this->Inventory->insert($excel_data);
+					}
+				}
 						else //insert or update item failure
 						{
 							$failCodes[] = $i;

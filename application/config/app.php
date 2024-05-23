@@ -375,5 +375,9 @@ $config['reminder_status'] = [
  */
 //$config['api_url'] = 'https://apicuongdat.thiluc2020.com';
 $config['api_url'] = 'https://tongkho.thiluc2020.com';
-
+/*
+** Thiết lập chể độ debug
+true : debugging_mode (developement). logs file application/logs/debug.txt
+false: product
+*/
 $config['debugging_mode'] = true;

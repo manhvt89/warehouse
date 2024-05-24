@@ -1591,13 +1591,14 @@ class Items extends Secure_Controller
 					$emp_info = $this->Employee->get_info($employee_id);
 					$comment =$this->lang->line('items_qty_file_import');
 
-					$cols = count($data);
+					$cols = 31; // Setup max col of Inventory Info
 
 					// array to store information if location got a quantity
 					$allowed_locations = $this->Stock_location->get_allowed_locations();
+					debug_log($allowed_locations, '$allowed_locations');
 					for ($col = 24; $col < $cols; $col = $col + 2)
 					{
-						$location_id = $data[$col];
+						$location_id = $data[$col] != null ? $data[$col] : 0;
 						if(array_key_exists($location_id, $allowed_locations))
 						{
 							$item_quantity_data = array(
@@ -1625,6 +1626,7 @@ class Items extends Secure_Controller
 					* those get an entry with quantity as 0.
 					* unfortunately a bit duplicate code from above...
 					*/
+					/* update 23/05/2024 ManhVT: Bỏ việc upload kho mặc định 0; Một số  vật tư chỉ lưu tại tổng kho (TK).
 					foreach($allowed_locations as $location_id => $location_name)
 					{
 						$item_quantity_data = array(
@@ -1644,6 +1646,7 @@ class Items extends Secure_Controller
 
 						$this->Inventory->insert($excel_data);
 					}
+					*/
 				}
 						else //insert or update item failure
 						{

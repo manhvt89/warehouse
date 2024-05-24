@@ -1515,44 +1515,42 @@ class Items extends Secure_Controller
 					'custom8'				=> $data[21] != null ? $data[21]:'',
 					'custom9'				=> $data[22] != null ? $data[22]:'',
 					'custom10'				=> $data[23] != null ? $data[23]:'',
-					'code'=>$data[32] != null ? $data[32] : '',
-					'normal_name'=>$data[33] != null ? $data[33] : '',
-					'short_name'=>$data[34] != null ? $data[34] : '',
-					'dpc_name'=>$data[35] != null ? $data[35] : '',
-					'encode'=>$data[36] != null ? $data[36] : '',
-					'group'=>$data[37] != null ? $data[37] : '',
-					'group_category'=>$data[38] != null ? $data[38] : '',
-					'cas_no'=>$data[39] != null ? $data[39] : '',
-					'kind'=>$data[40] != null ? $data[40] : '',
-					'country'=>$data[41] != null ? $data[41] : '',
-					'brand'=>$data[42] != null ? $data[42] : '',
-					'manufactory'=>$data[43] != null ? $data[43] : '',
-					'ms'=>$data[44] != null ? $data[44] : '',
-					'type'=>$data[45] != null ? $data[45] : '',
-					'item_group'=>$data[46] != null ? $data[46] : '',
-					'catalogue_no'=>$data[47] != null ? $data[47] : '',
-					
-					'purchase_uom_name'=>$data[48] != null ? $data[48] : '',
-					'purchase_uom_code'=>$data[49] != null ? $data[49] : '',
-					'purchase_item_per_purchase_unit'=>$data[50] != null ? $data[50] : '',
-					'purchase_packing_uom_name'=>$data[51] != null ? $data[51] : '',
-					'purchase_quality_per_packge'=>$data[52] != null ? $data[52] : '',
-					'purchase_packing_length'=>$data[53] != null ? $data[53] : '0',
-					'purchase_packing_height'=>$data[54] != null ? $data[54] : '0',
-					'purchase_packing_width'=>$data[55] != null ? $data[55] : '0',
-					'purchase_packing_volume'=>$data[56] != null ? $data[56] : '0',
-					'purchase_packing_weigth'=>$data[57] != null ? $data[57] : '1000',
-					'sale_uom_name'=>$data[58] != null ? $data[58] : '',
-					'sale_uom_code'=>$data[59] != null ? $data[59] : '',
-					'sale_item_per_sale_unit'=>$data[60] != null ? $data[60] : '1',
-					
-					'inventory_uom_name'=>$data[61] != null ? $data[61] : '',
-					'inventory_uom_code'=>$data[62] != null ? $data[62] : '',
-					'inventory_weigth_per_unit'=>$data[63] != null ? $data[63] : '1',
-					'serial'=>$data[64] != null ? $data[64] : '',
-					'part_no'=>$data[65] != null ? $data[65] : '',
-					'uom_group_id'=>$data[66] != null ? $data[66] : '0',
-					'leadtime' => $data[67] != null ? $data[67] : '0'
+					'code'=>$data[24] != null ? $data[24] : '',
+					'normal_name'=>$data[25] != null ? $data[25] : '',
+					'short_name'=>$data[26] != null ? $data[26] : '',
+					'dpc_name'=>$data[27] != null ? $data[27] : '',
+					'encode'=>$data[28] != null ? $data[28] : '',
+					'group'=>$data[29] != null ? $data[29] : '',
+					'group_category'=>$data[30] != null ? $data[30] : '',
+					'cas_no'=>$data[31] != null ? $data[31] : '',
+					'kind'=>$data[32] != null ? $data[32] : '',
+					'country'=>$data[33] != null ? $data[33] : '',
+					'brand'=>$data[34] != null ? $data[34] : '',
+					'manufactory'=>$data[35] != null ? $data[35] : '',
+					'ms'=>$data[36] != null ? $data[36] : '',
+					'type'=>$data[37] != null ? $data[37] : '',
+					'item_group'=>$data[38] != null ? $data[38] : '',
+					'catalogue_no'=>$data[39] != null ? $data[39] : '',
+					'purchase_uom_name'=>$data[40] != null ? $data[40] : '',
+					'purchase_uom_code'=>$data[41] != null ? $data[41] : '',
+					'purchase_item_per_purchase_unit'=>$data[42] != null ? $data[42] : '',
+					'purchase_packing_uom_name'=>$data[43] != null ? $data[43] : '',
+					'purchase_quality_per_packge'=>$data[44] != null ? $data[44] : '',
+					'purchase_packing_length'=>$data[45] != null ? $data[45] : '0',
+					'purchase_packing_height'=>$data[46] != null ? $data[46] : '0',
+					'purchase_packing_width'=>$data[47] != null ? $data[47] : '0',
+					'purchase_packing_volume'=>$data[48] != null ? $data[48] : '0',
+					'purchase_packing_weigth'=>$data[49] != null ? $data[49] : '1000',
+					'sale_uom_name'=>$data[50] != null ? $data[50] : '',
+					'sale_uom_code'=>$data[51] != null ? $data[51] : '',
+					'sale_item_per_sale_unit'=>$data[52] != null ? $data[52] : '1',
+					'inventory_uom_name'=>$data[53] != null ? $data[53] : '',
+					'inventory_uom_code'=>$data[54] != null ? $data[54] : '',
+					'inventory_weigth_per_unit'=>$data[55] != null ? $data[55] : '1',
+					'serial'=>$data[56] != null ? $data[56] : '',
+					'part_no'=>$data[57] != null ? $data[57] : '',
+					'uom_group_id'=>$data[58] != null ? $data[58] : '0',
+					'leadtime' => $data[59] != null ? $data[59] : '0'
 				);
 				$item_number = $data[0] != null ? $data[0]:'';
 				$invalidated = FALSE;
@@ -1591,20 +1589,25 @@ class Items extends Secure_Controller
 					$emp_info = $this->Employee->get_info($employee_id);
 					$comment =$this->lang->line('items_qty_file_import');
 
-					$cols = 31; // Setup max col of Inventory Info
+					$cols = count($data); // Setup max col of Inventory Info
 
 					// array to store information if location got a quantity
 					$allowed_locations = $this->Stock_location->get_allowed_locations();
 					debug_log($allowed_locations, '$allowed_locations');
-					for ($col = 24; $col < $cols; $col = $col + 2)
+					for ($col = 60; $col < $cols; $col = $col + 3)
 					{
 						$location_id = $data[$col] != null ? $data[$col] : 0;
+						$quantity = $data[$col+1] != null ? $data[$col+1] : 0;
+						$item_location = $data[$col+2] != null ? $data[$col+2] : '';
 						if(array_key_exists($location_id, $allowed_locations))
 						{
 							$item_quantity_data = array(
 								'item_id' => $item_data['item_id'],
 								'location_id' => $location_id,
-								'quantity' => $data[$col + 1],
+								'quantity' => $quantity,
+								'inventory_uom_name'=>$item_data['inventory_uom_name'],
+								'inventory_uom_code'=>$item_data['inventory_uom_code'],
+								'item_location'=>$item_location,
 							);
 							$this->Item_quantity->save($item_quantity_data, $item_data['item_id'], $location_id);
 

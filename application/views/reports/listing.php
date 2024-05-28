@@ -28,9 +28,9 @@ if(isset($error))
 				show_report_if_allowed('specific', 'ctvs', $person_id, 'reports_ctvs');
 				$bUser_type = $this->session->userdata('type');
 				?>
-				<a class="list-group-item" href="<?php echo site_url('reports/partner');?>"><?php echo 'Doanh thu theo CTV'; ?></a>
+				<!-- <a class="list-group-item" href="<?php echo site_url('reports/partner');?>"><?php echo 'Doanh thu theo CTV'; ?></a>
 				<a class="list-group-item" href="<?php echo site_url('reports/customer_care');?>"><?php echo 'Kết quả chăm sóc khác hàng'; ?></a>
-				<a class="list-group-item" href="<?php echo site_url('reports/cosoone');?>"><?php echo 'Xuất nội bộ'; ?></a>
+				<a class="list-group-item" href="<?php echo site_url('reports/cosoone');?>"><?php echo 'Xuất nội bộ'; ?></a> -->
 				<?php  if( $bUser_type == 2): ?>
 				<a class="list-group-item" href="/reports/graphical_summary_sales">Báo cáo hình ảnh</a>
 				<?php endif; ?>
@@ -48,9 +48,9 @@ if(isset($error))
 				</div>
 				<div class="list-group">
 				<?php 
-					//show_report('', 'reports_inventory_low');
-					//show_report('', 'reports_inventory_summary');
-					show_report('', 'reports_inventory_lens');
+					show_report('', 'reports_inventory_low');
+					show_report('', 'reports_inventory_summary');
+					//show_report('', 'reports_inventory_lens');
 					//show_report('', 'reports_inventory_import_lens');
 				//Contact Lens
 					//show_report('', 'reports_inventory_contact_lens');
@@ -61,11 +61,12 @@ if(isset($error))
 			
 					//show_report('', 'reports_inventory_detail_lens');
 				?>
+				<!--
 				<a class="list-group-item" href="<?php echo site_url('reports/inventory_thuoc');?>"><?php echo 'Báo cáo Thuốc'; ?></a>
 				<a class="list-group-item" href="<?php echo site_url('reports/inventory_frame');?>"><?php echo 'Báo cáo Gọng Kính'; ?></a>
 				<a class="list-group-item" href="<?php echo site_url('reports/inventory_sun_glasses');?>"><?php echo 'Báo cáo Kính Mát'; ?></a>
 				<a class="list-group-item" href="<?php echo site_url('reports/inventory_detail_lens');?>"><?php echo 'Báo cáo chi tiết Mắt Kính'; ?></a>
-				<a class="list-group-item" href="<?php echo site_url('reports/inventory_contact_lens');?>"><?php echo 'Báo cáo Áp Tròng'; ?></a>
+				<a class="list-group-item" href="<?php echo site_url('reports/inventory_contact_lens');?>"><?php echo 'Báo cáo Áp Tròng'; ?></a> -->
 				</div>
 			</div>
 		<?php 
@@ -83,7 +84,7 @@ if(isset($error))
 				</div>
 				<div class="list-group">
 					<?php
-					show_report('', 'reports_inventory_import_lens');
+					//show_report('', 'reports_inventory_import_lens');
 					//Contact Lens
 					//show_report('', 'reports_inventory_import_contact_lens');
 					// FRAME
@@ -105,7 +106,7 @@ if(isset($error))
 				</div>
 				<div class="list-group">
 					<?php
-					show_report('', 'reports_detail_import_lens');
+					//show_report('', 'reports_detail_import_lens');
 					//Contact Lens
 					//show_report('', 'reports_inventory_import_contact_lens');
 					// FRAME

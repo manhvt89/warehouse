@@ -134,7 +134,7 @@ DROP TABLE IF EXISTS `ospos_item_quantities`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ospos_item_quantities` (
-  `item_quantitie_id` int(10) NOT NULL AUTO_INCREMENT,
+  `item_quantities_id` int(10) NOT NULL AUTO_INCREMENT,
   `location_id` int(10) NOT NULL,
   `item_id` int(10) NOT NULL,
   `inventory_uom_name` varchar(50) DEFAULT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE `ospos_item_quantities` (
   `item_location` varchar(50) DEFAULT NULL,
   `cost_price` decimal(15,2) NOT NULL DEFAULT 0.00,
   `unit_price` decimal(15,2) NOT NULL DEFAULT 0.00,
-  PRIMARY KEY (`item_quantitie_id`)
+  PRIMARY KEY (`item_quantities_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

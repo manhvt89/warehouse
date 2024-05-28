@@ -3,13 +3,15 @@ class Item extends CI_Model
 {
 	/*
 	Determines if a given item_id is an item
+	Bổ sung location_id (xác định tại kho nào;)
 	*/
-	public function exists($item_id, $ignore_deleted = FALSE, $deleted = FALSE)
+	public function exists($item_id, $location_id ,$ignore_deleted = FALSE, $deleted = FALSE)
 	{
-		if (ctype_digit($item_id))
+		if (ctype_digit($item_id) && ctype_digit($location_id))
 		{
 			$this->db->from('items');
 			$this->db->where('item_id', (int) $item_id);
+			$this->db->where('location_id', (int) $location_id);
 			if ($ignore_deleted == FALSE)
 			{
 				$this->db->where('deleted', $deleted);
@@ -329,10 +331,10 @@ class Item extends CI_Model
 	khi tạo mới created_time = updated_time = current time
 	khi update; updated_time = current_time
 	*/
-	public function save(&$item_data, $item_id = FALSE)
+	public function save(&$item_data, $item_id = FALSE, $location_id=FALSE)
 	{
 		$time = time();
-		if(!$item_id || !$this->exists($item_id, TRUE))
+		if(!$item_id || !$this->exists($item_id, $location_id, TRUE))
 		{
 			$item_data['updated_time'] = $time;
 			$item_data['created_time'] = $time;

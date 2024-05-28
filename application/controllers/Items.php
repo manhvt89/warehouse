@@ -1565,7 +1565,7 @@ class Items extends Secure_Controller
 				debug_log($save_rs,'$save_rs');
 				if(!$invalidated && $save_rs)
 				{
-					$items_taxes_data = NULL;
+					$items_taxes_data = [];
 					//tax 1
 					if(is_numeric($data[7]) && $data[6] != '')
 					{
@@ -1579,7 +1579,7 @@ class Items extends Secure_Controller
 					}
 
 					// save tax values
-					if(count($items_taxes_data) > 0)
+					if(!empty($items_taxes_data))
 					{
 						$this->Item_taxes->save($items_taxes_data, $item_data['item_id']);
 					}

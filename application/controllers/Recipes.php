@@ -693,24 +693,27 @@ class Recipes extends Secure_Controller
 					$item_bs[] = $item_b;
 				}
 
-				$recipe_data = trimA($recipe_data);
-				$item_bs = trimA($item_bs);
-				$item_as = trimA($item_as);
-				debug_log($recipe_data,'$recipe_data');
-				$save_rs = $this->Recipe->save($recipe_data,$item_as,$item_bs);
-				debug_log($item_bs,'$item_bs');
-				debug_log($item_as,'$item_as');
-
-				if($save_rs)
-				{
-					
-				}
-				else //insert or update item failure
-				{
-					$failCodes[] = $i;
-				}
 				
 			}
+
+			$recipe_data = trimA($recipe_data);
+			$item_bs = trimA($item_bs);
+			$item_as = trimA($item_as);
+			debug_log($recipe_data,'$recipe_data');
+			debug_log($item_bs,'$item_bs');
+			debug_log($item_as,'$item_as');
+			$save_rs = 0;//$this->Recipe->save($recipe_data,$item_as,$item_bs);
+			
+
+			if($save_rs)
+			{
+				
+			}
+			else //insert or update item failure
+			{
+				$failCodes[] = $i;
+			}
+				
 			if(count($failCodes) > 0)
 			{
 				$message = $this->lang->line('items_excel_import_partially_failed') . ' (' . count($failCodes) . '): ' . implode(', ', $failCodes);

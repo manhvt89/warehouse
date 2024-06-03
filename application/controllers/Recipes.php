@@ -630,7 +630,7 @@ class Recipes extends Secure_Controller
 				'certificate_no'=>$certificate_no,
 
 			];
-			for($i = 15; $i < count($sheet_data); $i++) {
+			for($i = 14; $i < count($sheet_data); $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
 				debug_log($i,'START FOR: ');
 				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row

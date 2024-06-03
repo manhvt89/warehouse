@@ -630,6 +630,8 @@ class Recipes extends Secure_Controller
 				'certificate_no'=>$certificate_no,
 
 			];
+			$item_as = [];
+			$item_bs = [];
 			$neader = '';
 			for($i = 14; $i < count($sheet_data); $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
@@ -664,8 +666,8 @@ class Recipes extends Secure_Controller
 					$i++;
 					continue; // Next row
 				}
-				$item_as = [];
-				$item_bs = [];
+				debug_log($neader,'$neader');
+				
 				if($neader == 'A')
 				{
 					$item_a = [

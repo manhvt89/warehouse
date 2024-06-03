@@ -639,7 +639,7 @@ class Recipes extends Secure_Controller
 				$neader = 'A';
 				$neader_machine = $data[0] != null ? trim($data[0]):'';
 				debug_log($neader_machine,'$neader_machine');
-				if(str_contains($neader_machine, "A/ Công đoạn máy nhào trộn"))
+				if(strpos($neader_machine, "A/ Công đoạn máy nhào trộn") !== false)
 				{
 					$recipe_data['kneader_a'] = "A/ Công đoạn máy nhào trộn";
 					$processing_time_a = explode(' ',$data[7]);
@@ -648,7 +648,7 @@ class Recipes extends Secure_Controller
 					$recipe_data['weight_a'] = $weight_a[0];
 					$neader = 'A';
 					continue; // Next row
-				} elseif(str_contains($neader_machine, "B/ Công đoạn máy cán hai trục"))
+				} elseif(strpos($neader_machine, "B/ Công đoạn máy cán hai trục") !== false)
 				{
 					$neader = 'B';
 					$recipe_data['kneader_b'] = "B/ Công đoạn máy cán hai trục";
@@ -688,7 +688,9 @@ class Recipes extends Secure_Controller
 					$item_bs[] = $item_b;
 				}
 
-
+				$recipe_data = trimA($recipe_data);
+				$item_bs = trimA($item_bs);
+				$item_as = trimA($item_as);
 				debug_log($recipe_data,'$recipe_data');
 				$save_rs = $this->Recipe->save($recipe_data,$item_as,$item_bs);
 				debug_log($item_bs,'$item_bs');

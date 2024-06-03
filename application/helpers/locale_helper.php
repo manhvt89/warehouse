@@ -1366,4 +1366,18 @@ function clear_debug_log() {
 function to_upper($str){
     return mb_strtoupper($str, 'UTF-8');
 }
+/*
+Trim tất cả các item của mảng
+**/
+function trimA($array)
+{
+    $return = [];
+    if(empty($array))
+        return $return;
+    foreach($array as $key=>$value)
+    {
+        $return[$key] = $value;
+    } 
+    return $return;
+}
 ?>

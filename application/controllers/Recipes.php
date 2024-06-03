@@ -647,6 +647,7 @@ class Recipes extends Secure_Controller
 					$recipe_data['processing_time_a'] = $processing_time_a[0];
 					$recipe_data['weight_a'] = $weight_a[0];
 					$neader = 'A';
+					$i++;
 					continue; // Next row
 				} elseif(strpos($neader_machine, "B/ Công đoạn máy cán hai trục") !== false)
 				{
@@ -656,6 +657,7 @@ class Recipes extends Secure_Controller
 					$weight_b = explode(' ',$data[10]);
 					$recipe_data['processing_time_b'] = $processing_time_b[0];
 					$recipe_data['weight_b'] = $weight_b[0];
+					$i++;
 					continue; // Next row
 				}
 				$item_as = [];

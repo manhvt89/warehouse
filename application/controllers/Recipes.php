@@ -605,7 +605,7 @@ class Recipes extends Secure_Controller
 			// Bỏ qua dòng đầu tiên, start với i=1
 			debug_log(count($sheet_data),'count($sheet_data)');
 			var_dump($sheet_data);
-			$i = 9;
+			$i = 8;
 			$data = $sheet_data[$i];
 			debug_log(count($data),'data['.$i.']');
 			$name = $data['5'];

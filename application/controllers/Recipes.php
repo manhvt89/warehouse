@@ -630,6 +630,7 @@ class Recipes extends Secure_Controller
 				'certificate_no'=>$certificate_no,
 
 			];
+			$neader = '';
 			for($i = 14; $i < count($sheet_data); $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
 				debug_log($i,'START FOR: ');
@@ -638,7 +639,7 @@ class Recipes extends Secure_Controller
 				//var_dump($data);
 				debug_log($sheet_data[$i],'$sheet_data['.$i.']');
 				
-				$neader = 'A';
+				
 				$neader_machine = $data[0] != null ? trim($data[0]):'';
 				debug_log($neader_machine,'$neader_machine');
 				if(strpos($neader_machine, "A/ Công đoạn máy nhào trộn") !== false)

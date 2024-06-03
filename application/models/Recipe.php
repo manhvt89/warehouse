@@ -287,7 +287,7 @@ class Recipe extends CI_Model
 			{
 				foreach($item_as as $item)
 				{
-					$item_id = $this->Item->exists();
+					$item_id = $this->Item->exists_by_encode();
 					if($item_id == 0)
 					{
 						//create new Item

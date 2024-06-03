@@ -612,5 +612,21 @@ class Item extends CI_Model
 
 		return $this->save($data, $item_id);
 	}
+
+	public function exists_by_encode($encode,$ignore_deleted = FALSE, $deleted = FALSE)
+	{
+		
+		$this->db->from('items');
+		$this->db->where('encode', (int) $encode);
+		if ($ignore_deleted == FALSE)
+		{
+			$this->db->where('deleted', $deleted);
+		}
+
+		return ($this->db->get()->num_rows() == 1);
+		
+
+		
+	}
 }
 ?>

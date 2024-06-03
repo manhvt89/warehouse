@@ -634,7 +634,7 @@ class Recipes extends Secure_Controller
 				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
 				$data = $sheet_data[$i];
 				//var_dump($data);
-				debug_log($sheet_data[$i],'$sheet_data[$i]');
+				debug_log($sheet_data[$i],'$sheet_data['.$i.']');
 				
 				$neader = 'A';
 				$neader_machine = $data[0] != null ? trim($data[0]):'';

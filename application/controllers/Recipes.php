@@ -649,9 +649,10 @@ class Recipes extends Secure_Controller
 					$recipe_data['processing_time_a'] = $processing_time_a[0];
 					$recipe_data['weight_a'] = $weight_a[0];
 					$neader = 'A';
-					$i++;
+					$i = $i+2;
 					continue; // Next row
-				} elseif(strpos($neader_machine, "B/ Công đoạn máy cán hai trục") !== false)
+				} 
+				elseif(strpos($neader_machine, "B/ Công đoạn máy cán hai trục") !== false)
 				{
 					$neader = 'B';
 					$recipe_data['kneader_b'] = "B/ Công đoạn máy cán hai trục";

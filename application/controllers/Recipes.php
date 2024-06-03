@@ -633,7 +633,9 @@ class Recipes extends Secure_Controller
 			$item_as = [];
 			$item_bs = [];
 			$neader = '';
-			for($i = 14; $i < count($sheet_data); $i++) {
+			//$max = count($sheet_data); //1000
+			$max = 200;
+			for($i = 14; $i < $max; $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
 				debug_log($i,'START FOR: ');
 				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
@@ -706,7 +708,7 @@ class Recipes extends Secure_Controller
 			debug_log($recipe_data,'$recipe_data');
 			debug_log($item_bs,'$item_bs');
 			debug_log($item_as,'$item_as');
-			$save_rs = 0;//$this->Recipe->save($recipe_data,$item_as,$item_bs);
+			$save_rs = $this->Recipe->save($recipe_data,$item_as,$item_bs);
 			
 
 			if($save_rs)

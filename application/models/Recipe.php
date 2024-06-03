@@ -295,6 +295,7 @@ class Recipe extends CI_Model
 
 					$item['item_id'] = $item_id;
 					$item['type'] = 'A';
+					$item['recipe_id'] = $recipe_data['recipe_id'];
 					$this->db->insert('item_recipes', $item);
 				}	
 			}
@@ -304,7 +305,7 @@ class Recipe extends CI_Model
 			{
 				foreach($item_bs as $item)
 				{
-					$item_id = $this->Item->exists();
+					$item_id = $this->Item->exists_by_encode($item['item_mix']);
 					if($item_id == 0)
 					{
 						//create new Item
@@ -312,6 +313,7 @@ class Recipe extends CI_Model
 
 					$item['item_id'] = $item_id;
 					$item['type'] = 'B';
+					$item['recipe_id'] = $recipe_data['recipe_id'];
 					$this->db->insert('item_recipes', $item);
 				}
 			}

@@ -288,9 +288,10 @@ class Recipe extends CI_Model
 				foreach($item_as as $item)
 				{
 					$item_id = $this->Item->exists_by_encode($item['item_mix']);
-					if($item_id == 0)
+					if(!$item_id)
 					{
 						//create new Item
+						$item_id = 0;
 					}
 
 					$item['item_id'] = $item_id;
@@ -306,9 +307,10 @@ class Recipe extends CI_Model
 				foreach($item_bs as $item)
 				{
 					$item_id = $this->Item->exists_by_encode($item['item_mix']);
-					if($item_id == 0)
+					if(!$item_id)
 					{
 						//create new Item
+						$item_id = 0;
 					}
 
 					$item['item_id'] = $item_id;

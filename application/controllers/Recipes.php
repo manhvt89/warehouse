@@ -638,7 +638,7 @@ class Recipes extends Secure_Controller
 				
 				$neader = 'A';
 				$neader_machine = $data[0] != null ? trim($data[0]):'';
-				debug_log($neader_machine[$i],'$neader_machine');
+				debug_log($neader_machine,'$neader_machine');
 				if(str_contains($neader_machine, "A/ Công đoạn máy nhào trộn"))
 				{
 					$recipe_data['kneader_a'] = "A/ Công đoạn máy nhào trộn";

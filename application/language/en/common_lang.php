@@ -69,3 +69,20 @@ $lang["common_required"] = "Yêu cầu";
 $lang["common_id"] = "Id";
 $lang['common_facebook_url'] = 'Facebook URL';
 $lang['purchases_no_purchases_to_display'] = 'Chưa có phiếu đặt hàng nào';
+
+/** Recipe - Đơn pha chế */
+$lang['recipes_name'] = 'Tên đơn pha chế';
+$lang['recipes_master_batch'] = 'Mác nguyên liệu';
+$lang['recipes_date_issued'] = 'Ngày ban hành';
+$lang['recipes_grade_of_standard'] = 'Cấp tiêu chuẩn';
+$lang['recipes_certificate_no'] = 'Giấy kiểm định số';
+$lang['recipes_no_recipes_to_display'] = 'Chưa có đơn pha chế nào';
+$lang['recipe_cannot_be_deleted'] = "Chưa xóa được đơn pha chế";
+$lang['recipe_successful_deleted'] = "Xóa thành công đơn pha chế";
+$lang['recipes_certificate_attack'] = "Tệp đính kèm";
+$lang['recipes_new'] = "Tạo mới";
+
+/** Location */
+$lang['location_deleted'] = 'Trạng thái hoạt động';
+
+

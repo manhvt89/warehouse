@@ -180,3 +180,84 @@ CREATE TABLE `ospos_machines` (
 INSERT INTO `ospos_machines` (`machine_name`, `machine_code`,`code`, `manufactory`,`seria`, `created_date`,`used_date`, `position`,`status`) VALUES
 ('Máy ép nhựa', 'EN-120-1B-01', '01', 'ENAIVIV-Taiwan','120364',0,0,'Tổ ép nhựa',0),
 ('Máy ép cao su', 'EN-120-1B-01', '01', 'ENAIVIV-Taiwan','120364',0,0,'Tổ ép cao su',0),
+
+DROP TABLE IF EXISTS `ospos_production_orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_production_orders` (
+  `producttion_order_no` varchar(25) NOT NULL,
+  `producttion_order_id` int(10) NOT NULL AUTO_INCREMENT,
+  `producttion_order_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `customer_code` varchar(50) NOT NULL DEFAULT '',
+  `customer_id` int(11) DEFAULT NULL,
+  `customer_name` varchar(250) NOT NULL DEFAULT '',
+  `product_code` varchar(15) DEFAULT NULL,
+  `product_name` varchar(255) NOT NULL DEFAULT '',
+  `product_part_no` varchar(55) NOT NULL DEFAULT '',
+  `requested_date` int(11) NOT NULL DEFAULT 0,
+  `machine_name` varchar(255) NOT NULL DEFAULT '',
+  `machine_code` varchar(15) DEFAULT NULL,
+  `quantity` decimal(15,3) NOT NULL DEFAULT 1.000,
+  `product_uom_name` varchar(50) NOT NULL DEFAULT '',
+  `product_uom_code` varchar(50) NOT NULL DEFAULT '',
+  `start_time` int(11) NOT NULL DEFAULT 0,
+  `total_working_hours` int(11) NOT NULL DEFAULT 0,
+  `shift_work_mode` varchar(15) NOT NULL DEFAULT '', 
+  `material_name` varchar(150) NOT NULL DEFAULT '',
+  `ms` varchar(50) NOT NULL DEFAULT '',
+  `recipe_id` int(11) DEFAULT 0,
+  `weight_of_piece` decimal(15,3) NOT NULL DEFAULT 0.000,
+  `batch_number` int(11) DEFAULT 0,
+  `current_inventory` decimal(15,3) NOT NULL DEFAULT 0.000,
+  `usage_weight` decimal(15,3) NOT NULL DEFAULT 0.000,
+  `batch_weight` decimal(15,3) NOT NULL DEFAULT 0.000,
+  `product_volume` decimal(15,3) NOT NULL DEFAULT 0.000,
+  `ending_inventory` decimal(15,3) NOT NULL DEFAULT 0.000,
+  `actual_inventory` decimal(15,3) NOT NULL DEFAULT 0.000,
+  `data` text NOT NULL DEFAULT '',
+  PRIMARY KEY (`producttion_order_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+DROP TABLE IF EXISTS `ospos_recipes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_recipes` (
+  `recipe_id` int(10) NOT NULL AUTO_INCREMENT,
+  `recipe_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `name` varchar(250) NOT NULL DEFAULT '',
+  `master_batch` varchar(55) NOT NULL DEFAULT '',
+  `date_issued` int(11) NOT NULL DEFAULT 0,
+  `grade_of_standard` varchar(50) NOT NULL DEFAULT '',
+  `certificate_no` varchar(50) DEFAULT NULL,
+  `certificate_attack` varchar(250) NOT NULL DEFAULT '', 
+  `kneader_a` varchar(50) DEFAULT NULL,
+  `processing_time_a` int(11) NOT NULL DEFAULT 0,
+  `weight_a` decimal(15,2) NOT NULL DEFAULT 75.00,
+
+  `kneader_b` varchar(50) DEFAULT NULL,
+  `processing_time_b` int(11) NOT NULL DEFAULT 0,
+  `weight_b` decimal(15,2) NOT NULL DEFAULT 25.54,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `deleted` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`recipe_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+DROP TABLE IF EXISTS `ospos_item_recipes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_item_recipes` (
+  `item_recipe_id` int(10) NOT NULL AUTO_INCREMENT,
+  `item_recipe_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `recipe_id` int(11) NOT NULL DEFAULT 0,
+  `item_id` int(11) NOT NULL DEFAULT 0,
+  `item_group` varchar(10) NOT NULL DEFAULT '',
+  `item_mix` varchar(10) NOT NULL DEFAULT '',
+  `uom_code` varchar(10) NOT NULL DEFAULT '',
+  `uom_name` varchar(10) NOT NULL DEFAULT '',
+  `weight` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `tolerace` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `type` varchar(1) NOT NULL DEFAULT '',
+
+  PRIMARY KEY (`item_recipe_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+

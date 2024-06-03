@@ -1327,4 +1327,61 @@ function get_location_data_row($item, $controller)
 	}	
 	return $return;
 }
+
+function get_recipe_manage_table_headers()
+{
+	$CI =& get_instance();
+	
+	$headers = array(
+			array('recipes.recipe_id' => $CI->lang->line('common_id')),
+			array('name' => $CI->lang->line('recipes_name')),
+			array('master_batch' => $CI->lang->line('recipes_master_batch')),
+			array('date_issued' => $CI->lang->line('recipes_date_issued')),
+			array('grade_of_standard' => $CI->lang->line('recipes_grade_of_standard')),
+			array('certificate_no' => $CI->lang->line('recipes_certificate_no'))
+		);
+	//var_dump($headers);
+	return transform_headers($headers);
+}
+
+function get_recipe_data_row($item, $controller)
+{
+	$CI =& get_instance();
+	
+	
+	$controller_name = strtolower(get_class($CI));
+
+	$file = '';
+	if ($item->pic_id != '')
+	{
+		$files = glob('./uploads/item_files/' . $item->certificate_attack . '.*');
+		if (sizeof($files) > 0)
+		{
+			$file .= '<a class="rollover" href="'. base_url($files[0]) .'">'.$CI->lang->line('recipes_certificate_attack').'</a>';
+		}
+	}
+	
+	
+	if ($CI->Employee->has_grant($controller_name.'_view')) {
+		$edit = anchor(
+			$controller_name."/view/$item->recipe_id",
+			'<span class="glyphicon glyphicon-edit"></span>',
+			array('class' => 'modal-dlg', 'data-btn-submit' => $CI->lang->line('common_submit'), 'title' => $CI->lang->line($controller_name.'_update'))
+		);
+	} else {
+		$edit = '';
+	}
+	
+	$return = array (
+		'recipes.recipe_id' => $item->recipe_id,
+		'name' => $item->name,
+		'master_batch' => $item->master_batch,
+		'company_name' => $item->company_name,
+		'date_issued'=>date('d/m/Y',$item->date_issued),
+		'grade_of_standard'=> $item->grade_of_standard,
+		'certificate_no'=>$item->certificate_no,
+		'file'=>$file,
+		'edit' => $edit);
+	return $return;
+}
 ?>

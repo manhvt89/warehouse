@@ -7,11 +7,11 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 //use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-class Items extends Secure_Controller
+class Machines extends Secure_Controller
 {
 	public function __construct()
 	{
-		parent::__construct('items');
+		parent::__construct('machines');
 
 		$this->load->library('item_lib');
 		$this->load->model('cron/Product');

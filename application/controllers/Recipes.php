@@ -698,7 +698,8 @@ class Recipes extends Secure_Controller
 
 				
 			}
-
+			array_pop($item_bs);
+			array_pop($item_as);
 			$recipe_data = trimA($recipe_data);
 			$item_bs = trimA($item_bs);
 			$item_as = trimA($item_as);

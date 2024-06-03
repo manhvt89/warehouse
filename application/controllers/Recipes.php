@@ -606,6 +606,7 @@ class Recipes extends Secure_Controller
 			debug_log(count($sheet_data),'count($sheet_data)');
 			$i = 9;
 			$data = $sheet_data[$i];
+			debug_log(count($data),'data['.$i.']');
 			$name = $data['5'];
 			$master_batch = $data['5']; //F
 			$grade_of_standard = $data['10']; //K
@@ -630,7 +631,7 @@ class Recipes extends Secure_Controller
 			];
 			for($i = 15; $i < count($sheet_data); $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
-				//debug_log($sheet_data[$i],'$sheet_data[$i]');
+				debug_log($i,'START FOR: ');
 				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
 				$data = $sheet_data[$i];
 				//var_dump($data);

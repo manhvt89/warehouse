@@ -665,7 +665,7 @@ class Recipes extends Secure_Controller
 					$weight_b = explode(' ',$data[10]);
 					$recipe_data['processing_time_b'] = $processing_time_b[0];
 					$recipe_data['weight_b'] = $weight_b[0];
-					$i++;
+					$i = $i+2;
 					continue; // Next row
 				}
 				debug_log($neader,'$neader');

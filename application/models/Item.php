@@ -615,21 +615,22 @@ class Item extends CI_Model
 
 	public function exists_by_encode($encode,$ignore_deleted = FALSE, $deleted = FALSE)
 	{
-		$this->load->helper('locale_helper');
+		//$this->load->helper('locale_helper');
 		$this->db->from('items');
 		$this->db->where('encode', (int) $encode);
 		if ($ignore_deleted == FALSE)
 		{
 			$this->db->where('deleted', $deleted);
 		}
-		debug_log('1234','test0');
+		//debug_log('1234','test0');
 		echo $this->db->get()->num_rows();
 		if($this->db->get()->num_rows() > 1)
 		{
 			$row = $this->db->get()->row();
-			var_dump($row);
+			var_dump($row); die();
 			return $row->item_id;
 		}
+		die();
 		return 0;
 	}
 }

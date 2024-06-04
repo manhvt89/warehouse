@@ -399,11 +399,6 @@ class Recipes extends Secure_Controller
 		}
 	}
 	
-	public function check_item_number()
-	{
-		$exists = $this->Item->item_number_exists($this->input->post('item_number'), $this->input->post('item_id'));
-		echo !$exists ? 'true' : 'false';
-	}
 	
 	private function _handle_file_upload()
 	{
@@ -741,6 +736,32 @@ class Recipes extends Secure_Controller
 				echo json_encode(array('success' => TRUE, 'message' => $this->lang->line('items_excel_import_success')));
 			}
 		}
+	}
+
+	public function is_approved()
+	{
+		return true;
+	}
+
+	public function is_editor()
+	{
+		return true;
+	}
+
+	public function is_action()
+	{
+		/**
+		 * Phân quyền dành cho cán bộ công nhân thực hiện
+		 */
+		return true;
+	}
+
+	public function is_production_order()
+	{
+		/**
+		 * Phân quyền cho người lập kế hoạch
+		 */
+		return true;
 	}
 
 }

@@ -289,7 +289,7 @@ class Recipe extends CI_Model
 				{
 					$item_id = $this->Item->exists_by_encode($item['item_mix']);
 					
-
+					debug_log($item_id,'$item_id')
 					$item['item_id'] = $item_id;
 					$item['type'] = 'A';
 					$item['recipe_id'] = $recipe_data['recipe_id'];

@@ -1338,7 +1338,9 @@ function get_recipe_manage_table_headers()
 			array('master_batch' => $CI->lang->line('recipes_master_batch')),
 			array('date_issued' => $CI->lang->line('recipes_date_issued')),
 			array('grade_of_standard' => $CI->lang->line('recipes_grade_of_standard')),
-			array('certificate_no' => $CI->lang->line('recipes_certificate_no'))
+			array('certificate_no' => $CI->lang->line('recipes_certificate_no')),
+			//array('certificate_attack' => $CI->lang->line('recipes_certificate_attack')), // chưa xài
+			array('status' => $CI->lang->line('recipes_status')),
 		);
 	//var_dump($headers);
 	return transform_headers($headers);

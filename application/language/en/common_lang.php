@@ -81,6 +81,7 @@ $lang['recipe_cannot_be_deleted'] = "Chưa xóa được đơn pha chế";
 $lang['recipe_successful_deleted'] = "Xóa thành công đơn pha chế";
 $lang['recipes_certificate_attack'] = "Tệp đính kèm";
 $lang['recipes_new'] = "Tạo mới";
+$lang['recipes_status'] = "Trạng thái";
 
 /** Location */
 $lang['location_deleted'] = 'Trạng thái hoạt động';

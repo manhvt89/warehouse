@@ -1352,7 +1352,7 @@ function get_recipe_data_row($item, $controller)
 	$controller_name = strtolower(get_class($CI));
 
 	$file = '';
-	if ($item->pic_id != '')
+	if ($item->certificate_attack != '')
 	{
 		$files = glob('./uploads/item_files/' . $item->certificate_attack . '.*');
 		if (sizeof($files) > 0)
@@ -1376,7 +1376,7 @@ function get_recipe_data_row($item, $controller)
 		'recipes.recipe_id' => $item->recipe_id,
 		'name' => $item->name,
 		'master_batch' => $item->master_batch,
-		'company_name' => $item->company_name,
+		//'company_name' => $item->company_name,
 		'date_issued'=>date('d/m/Y',$item->date_issued),
 		'grade_of_standard'=> $item->grade_of_standard,
 		'certificate_no'=>$item->certificate_no,

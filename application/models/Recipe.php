@@ -306,11 +306,7 @@ class Recipe extends CI_Model
 			
 			
 		} else {
-			//echo '0';
-			//$item_data['updated_time'] = $time;
-			//$this->db->where('item_id', $item_id);
-			
-			//return $this->db->update('items', $item_data);
+
 			return false;
 		}
 	}

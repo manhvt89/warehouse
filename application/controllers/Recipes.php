@@ -717,7 +717,7 @@ class Recipes extends Secure_Controller
 			}
 			else //insert or update item failure
 			{
-				$failCodes[] = $i;
+				$failCodes[] = 1;
 			}
 				
 			if(count($failCodes) > 0)

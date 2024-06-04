@@ -623,10 +623,11 @@ class Item extends CI_Model
 			$this->db->where('deleted', $deleted);
 		}
 
-		return ($this->db->get()->num_rows() == 1);
-		
-
-		
+		if($this->db->get()->num_rows() == 1)
+		{
+			return $this->db->get()->row()->item_id;
+		}
+		return 0;
 	}
 }
 ?>

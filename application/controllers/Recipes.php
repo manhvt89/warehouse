@@ -619,6 +619,7 @@ class Recipes extends Secure_Controller
 			debug_log($_arr_date_issued,'_arr_date_issued');
 			$_str_date = str_replace(" ","", $_arr_date_issued[0]);
 			$_str_date = mb_substr($_str_date,0,10);
+			$_str_date_issued = $_str_date;
 			$_str_date = str_replace('/', '-', $_str_date);
 			debug_log($_str_date,'_str_date');
 			$_int_date_issued = strtotime($_str_date);
@@ -632,6 +633,7 @@ class Recipes extends Secure_Controller
 			$recipe_data = [
 				'name' => $name,
 				'master_batch'=>$master_batch,
+				'str_date_issued' = $_str_date_issued,
 				'grade_of_standard'=>$grade_of_standard,
 				'date_issued'=>$_int_date_issued,
 				'certificate_no'=>$certificate_no,

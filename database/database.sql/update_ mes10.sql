@@ -228,6 +228,7 @@ CREATE TABLE `ospos_recipes` (
   `master_batch` varchar(55) NOT NULL DEFAULT '',
   `date_issued` int(11) NOT NULL DEFAULT 0,
   `grade_of_standard` varchar(50) NOT NULL DEFAULT '',
+  `str_date_issued` varchar(15) NOT NULL DEFAULT '',
   `certificate_no` varchar(50) DEFAULT NULL,
   `certificate_attack` varchar(250) NOT NULL DEFAULT '', 
   `kneader_a` varchar(50) DEFAULT NULL,

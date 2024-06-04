@@ -617,7 +617,7 @@ class Item extends CI_Model
 	{
 		$this->load->helper('locale_helper');
 		$this->db->from('items');
-		$this->db->where('encode', (int) $encode);
+		$this->db->where('encode', $encode);
 		if ($ignore_deleted == FALSE)
 		{
 			$this->db->where('deleted', $deleted);

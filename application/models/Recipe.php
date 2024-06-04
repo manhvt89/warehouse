@@ -271,14 +271,14 @@ class Recipe extends CI_Model
 	Inserts or updates a item
 	
 	*/
-	public function save1(&$recipe_data, $item_as, $item_bs)
+	public function save(&$recipe_data, $item_as, $item_bs)
 	{
-		$time = time();
+		echo 'Save'; die();
 		$master_batch = $recipe_data['master_batch'];
 		if(!$this->exists($master_batch, TRUE))
 		{
-			//$this->db->trans_start();
-			$this->db->insert('recipes', $recipe_data);
+			$this->db->trans_start();
+			$this->db->insert('recipes1', $recipe_data);
 			
 			$recipe_data['recipe_id'] = $this->db->insert_id();
 			
@@ -288,8 +288,7 @@ class Recipe extends CI_Model
 				foreach($item_as as $item)
 				{
 					$item_id = $this->Item->exists_by_encode($item['item_mix']);
-					echo $item_id;
-					die();
+					
 					//debug_log($item_id,'$item_id');
 					$item['item_id'] = $item_id;
 					$item['type'] = 'A';
@@ -311,12 +310,11 @@ class Recipe extends CI_Model
 					$this->db->insert('item_recipes', $item);
 				}
 			}
-			echo 'XXXX';
-			die();
-			//$this->db->trans_complete();
+			
+			$this->db->trans_complete();
 
-			//return $this->db->trans_status();
-			return true;
+			return $this->db->trans_status();
+			
 			
 		} else {
 			//$item_data['updated_time'] = $time;

@@ -311,7 +311,8 @@ class Recipe extends CI_Model
 					$this->db->insert('item_recipes', $item);
 				}
 			}
-
+			echo 'XXXX';
+			die();
 			//$this->db->trans_complete();
 
 			//return $this->db->trans_status();

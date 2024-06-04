@@ -55,7 +55,7 @@ class Recipe extends CI_Model
 	public function search($search, $filters, $rows = 0, $limit_from = 0, $sort = 'recipes.name', $order = 'asc')
 	{
 		$this->db->select('recipes.*');
-		$this->db->from('recipes');
+		$this->db->from('recipes1');
 		//$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
 		//$this->db->join('inventory', 'inventory.trans_items = items.item_id');
 

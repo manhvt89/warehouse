@@ -1375,6 +1375,7 @@ function get_recipe_data_row($item, $controller)
 	}
 
 	$_arr_status = [
+		0 => 'NA',
 		1 => $CI->lang->line('recipes_status_new'),
 		2 => $CI->lang->line('recipes_status_sent'),
 		3 => $CI->lang->line('recipes_status_reject'),

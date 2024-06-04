@@ -82,6 +82,11 @@ $lang['recipe_successful_deleted'] = "Xóa thành công đơn pha chế";
 $lang['recipes_certificate_attack'] = "Tệp đính kèm";
 $lang['recipes_new'] = "Tạo mới";
 $lang['recipes_status'] = "Trạng thái";
+$lang['recipes_status_new'] = "Mới tạo";
+$lang['recipes_status_sent'] = "Gửi phê duyệt";
+$lang['recipes_status_reject'] = "Từ chối";
+$lang['recipes_status_resent'] = "Gửi lại";
+$lang['recipes_status_approved'] = "Đã phê duyệt";
 
 /** Location */
 $lang['location_deleted'] = 'Trạng thái hoạt động';

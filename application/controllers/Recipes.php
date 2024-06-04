@@ -637,6 +637,7 @@ class Recipes extends Secure_Controller
 				'grade_of_standard'=>$grade_of_standard,
 				'date_issued'=>$_int_date_issued,
 				'certificate_no'=>$certificate_no,
+				'status'=>5
 
 			];
 			$item_as = [];

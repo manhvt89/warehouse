@@ -1373,6 +1373,20 @@ function get_recipe_data_row($item, $controller)
 	} else {
 		$edit = '';
 	}
+
+	$_arr_status = [
+		1 => $CI->lang->line('recipes_status_new'),
+		2 => $CI->lang->line('recipes_status_sent'),
+		3 => $CI->lang->line('recipes_status_reject'),
+		4 => $CI->lang->line('recipes_status_resent'),
+		5 => $CI->lang->line('recipes_status_approved')
+	];
+	$status = $_arr_status[0];
+	if(isset($_arr_status[$item->status]))
+	{ 
+		$status = $_arr_status[$item->status];
+	}
+	
 	
 	$return = array (
 		'recipes.recipe_id' => $item->recipe_id,
@@ -1382,6 +1396,7 @@ function get_recipe_data_row($item, $controller)
 		'date_issued'=>date('d/m/Y',$item->date_issued),
 		'grade_of_standard'=> $item->grade_of_standard,
 		'certificate_no'=>$item->certificate_no,
+		'status'=>$status,
 		'file'=>$file,
 		'edit' => $edit);
 	return $return;

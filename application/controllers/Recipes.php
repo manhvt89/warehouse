@@ -612,13 +612,15 @@ class Recipes extends Secure_Controller
 			$master_batch = $data['5']; //F
 			$grade_of_standard = $data['10']; //K
 			$i = $i+2;
-			$date_issued = $data['5']; 
+			$_str_date_issued = trim($data['5']); 
 			$certificate_no=$data['10'];
-
-			$date_issued = strtotime($date_issued);
-			if($date_issued==false)
+			$_arr_date_issued = explode(' ',$_str_date_issued);
+			$_str_date = str_replace(" ","", $_arr_date_issued[0]);
+			$_str_date = str_replace('/', '-', $_str_date);
+			$_int_date_issued = strtotime($_str_date);
+			if($_int_date_issued == false)
 			{
-				$date_issued = strtotime('17/09/2022'); //dèault
+				$_int_date_issued = strtotime('17-09-2022'); //dèault
 			}
 
 
@@ -626,7 +628,7 @@ class Recipes extends Secure_Controller
 				'name' => $name,
 				'master_batch'=>$master_batch,
 				'grade_of_standard'=>$grade_of_standard,
-				'date_issued'=>$date_issued,
+				'date_issued'=>$_int_date_issued,
 				'certificate_no'=>$certificate_no,
 
 			];

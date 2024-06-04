@@ -288,7 +288,8 @@ class Recipe extends CI_Model
 				foreach($item_as as $item)
 				{
 					$item_id = $this->Item->exists_by_encode($item['item_mix']);
-					
+					echo $item_id;
+					die();
 					//debug_log($item_id,'$item_id');
 					$item['item_id'] = $item_id;
 					$item['type'] = 'A';

@@ -617,6 +617,7 @@ class Recipes extends Secure_Controller
 			$_arr_date_issued = explode(' ',$_str_date_issued);
 			$_str_date = str_replace(" ","", $_arr_date_issued[0]);
 			$_str_date = str_replace('/', '-', $_str_date);
+			debug_log(_str_date,'_str_date');
 			$_int_date_issued = strtotime($_str_date);
 			if($_int_date_issued == false)
 			{

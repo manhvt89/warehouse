@@ -2,8 +2,8 @@
 class Recipe extends CI_Model
 {
 	/*
-	Determines if a given item_id is an item
-	Bổ sung location_id (xác định tại kho nào;)
+	Kiểm tra xem đã tồn tại đơn pha chế với mã $master_batch
+	
 	*/
 	public function exists($master_batch,$ignore_deleted = FALSE, $deleted = FALSE)
 	{
@@ -18,20 +18,6 @@ class Recipe extends CI_Model
 		return ($this->db->get()->num_rows() == 1);
 	}
 
-	/*
-	Determines if a given item_number exists
-	*/
-	public function item_number_exists($item_number, $item_id = '')
-	{
-		$this->db->from('items');
-		$this->db->where('item_number', (string) $item_number);
-		if(ctype_digit($item_id))
-		{
-			$this->db->where('item_id !=', (int) $item_id);
-		}
-
-		return ($this->db->get()->num_rows() == 1);
-	}
 
 	/*
 	get item in cart to check
@@ -273,12 +259,13 @@ class Recipe extends CI_Model
 	*/
 	public function save(&$recipe_data, $item_as, $item_bs)
 	{
-		echo 'SAve';
+		//echo 'SAve';
 		$master_batch = $recipe_data['master_batch'];
-		echo $master_batch;
+		//echo $master_batch;
+		//$exist = $this->exists($master_batch, TRUE);
 		if(!$this->exists($master_batch, TRUE))
 		{
-			echo '1';
+			//echo '1';
 			$this->db->trans_start();
 			$this->db->insert('recipes', $recipe_data);
 			
@@ -319,7 +306,7 @@ class Recipe extends CI_Model
 			
 			
 		} else {
-			echo '0';
+			//echo '0';
 			//$item_data['updated_time'] = $time;
 			//$this->db->where('item_id', $item_id);
 			

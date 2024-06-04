@@ -275,6 +275,7 @@ class Recipe extends CI_Model
 	{
 		echo 'SAve';
 		$master_batch = $recipe_data['master_batch'];
+		echo $master_batch;
 		if(!$this->exists($master_batch, TRUE))
 		{
 			echo '1';
@@ -318,6 +319,7 @@ class Recipe extends CI_Model
 			
 			
 		} else {
+			echo '0';
 			//$item_data['updated_time'] = $time;
 			//$this->db->where('item_id', $item_id);
 			

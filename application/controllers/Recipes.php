@@ -633,7 +633,7 @@ class Recipes extends Secure_Controller
 			$recipe_data = [
 				'name' => $name,
 				'master_batch'=>$master_batch,
-				'str_date_issued' = $_str_date_issued,
+				'str_date_issued' => $_str_date_issued,
 				'grade_of_standard'=>$grade_of_standard,
 				'date_issued'=>$_int_date_issued,
 				'certificate_no'=>$certificate_no,

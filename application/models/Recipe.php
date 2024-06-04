@@ -278,7 +278,7 @@ class Recipe extends CI_Model
 		if(!$this->exists($master_batch, TRUE))
 		{
 			$this->db->trans_start();
-			$this->db->insert('recipes1', $recipe_data);
+			$this->db->insert('recipes', $recipe_data);
 			
 			$recipe_data['recipe_id'] = $this->db->insert_id();
 			

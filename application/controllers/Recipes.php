@@ -612,6 +612,7 @@ class Recipes extends Secure_Controller
 			$master_batch = $data['5']; //F
 			$grade_of_standard = $data['10']; //K
 			$i = $i+2;
+			$data = $sheet_data[$i];
 			$_str_date_issued = trim($data['5']); 
 			$certificate_no=$data['10'];
 			$_arr_date_issued = explode(' ',$_str_date_issued);

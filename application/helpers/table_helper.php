@@ -1366,7 +1366,7 @@ function get_recipe_data_row($item, $controller)
 	
 	if ($CI->Employee->has_grant($controller_name.'_view')) {
 		$edit = anchor(
-			$controller_name."/view/$item->recipe_id",
+			$controller_name."/view/$item->recipe_uuid",
 			'<span class="glyphicon glyphicon-edit"></span>',
 			array('class' => 'modal-dlg', 'data-btn-submit' => $CI->lang->line('common_submit'), 'title' => $CI->lang->line($controller_name.'_update'))
 		);

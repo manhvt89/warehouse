@@ -277,7 +277,7 @@ class Recipe extends CI_Model
 		$master_batch = $recipe_data['master_batch'];
 		if(!$this->exists($master_batch, TRUE))
 		{
-			$this->db->trans_start();
+			//$this->db->trans_start();
 			$this->db->insert('recipes', $recipe_data);
 			
 			$recipe_data['recipe_id'] = $this->db->insert_id();
@@ -312,9 +312,10 @@ class Recipe extends CI_Model
 				}
 			}
 
-			$this->db->trans_complete();
+			//$this->db->trans_complete();
 
-			return $this->db->trans_status();
+			//return $this->db->trans_status();
+			return true;
 			
 		} else {
 			//$item_data['updated_time'] = $time;

@@ -740,27 +740,37 @@ class Recipes extends Secure_Controller
 
 	public function is_approved()
 	{
+		/**
+		 * Phân quyền cho người xét duyện đơn pha chế
+		 * xem được đầy đủ, tên các chất
+		 */
 		return true;
 	}
 
 	public function is_editor()
 	{
+		/**
+		 * Phân quyền cho người tạo đơn pha chế
+		 * Xem được đầy đủ tên các chất
+		 */
 		return true;
 	}
 
 	public function is_action()
 	{
 		/**
+		 * Xem được đã được mã hóa
 		 * Phân quyền dành cho cán bộ công nhân thực hiện
-		 */
+		 **/
 		return true;
 	}
 
 	public function is_production_order()
 	{
 		/**
+		 * Xem được đã được mã hóa
 		 * Phân quyền cho người lập kế hoạch
-		 */
+		 **/
 		return true;
 	}
 

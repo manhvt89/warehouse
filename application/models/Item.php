@@ -625,7 +625,7 @@ class Item extends CI_Model
 		
 		$query = $this->db->get();
 		debug_log($query->num_rows(),'test0');
-		if($query->num_rows() > 1)
+		if($query->num_rows() > 0)
 		{
 			$row = $query->row();
 			debug_log($row,'row');

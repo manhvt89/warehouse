@@ -622,10 +622,12 @@ class Item extends CI_Model
 		{
 			$this->db->where('deleted', $deleted);
 		}
-
+		debug_log($this->db->get()->num_rows(),'$this->db->get()->num_rows()');
 		if($this->db->get()->num_rows() > 1)
 		{
-			return $this->db->get()->row()->item_id;
+			$row = $this->db->get()->row();
+			debug_log($row,'$row');
+			return $row->item_id;
 		}
 		return 0;
 	}

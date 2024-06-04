@@ -273,7 +273,7 @@ class Recipe extends CI_Model
 	*/
 	public function save(&$recipe_data, $item_as, $item_bs)
 	{
-		echo 'Save'; die();
+		
 		$master_batch = $recipe_data['master_batch'];
 		if(!$this->exists($master_batch, TRUE))
 		{

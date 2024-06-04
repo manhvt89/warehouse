@@ -273,10 +273,11 @@ class Recipe extends CI_Model
 	*/
 	public function save(&$recipe_data, $item_as, $item_bs)
 	{
-		
+		echo 'SAve';
 		$master_batch = $recipe_data['master_batch'];
 		if(!$this->exists($master_batch, TRUE))
 		{
+			echo '1';
 			$this->db->trans_start();
 			$this->db->insert('recipes', $recipe_data);
 			

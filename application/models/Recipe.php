@@ -271,7 +271,7 @@ class Recipe extends CI_Model
 	Inserts or updates a item
 	
 	*/
-	public function save(&$recipe_data, $item_as, $item_bs)
+	public function save1(&$recipe_data, $item_as, $item_bs)
 	{
 		$time = time();
 		$master_batch = $recipe_data['master_batch'];

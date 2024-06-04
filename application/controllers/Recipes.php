@@ -622,7 +622,8 @@ class Recipes extends Secure_Controller
 			$_str_date = str_replace('/', '-', $_str_date);
 			debug_log($_str_date,'_str_date');
 			$_int_date_issued = strtotime($_str_date);
-			if($_int_date_issued == false)
+			debug_log($_int_date_issued,'_int_date_issued');
+			if($_int_date_issued === false)
 			{
 				$_int_date_issued = strtotime('17-09-2022'); //dèault
 			}

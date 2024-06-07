@@ -3,7 +3,7 @@
 <ul id="error_message_box" class="error_message_box"></ul>
 
 <?php echo form_open('items/save/'.$item_info->item_id, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
-	<fieldset id="item_basic_info">
+	<fieldset id="recipe_basic_info">
 		<div class="form-group form-group-sm">
 			<div class='col-xs-6'>
 				<div class="recipe-header-company-name"><?=$this->config->item('company')?></div>
@@ -24,7 +24,7 @@
 			</div>
 		</div>
 
-		<div class="form-group form-group-sm">
+		<div id="recipe-info" class="form-group form-group-sm">
 			<div class='col-xs-4'>
 				QRCODE
 			</div>

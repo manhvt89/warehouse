@@ -31,7 +31,7 @@
 			<div class='col-xs-8'>
 				<div class='col-xs-6'>
 					<div class='col-xs-4'>
-						<?=$this->lang->line('recipe_name')?>
+						<?=$this->lang->line('recipes_master_batch')?>
 					</div>
 					<div class='col-xs-8'>
 						<?=$item_info->name?>
@@ -39,26 +39,26 @@
 				</div>
 				<div class='col-xs-6'>
 					<div class='col-xs-4'>
-						<?=$this->lang->line('recipe_name')?>
+						<?=$this->lang->line('recipes_grade_of_standard')?>
 					</div>
 					<div class='col-xs-8'>
-						<?=$item_info->name?>
+						<?=$item_info->grade_of_standard?>
 					</div>
 				</div>
 				<div class='col-xs-6'>
 					<div class='col-xs-4'>
-						<?=$this->lang->line('recipe_name')?>
+						<?=$this->lang->line('recipes_date_issued')?>
 					</div>
 					<div class='col-xs-8'>
-						<?=$item_info->name?>
+						<?=$item_info->date_issued?>
 					</div>
 				</div>
 				<div class='col-xs-6'>
 					<div class='col-xs-4'>
-						<?=$this->lang->line('recipe_name')?>
+						<?=$this->lang->line('recipes_certificate_no')?>
 					</div>
 					<div class='col-xs-8'>
-						<?=$item_info->name?>
+						<?=$item_info->certificate_no?>
 					</div>
 				</div>
 			</div>

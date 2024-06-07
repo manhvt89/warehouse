@@ -169,7 +169,7 @@ class Recipes extends Secure_Controller
 		$data['arrItem_as'] = $arrItem_as;
 		$data['arrItem_bs'] = $arrItem_bs;
 
-		var_dump($data);
+		//var_dump($data);
 		
 		$this->load->view('recipes/form', $data);
 	}
@@ -641,7 +641,15 @@ class Recipes extends Secure_Controller
 					continue; // Next row
 				}
 				debug_log($neader,'$neader');
-				
+				$_strTolerace = $data[9];
+				$_arrTolerace = explode($_strTolerace);
+				$_dTolerace = 0.000;
+				if(count($_arrTolerace) == 2)
+				{
+					$_dTolerace = $_arrTolerace[1];
+				} else {
+					$_dTolerace = 0.000;
+				}
 				if($neader == 'A')
 				{
 					$item_a = [

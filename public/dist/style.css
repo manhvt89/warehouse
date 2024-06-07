@@ -1038,6 +1038,10 @@ width: 148.5mm;*/
       font-size: 12px;
     }
 
+    #recipe_basic_info{
+      width:100%;
+    }
+
     @media print {
         /*
 Edit for BILL

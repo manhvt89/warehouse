@@ -61,13 +61,13 @@
 						<?=$this->lang->line('recipe_processing_time')?>:
 					</td>
 					<td>
-						<?=$item_info->processing_time_a?>
+						<?=$item_info->processing_time_a?> phút
 					</td>
 					<td>
 						<?=$this->lang->line('recipe_weight')?>:
 					</td>
 					<td>
-						<?=$item_info->weight_a?>
+						<?=$item_info->weight_a?> Kg
 					</td>	
 				<tr>
 			</table>
@@ -134,13 +134,13 @@
 						<?=$this->lang->line('recipe_processing_time')?>:
 					</td>
 					<td>
-						<?=$item_info->processing_time_b?>
+						<?=$item_info->processing_time_b?> phút
 					</td>
 					<td>
 						<?=$this->lang->line('recipe_weight')?>:
 					</td>
 					<td>
-						<?=$item_info->weight_b?>
+						<?=$item_info->weight_b?> Kg
 					</td>	
 				<tr>
 			</table>

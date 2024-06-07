@@ -164,8 +164,8 @@ class Recipes extends Secure_Controller
 
 		$data['item_info'] = $item_info;
 
-		$arrItem_as = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'A');
-		$arrItem_bs = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'B');
+		$arrItem_as = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'A')->result();
+		$arrItem_bs = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'B')->result();
 		$data['arrItem_as'] = $arrItem_as;
 		$data['arrItem_bs'] = $arrItem_bs;
 

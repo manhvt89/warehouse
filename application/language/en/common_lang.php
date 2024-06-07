@@ -88,7 +88,7 @@ $lang['recipes_status_reject'] = "Từ chối";
 $lang['recipes_status_resent'] = "Gửi lại";
 $lang['recipes_status_approved'] = "Đã phê duyệt";
 $lang['module_recipes'] = "Đơn pha chế";
-$lang['module_location'] = "Vị trí kho";
+$lang['module_locations'] = "Vị trí kho";
 $lang['recipes_update'] = "Thông tin đơn pha chế";
 
 /** Location */

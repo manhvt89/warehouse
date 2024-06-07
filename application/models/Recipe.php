@@ -144,36 +144,13 @@ class Recipe extends CI_Model
 			{
 				$item_obj->$field = '';
 			}
-			$item_obj->unit_price = 0;
-			$item_obj->item_id = 0;
-            $item_obj->cost_price = 0;
-			$item_obj->supplier_id = 0;
-			$item_obj->reorder_level = 0.000;
-			$item_obj->receiving_quantity = 1.000;
-			$item_obj->pic_id = 0;
-			$item_obj->allow_alt_description = 0;
-			$item_obj->is_serialized = 0;
-			$item_obj->deleted = 0;
-			$item_obj->standard_amount = 0.000;
+			$item_obj->date_issued = 0;
+			$item_obj->processing_time_a =0;
+			$item_obj->weight_a = 75.00;
+			$item_obj->processing_time_b =0;
+			$item_obj->weight_b = 25.50;
 			$item_obj->status = 0;
-			$item_obj->purchase_item_per_purchase_unit = 1.00;
-			$item_obj->purchase_quality_per_packge     = 1.00;
-			$item_obj->purchase_packing_length         = 1.00;
-			$item_obj->purchase_packing_height         = 1.00;
-			$item_obj->purchase_packing_width          = 1.00;
-			$item_obj->purchase_packing_volume         = 1.00;
-			$item_obj->purchase_packing_weigth         = 1.00;
-			$item_obj->sale_item_per_sale_unit         = 1.00;
-			$item_obj->sale_quality_per_packge         = 1.00;
-			$item_obj->sale_packing_length             = 1.00;
-			$item_obj->sale_packing_height             = 1.00;
-			$item_obj->sale_packing_width              = 1.00;
-			$item_obj->sale_packing_volume             = 1.00;
-			$item_obj->sale_packing_weigth             = 1.00;
-			$item_obj->set_default_warehouse_id        = 0;
-			$item_obj->inventory_weigth_per_unit       = 1.00;
-			$item_obj->uom_group_id                    = 0;
-
+			$item_obj->deleted = 0;
 			return $item_obj;
 		}
 	}
@@ -567,6 +544,23 @@ class Recipe extends CI_Model
 		$data = array('cost_price' => $average_price);
 
 		return $this->save($data, $item_id);
+	}
+
+	/**
+	 * Lấy các item trong đơn pha chế
+	 * $type = "A" hoặc "B";
+	 */
+	public function get_items_by_recipe_id($recipe_id,$type='A')
+	{
+		if($type != 'A' || $type != 'B')
+			return [];
+		$this->db->select('item_recipes.*');
+		$this->db->from('item_recipes');
+		$this->db->join('items', 'items.item_id=item_recipes.item_id','left');
+		$this->db->where('recipe_id', $recipe_id);
+		$this->db->where('type', $type);
+		$this->db->order_by('item_group', 'asc');
+		return $this->db->get();
 	}
 }
 ?>

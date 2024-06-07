@@ -147,64 +147,31 @@ class Recipes extends Secure_Controller
 	public function view($item_id = -1)
 	{
 		$person_id = $this->session->userdata('person_id');
-		$data['has_grant'] = $this->Employee->has_grant('items_accounting', $person_id);
-		$data['item_tax_info'] = $this->xss_clean($this->Item_taxes->get_info($item_id));
+		$data['is_approved'] = $this->Employee->has_grant('reipces_is_approved');
+		$data['is_editor'] = $this->Employee->has_grant('reipces_is_editor');
+		$data['is_action'] = $this->Employee->has_grant('reipces_is_action');
+		$data['is_production_order'] = $this->Employee->has_grant('reipces_is_production_order');
+
+		$data['item_tax_info'] = '';
 		$data['default_tax_1_rate'] = '';
 		$data['default_tax_2_rate'] = '';
 
-		$item_info = $this->Item->get_info($item_id);
+		$item_info = $this->Recipe->get_info($item_id);
 		foreach(get_object_vars($item_info) as $property => $value)
 		{
 			$item_info->$property = $this->xss_clean($value);
 		}
 
-		if($item_id == -1)
-		{
-			$data['default_tax_1_rate'] = $this->config->item('default_tax_1_rate');
-			$data['default_tax_2_rate'] = $this->config->item('default_tax_2_rate');
-			
-			$item_info->receiving_quantity = 0;
-			$item_info->reorder_level = 0;
-			$item_info->standard_amount = 0;
-		}
-
 		$data['item_info'] = $item_info;
 
-		$suppliers = array('' => $this->lang->line('items_none'));
-		foreach($this->Supplier->get_all()->result_array() as $row)
-		{
-			$suppliers[$this->xss_clean($row['person_id'])] = $this->xss_clean($row['company_name']);
-		}
-		$data['suppliers'] = $suppliers;
-		$data['selected_supplier'] = $item_info->supplier_id;
+		$arrItem_as = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'A');
+		$arrItem_bs = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'B');
+		$data['arrItem_as'] = $arrItem_as;
+		$data['arrItem_bs'] = $arrItem_bs;
 
-		$data['logo_exists'] = $item_info->pic_id != '';
-		if($item_info->pic_id != '') {
-			$images = glob('./uploads/item_pics/' . $item_info->pic_id . '.*');
-			$data['image_path'] = sizeof($images) > 0 ? base_url($images[0]) : '';
-		}else{
-			$data['image_path'] = '';
-		}
-
-		$stock_locations = $this->Stock_location->get_undeleted_all()->result_array();
-        foreach($stock_locations as $location)
-        {
-			$location = $this->xss_clean($location);
-			$oTheItemQuantity = $this->Item_quantity->get_item_quantity($item_id, $location['location_id']);
-
-			$quantity = $this->xss_clean($oTheItemQuantity->quantity);
-			
-			$location_array[$location['location_id']] = [
-				'location_name' => $location['location_name'], 
-				'quantity' => $quantity,
-				'inventory_uom_name'=> $oTheItemQuantity->inventory_uom_name,
-				'inventory_uom_code' => $oTheItemQuantity->inventory_uom_code,
-				'item_location' => $oTheItemQuantity->item_location
-			];
-			$data['stock_locations'] = $location_array;
-        }
-
-		$this->load->view('items/form', $data);
+		var_dump($data);
+		
+		$this->load->view('recipes/form', $data);
 	}
     
 	public function inventory($item_id = -1)

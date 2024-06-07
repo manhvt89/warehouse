@@ -90,6 +90,7 @@ $lang['recipes_status_approved'] = "Đã phê duyệt";
 $lang['module_recipes'] = "Đơn pha chế";
 $lang['module_locations'] = "Vị trí kho";
 $lang['recipes_update'] = "Thông tin đơn pha chế";
+$lang['recipe_title'] = "ĐƠN PHA CHẾ";
 
 /** Location */
 $lang['location_deleted'] = 'Trạng thái hoạt động';

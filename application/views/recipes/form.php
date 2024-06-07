@@ -56,7 +56,7 @@
 	</tr>
 	<tr>
 		<td>
-			<table>
+			<table id="recipe-header-kneader-a">
 				<tr>
 					<td colspan="2">
 						<?=$item_info->kneader_a?>
@@ -76,8 +76,131 @@
 				<tr>
 			</table>
 		</td>
-	</tr>	
+	</tr>
+	<tr>
+		<td>
+			<table id="recipe-body-kneader-a">
+				<tr class="recipe-header-body-kneader-a">
+					<td>
+						<?=$this->lang->line('recipe_group')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_component_mix')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_unit')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_weight')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_tolerance')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_contains_percentage')?>
+					</td>
+				</tr>
+				<?php if(!empty($arrItem_as)): ?>
+					<?php foreach($arrItem_as as $item_a): ?>
+					<tr class="recipe-item-body-kneader-a">
+						<td>
+							<?=$item_a->item_group?>
+						</td>
+						<td>
+						<?=$item_a->item_mix?>
+						</td>
+						<td>
+						<?=$item_a->uom_name?>
+						</td>
+						<td>
+						<?=$item_a->weight?>
+						</td>
+						<td>
+						<?=$item_a->tolerance?>
+						</td>
+						<td>
+						N/A
+						</td>
+					</tr>
+					<?php endforeach; ?>
+				<?php endif; ?>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table id="recipe-header-kneader-b">
+				<tr>
+					<td colspan="2">
+						<?=$item_info->kneader_b?>
+					</td>
+					<td>
+						<?=$this->lang->line('recipe_processing_time')?>:
+					</td>
+					<td>
+						<?=$item_info->processing_time_b?>
+					</td>
+					<td>
+						<?=$this->lang->line('recipe_weight')?>:
+					</td>
+					<td>
+						<?=$item_info->weight_b?>
+					</td>	
+				<tr>
+			</table>
+		</td>
+	</tr>
 
+	<tr>
+		<td>
+			<table id="recipe-body-kneader-b">
+				<tr class="recipe-header-body-kneader-b">
+					<td>
+						<?=$this->lang->line('recipe_group')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_component_mix')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_unit')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_weight')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_tolerance')?>
+					</td>
+					<td>
+					<?=$this->lang->line('recipe_contains_percentage')?>
+					</td>
+				</tr>
+				<?php if(!empty($arrItem_bs)): ?>
+					<?php foreach($arrItem_bs as $item_b): ?>
+					<tr class="recipe-item-body-kneader-b">
+						<td>
+							<?=$item_b->item_group?>
+						</td>
+						<td>
+						<?=$item_b->item_mix?>
+						</td>
+						<td>
+						<?=$item_b->uom_name?>
+						</td>
+						<td>
+						<?=$item_b->weight?>
+						</td>
+						<td>
+						<?=$item_b->tolerance?>
+						</td>
+						<td>
+						N/A
+						</td>
+					</tr>
+					<?php endforeach; ?>
+				<?php endif; ?>
+			</table>
+		</td>
+	</tr>
 </table>
 <?php echo form_open('items/save/'.$item_info->item_id, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
 	<fieldset id="">

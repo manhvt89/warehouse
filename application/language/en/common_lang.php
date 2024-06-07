@@ -94,6 +94,11 @@ $lang['recipe_title'] = "ĐƠN PHA CHẾ";
 $lang['recipe_product_code'] = "Mã định danh";
 $lang['recipe_processing_time'] = "Thời gian trộn";
 $lang['recipe_weight'] = "Trọng lượng";
+$lang['recipe_group'] = "Nhóm";
+$lang['recipe_component_mix'] = "Thành phần hỗn hợp";
+$lang['recipe_unit'] = "Đơn vị";
+$lang['recipe_tolerance'] = "Cho phép sai số";
+$lang['recipe_contains_percentage'] = "Chiếm tỉ lệ (%)";
 
 /** Location */
 $lang['location_deleted'] = 'Trạng thái hoạt động';

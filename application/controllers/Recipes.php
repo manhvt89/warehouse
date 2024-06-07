@@ -658,7 +658,7 @@ class Recipes extends Secure_Controller
 						'uom_code'=>$data[6],
 						'uom_name'=>$data[6],
 						'weight'=>$data[7],
-						'tolerace'=>$data[9],
+						'tolerace'=>$_strTolerace,
 						'recipe_id'=>'',
 						'item_id'=>''
 					];
@@ -670,7 +670,7 @@ class Recipes extends Secure_Controller
 						'uom_code'=>$data[6],
 						'uom_name'=>$data[6],
 						'weight'=>$data[7],
-						'tolerace'=>$data[9],
+						'tolerace'=>$_strTolerace,
 						'recipe_id'=>'',
 						'item_id'=>''
 					];

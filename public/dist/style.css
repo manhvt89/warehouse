@@ -1036,10 +1036,9 @@ width: 148.5mm;*/
       border: 1px solid #282A35;
       border-collapse: collapse;
       font-size: 12px;
-        width:100%;
+      width:100%;
     }
-
-    #recipe_basic_info{
+    #recipe_basic_info {
       width:100%;
     }
 

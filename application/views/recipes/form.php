@@ -2,63 +2,72 @@
 
 <ul id="error_message_box" class="error_message_box"></ul>
 
-<?php echo form_open('items/save/'.$item_info->item_id, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
-	<fieldset id="recipe_basic_info">
-		<div class="form-group form-group-sm">
-			<div class='col-xs-6'>
-				<div class="recipe-header-company-name"><?=$this->config->item('company')?></div>
-			</div>
-			<div class='col-xs-6'>
-				<div class="recipe-header-company-info">
-					<p><?=$this->config->item('address')?></p>
-					<p>Tel : (251) 352 5199 / 352 5200  _ Fax:(251) 352 5222</p>
-				</div>
-			</div>
-		</div>
-		<div class="form-group form-group-sm">
-			
-			<div class='col-xs-12'>
-				<div class="recipe-title">
+<table>
+	<tr>
+		<td>
+			<table id="recipe-header">
+				<tr>
+					<td><div class="recipe-header-company-name"><?=$this->config->item('company')?></div></td>
+					<td>
+					<div class="recipe-header-company-info">
+						<p><?=$this->config->item('address')?></p>
+						<p>Tel : (251) 352 5199 / 352 5200  _ Fax:(251) 352 5222</p>
+					</div>
+					</td>
+				</tr>
+
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div class="recipe-title">
 					<?=$this->lang->line('recipe_title')?>
 				</div>
-			</div>
-		</div>
-
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table id="recipe-info">
+				<tr>
+					<td></td>
+					<td><?=$this->lang->line('recipes_master_batch')?>:</td>
+					<td><b><?=$item_info->name?></b></td>
+					<td><?=$this->lang->line('recipes_grade_of_standard')?>:</td>
+					<td><b><?=$item_info->grade_of_standard?></b></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><?=$this->lang->line('recipes_date_issued')?>:</td>
+					<td><b><?=date('d/m/Y',$item_info->date_issued)?></b></td>
+					<td><?=$this->lang->line('recipes_certificate_no')?>:</td>
+					<td><b><?=$item_info->certificate_no?></b></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><?=$this->lang->line('recipe_product_code')?>:</td>
+					<td colspan="3"><b>N/A</b></td>
+					
+				</tr>
+			</table>
+		</td>
+	</tr>	
+</table>
+<?php echo form_open('items/save/'.$item_info->item_id, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
+	<fieldset id="recipe_basic_info">
+		
 		<div id="recipe-info" class="form-group form-group-sm">
 			<div class='col-xs-4'>
 				QRCODE
 			</div>
 			<div class='col-xs-8'>
-				<div class='col-xs-6'>
-					<div class='col-xs-6'>
-						<?=$this->lang->line('recipes_master_batch')?>:
+				
+				<div class='col-xs-12'>
+					<div class='col-xs-4'>
+						:
 					</div>
-					<div class='col-xs-6'>
-						<b><?=$item_info->name?></b>
-					</div>
-				</div>
-				<div class='col-xs-6'>
-					<div class='col-xs-6'>
-						<?=$this->lang->line('recipes_grade_of_standard')?>:
-					</div>
-					<div class='col-xs-6'>
-						<b><?=$item_info->grade_of_standard?></b>
-					</div>
-				</div>
-				<div class='col-xs-6'>
-					<div class='col-xs-6'>
-						<?=$this->lang->line('recipes_date_issued')?>:
-					</div>
-					<div class='col-xs-6'>
-						<b><?=date('d/m/Y',$item_info->date_issued)?></b>
-					</div>
-				</div>
-				<div class='col-xs-6'>
-					<div class='col-xs-6'>
-						<?=$this->lang->line('recipes_certificate_no')?>:
-					</div>
-					<div class='col-xs-6'>
-						<b><?=$item_info->certificate_no?></b>
+					<div class='col-xs-8'>
+						N/A
 					</div>
 				</div>
 			</div>

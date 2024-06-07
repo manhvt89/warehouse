@@ -30,21 +30,21 @@
 		<td>
 			<table id="recipe-info">
 				<tr>
-					<td></td>
+					<td rowspan="3"></td>
 					<td><?=$this->lang->line('recipes_master_batch')?>:</td>
 					<td><b><?=$item_info->name?></b></td>
 					<td><?=$this->lang->line('recipes_grade_of_standard')?>:</td>
 					<td><b><?=$item_info->grade_of_standard?></b></td>
 				</tr>
 				<tr>
-					<td></td>
+					
 					<td><?=$this->lang->line('recipes_date_issued')?>:</td>
 					<td><b><?=date('d/m/Y',$item_info->date_issued)?></b></td>
 					<td><?=$this->lang->line('recipes_certificate_no')?>:</td>
 					<td><b><?=$item_info->certificate_no?></b></td>
 				</tr>
 				<tr>
-					<td></td>
+					
 					<td><?=$this->lang->line('recipe_product_code')?>:</td>
 					<td colspan="3"><b>N/A</b></td>
 					

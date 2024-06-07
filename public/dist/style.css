@@ -1027,6 +1027,12 @@ width: 148.5mm;*/
     .recipe-header-company-name {
         text-align: left;
     }
+    .recipe-title
+    {
+      text-align: center;
+      font-size: 25px;
+      font-weight: bold;
+    }
 
     @media print {
         /*

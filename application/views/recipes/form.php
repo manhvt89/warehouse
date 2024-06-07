@@ -53,28 +53,35 @@
 				</tr>
 			</table>
 		</td>
+	</tr>
+	<tr>
+		<td>
+			<table>
+				<tr>
+					<td colspan="2">
+						<?=$item_info->kneader_a?>
+					</td>
+					<td>
+						<?=$this->lang->line('recipe_processing_time')?>:
+					</td>
+					<td>
+						<?=$item_info->processing_time_a?>
+					</td>
+					<td>
+						<?=$this->lang->line('recipe_weight')?>:
+					</td>
+					<td>
+						<?=$item_info->weight_a?>
+					</td>	
+				<tr>
+			</table>
+		</td>
 	</tr>	
+
 </table>
 <?php echo form_open('items/save/'.$item_info->item_id, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
 	<fieldset id="">
 		
-		<div id="recipe-info" class="form-group form-group-sm">
-			<div class='col-xs-4'>
-				
-			</div>
-			<div class='col-xs-8'>
-				
-				<div class='col-xs-12'>
-					<div class='col-xs-4'>
-						:
-					</div>
-					<div class='col-xs-8'>
-						N/A
-					</div>
-				</div>
-			</div>
-		</div>
-
 		<div class="form-group form-group-sm">
 			<?php echo form_label($this->lang->line('items_category'), 'category', array('class'=>'required control-label col-xs-3')); ?>
 			<div class='col-xs-8'>

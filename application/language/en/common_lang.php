@@ -92,6 +92,8 @@ $lang['module_locations'] = "Vị trí kho";
 $lang['recipes_update'] = "Thông tin đơn pha chế";
 $lang['recipe_title'] = "ĐƠN PHA CHẾ";
 $lang['recipe_product_code'] = "Mã định danh";
+$lang['recipe_processing_time'] = "Thời gian trộn";
+$lang['recipe_weight'] = "Trọng lượng";
 
 /** Location */
 $lang['location_deleted'] = 'Trạng thái hoạt động';

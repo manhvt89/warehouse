@@ -31,34 +31,34 @@
 			<div class='col-xs-8'>
 				<div class='col-xs-6'>
 					<div class='col-xs-4'>
-						<?=$this->lang->line('recipes_master_batch')?>
+						<?=$this->lang->line('recipes_master_batch')?>:
 					</div>
 					<div class='col-xs-8'>
-						<?=$item_info->name?>
+						<b><?=$item_info->name?></b>
 					</div>
 				</div>
 				<div class='col-xs-6'>
 					<div class='col-xs-4'>
-						<?=$this->lang->line('recipes_grade_of_standard')?>
+						<?=$this->lang->line('recipes_grade_of_standard')?>:
 					</div>
 					<div class='col-xs-8'>
-						<?=$item_info->grade_of_standard?>
+						<b><?=$item_info->grade_of_standard?></b>
 					</div>
 				</div>
 				<div class='col-xs-6'>
 					<div class='col-xs-4'>
-						<?=$this->lang->line('recipes_date_issued')?>
+						<?=$this->lang->line('recipes_date_issued')?>:
 					</div>
 					<div class='col-xs-8'>
-						<?=$item_info->date_issued?>
+						<b><?=date('d/m/Y',$item_info->date_issued)?></b>
 					</div>
 				</div>
 				<div class='col-xs-6'>
 					<div class='col-xs-4'>
-						<?=$this->lang->line('recipes_certificate_no')?>
+						<?=$this->lang->line('recipes_certificate_no')?>:
 					</div>
 					<div class='col-xs-8'>
-						<?=$item_info->certificate_no?>
+						<b><?=$item_info->certificate_no?></b>
 					</div>
 				</div>
 			</div>

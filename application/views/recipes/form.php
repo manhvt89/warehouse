@@ -1,4 +1,4 @@
-<table id="recipe_basic_info">
+<table id="recipe_basic_info" width="100%">
 	<tr>
 		<td>
 			<table id="recipe-header">

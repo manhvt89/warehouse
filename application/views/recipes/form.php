@@ -2,7 +2,7 @@
 
 <ul id="error_message_box" class="error_message_box"></ul>
 
-<table>
+<table id="recipe_basic_info">
 	<tr>
 		<td>
 			<table id="recipe-header">
@@ -30,7 +30,9 @@
 		<td>
 			<table id="recipe-info">
 				<tr>
-					<td rowspan="3"></td>
+					<td rowspan="3">
+						QRCODE
+					</td>
 					<td><?=$this->lang->line('recipes_master_batch')?>:</td>
 					<td><b><?=$item_info->name?></b></td>
 					<td><?=$this->lang->line('recipes_grade_of_standard')?>:</td>
@@ -54,11 +56,11 @@
 	</tr>	
 </table>
 <?php echo form_open('items/save/'.$item_info->item_id, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
-	<fieldset id="recipe_basic_info">
+	<fieldset id="">
 		
 		<div id="recipe-info" class="form-group form-group-sm">
 			<div class='col-xs-4'>
-				QRCODE
+				
 			</div>
 			<div class='col-xs-8'>
 				

@@ -116,7 +116,7 @@
 						<?=$item_a->weight?>
 						</td>
 						<td>
-						<?=$item_a->tolerance?>
+						<?php echo $item_a->tolerace;?>
 						</td>
 						<td>
 						N/A

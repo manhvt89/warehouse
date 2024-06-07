@@ -6,11 +6,11 @@
 	<fieldset id="item_basic_info">
 		<div class="form-group form-group-sm">
 			<div class='col-xs-6'>
-				<div class="recipe-header-company-name"><?=$this->config->item('company_name')?></div>
+				<div class="recipe-header-company-name"><?=$this->config->item('company')?></div>
 			</div>
 			<div class='col-xs-6'>
 				<div class="recipe-header-company-info">
-					<p><?=$this->config->item('company_address')?></p>
+					<p><?=$this->config->item('address')?></p>
 					<p>Tel : (251) 352 5199 / 352 5200  _ Fax:(251) 352 5222</p>
 				</div>
 			</div>

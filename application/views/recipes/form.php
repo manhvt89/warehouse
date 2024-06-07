@@ -1,7 +1,3 @@
-<div id="required_fields_message"><?php echo $this->lang->line('common_fields_required_message'); ?></div>
-
-<ul id="error_message_box" class="error_message_box"></ul>
-
 <table id="recipe_basic_info">
 	<tr>
 		<td>

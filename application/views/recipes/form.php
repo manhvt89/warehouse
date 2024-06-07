@@ -25,14 +25,42 @@
 		</div>
 
 		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_name'), 'name', array('class'=>'required control-label col-xs-3')); ?>
+			<div class='col-xs-4'>
+				QRCODE
+			</div>
 			<div class='col-xs-8'>
-				<?php echo form_input(array(
-						'name'=>'name',
-						'id'=>'name',
-						'class'=>'form-control input-sm',
-						'value'=>$item_info->name)
-						);?>
+				<div class='col-xs-6'>
+					<div class='col-xs-4'>
+						<?=$this->lang->line('recipe_name')?>
+					</div>
+					<div class='col-xs-8'>
+						<?=$item_info->name?>
+					</div>
+				</div>
+				<div class='col-xs-6'>
+					<div class='col-xs-4'>
+						<?=$this->lang->line('recipe_name')?>
+					</div>
+					<div class='col-xs-8'>
+						<?=$item_info->name?>
+					</div>
+				</div>
+				<div class='col-xs-6'>
+					<div class='col-xs-4'>
+						<?=$this->lang->line('recipe_name')?>
+					</div>
+					<div class='col-xs-8'>
+						<?=$item_info->name?>
+					</div>
+				</div>
+				<div class='col-xs-6'>
+					<div class='col-xs-4'>
+						<?=$this->lang->line('recipe_name')?>
+					</div>
+					<div class='col-xs-8'>
+						<?=$item_info->name?>
+					</div>
+				</div>
 			</div>
 		</div>
 

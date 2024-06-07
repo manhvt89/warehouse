@@ -552,8 +552,6 @@ class Recipe extends CI_Model
 	 */
 	public function get_items_by_recipe_id($recipe_id,$type='A')
 	{
-		if($type != 'A' || $type != 'B')
-			return [];
 		$this->db->select('item_recipes.*');
 		$this->db->from('item_recipes');
 		$this->db->join('items', 'items.item_id=item_recipes.item_id','left');

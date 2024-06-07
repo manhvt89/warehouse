@@ -190,7 +190,7 @@
 						<?=$item_b->weight?>
 						</td>
 						<td>
-						<?=$item_b->tolerance?>
+						<?php echo $item_a->tolerace;?>
 						</td>
 						<td>
 						N/A

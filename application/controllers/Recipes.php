@@ -169,7 +169,7 @@ class Recipes extends Secure_Controller
 		$data['arrItem_as'] = $arrItem_as;
 		$data['arrItem_bs'] = $arrItem_bs;
 
-		var_dump($data);
+		//var_dump($data);
 		
 		$this->load->view('recipes/form', $data);
 	}

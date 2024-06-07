@@ -118,17 +118,16 @@ class Recipe extends CI_Model
 	*/
 	public function get_info($item_id)
 	{
-		$this->db->select('items.*');
-		$this->db->select('suppliers.company_name');
-		$this->db->from('items');
-		$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
+		$this->db->select('recipes.*');
+		//$this->db->select('suppliers.company_name');
+		$this->db->from('recipes');
+		//$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
 		if(strlen($item_id)> 20) // Nêu chuỗi lớn hơn 20 sẽ sử dụng item_uuid
 		{
-			$this->db->where('item_uuid', $item_id);
+			$this->db->where('recipe_uuid', $item_id);
 		} else{
-			$this->db->where('item_id', $item_id); // support version cũ
+			$this->db->where('recipe_id', $item_id); // support version cũ
 		}
-
 		$query = $this->db->get();
 
 		if($query->num_rows() == 1)
@@ -141,7 +140,7 @@ class Recipe extends CI_Model
 			$item_obj = new stdClass();
 
 			//Get all the fields from items table
-			foreach($this->db->list_fields('items') as $field)
+			foreach($this->db->list_fields('recipes') as $field)
 			{
 				$item_obj->$field = '';
 			}

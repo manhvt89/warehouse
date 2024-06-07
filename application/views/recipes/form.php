@@ -5,27 +5,13 @@
 <?php echo form_open('items/save/'.$item_info->item_id, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
 	<fieldset id="item_basic_info">
 		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_item_number'), 'item_number', array('class'=>'control-label col-xs-3')); ?>
 			<div class='col-xs-6'>
-				<div class="input-group">
-					<span class="input-group-addon input-sm"><span class="glyphicon glyphicon-barcode"></span></span>
-					<?php echo form_input(array(
-							'name'=>'item_number',
-							'id'=>'item_number',
-							'class'=>'form-control input-sm',
-							'value'=>$item_info->item_number)
-							);?>
-				</div>
+				<div class="recipe-header-company-name">CÔNG TY TNHH TƯƠNG LAI</div>
 			</div>
 			<div class='col-xs-6'>
-				<div class="input-group">
-					<span class="input-group-addon input-sm"><span class="glyphicon glyphicon-barcode"></span></span>
-					<?php echo form_input(array(
-							'name'=>'item_number',
-							'id'=>'item_number',
-							'class'=>'form-control input-sm',
-							'value'=>$item_info->item_number)
-							);?>
+				<div class="recipe-header-company-info">
+					<p>Thanh Bình, Lộc An, Long Thành, Đồng Nai, Việt Nam.</p>
+					<p>Tel : (251) 352 5199 / 352 5200  _ Fax:(251) 352 5222</p>
 				</div>
 			</div>
 		</div>

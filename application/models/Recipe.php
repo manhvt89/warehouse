@@ -552,11 +552,11 @@ class Recipe extends CI_Model
 	 */
 	public function get_items_by_recipe_id($recipe_id,$type='A')
 	{
-		$this->db->select('item_recipes1.*');
+		$this->db->select('item_recipes.*');
 		$this->db->from('item_recipes');
 		$this->db->join('items', 'items.item_id=item_recipes.item_id','left');
 		$this->db->where('recipe_id', $recipe_id);
-		$this->db->where('type', $type);
+		$this->db->where('item_recipes.type', $type);
 		$this->db->order_by('item_group', 'asc');
 		return $this->db->get();
 	}

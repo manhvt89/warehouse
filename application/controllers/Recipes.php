@@ -68,10 +68,12 @@ class Recipes extends Secure_Controller
 		$total_rows = $this->Recipe->get_found_rows($search, $filters);
 
 		$data_rows = array();
+		$_index = 0;
 		foreach($Recipes->result() as $item)
 		{
 			debug_log($item,'$item');
-			$data_rows[] = $this->xss_clean(get_recipe_data_row($item, $this));
+			$_index++;
+			$data_rows[] = $this->xss_clean(get_recipe_data_row($item, $_index));
 		}
 
 		echo json_encode(array('total' => $total_rows, 'rows' => $data_rows));

@@ -1350,7 +1350,7 @@ function get_recipe_manage_table_headers()
 	return transform_headers($headers,TRUE,FALSE);
 }
 
-function get_recipe_data_row($item, $controller)
+function get_recipe_data_row($item, $index=1)
 {
 	$CI =& get_instance();
 	
@@ -1394,7 +1394,7 @@ function get_recipe_data_row($item, $controller)
 	
 	
 	$return = array (
-		'recipes.recipe_uuid' => $item->recipe_uuid,
+		'recipes.recipe_uuid' => $index,
 		'name' => $item->name,
 		'master_batch' => $item->master_batch,
 		//'company_name' => $item->company_name,

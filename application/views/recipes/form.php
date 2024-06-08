@@ -23,7 +23,7 @@
 		width: 50%;
 	}
 
-	
+	/*
 	.name {
         font-size: 20px;
     }
@@ -46,13 +46,11 @@
     #receipt_items td:not(:last-child) {
         display: none;
     }
-    td,
-    th {
-        display: block;
-    }
+   
     td[data-th]:before {
         content: attr(data-th);
     }
+	*/
 </style>
 <table id="recipe_basic_info" width="100%">
 	<tr>

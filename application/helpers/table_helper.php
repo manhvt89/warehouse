@@ -439,6 +439,10 @@ function transform_headers_readonly_raw($array)
 	}
 	return $result;
 }
+/**
+ * $editable = true: Hiển thị cột có các hoạt động edit
+ * $readonly = FALSE: Hiển thị thêm cột select;
+ */
 function transform_headers($array, $readonly = FALSE, $editable = TRUE)
 {
 	$result = array();
@@ -1343,7 +1347,7 @@ function get_recipe_manage_table_headers()
 			array('status' => $CI->lang->line('recipes_status')),
 		);
 	//var_dump($headers);
-	return transform_headers($headers,FALSE,FALSE);
+	return transform_headers($headers,TRUE,FALSE);
 }
 
 function get_recipe_data_row($item, $controller)

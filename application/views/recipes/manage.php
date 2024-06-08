@@ -1,7 +1,7 @@
 <?php $this->load->view("partial/header"); ?>
 <style type="text/css">
     #DetailRecipeView .modal-dialog{
-        width: 1024px;
+        width: 760px;
     }
 
     @media print {

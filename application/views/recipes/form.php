@@ -6,8 +6,12 @@
 
 	#recipe_basic_info table {
 		width : 100%;
+		border-collapse: collapse;
 	}
 
+	#recipe_basic_info table, th, td {
+		border: 1px solid;
+	}
 	#recipe-info td {
 		width: 20%;
 	}
@@ -16,6 +20,10 @@
 	}
 	#recipe-header-kneader-a td {
 		width: 20%;
+	}
+	#recipe-header-kneader-a td:first-child,#recipe-header-kneader-b td:first-child {
+		width: 20%;
+		font-weight: bold;
 	}
 
 	.recipe-header-body-kneader-a td:first-child {

@@ -1393,7 +1393,7 @@ function get_recipe_data_row($item, $index=1)
 	}
 	
 	
-	$return = array (
+	$return = [
 		'recipes.recipe_uuid' => $index,
 		'name' => $item->name,
 		'master_batch' => $item->master_batch,
@@ -1404,8 +1404,9 @@ function get_recipe_data_row($item, $index=1)
 		'status'=>$status,
 		'file'=>$file,
 		'istatus'=>$item->status,
-		'recipe_uuid'=>$item->recipe_uuid
-		);
+		'recipe_uuid'=>$item->recipe_uuid,
+		'view'=>$controller_name."/view/".$item->recipe_uuid
+		];
 	return $return;
 }
 ?>

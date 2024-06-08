@@ -88,7 +88,13 @@ function openPaymentPopup(e, value, row, index) {
     // Hiển thị popup và truyền thông tin đơn hàng (row) vào popup
     // ...
     console.log(index);
-   
+    console.log(row);
+    console.log(e);
+    console.log(value);
+    var node = $('#body-recipe-view-modal');
+    $.get(row.view, function(data) {
+        node.html(data);
+    });
     // Ví dụ sử dụng Bootstrap Modal
     $('#DetailRecipeView').modal('show');
 }

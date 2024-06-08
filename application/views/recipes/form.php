@@ -20,7 +20,36 @@
 		width: 10%;
 	}
 	.recipe-header-body-kneader-a td:nth-child(2) {
-		width: 50%;
+		width: 30%;
+	}
+	.recipe-header-body-kneader-a td:nth-child(3) {
+		width: 20%;
+	}
+	.recipe-header-body-kneader-a td:nth-child(4) {
+		width: 20%;
+	}
+	.recipe-header-body-kneader-a td:nth-child(5) {
+		width: 20%;
+	}
+
+	#recipe-header-kneader-a td {
+		width: 20%;
+	}
+
+	.recipe-header-body-kneader-a td:first-child {
+		width: 10%;
+	}
+	.recipe-header-body-kneader-a td:nth-child(2) {
+		width: 30%;
+	}
+	.recipe-header-body-kneader-a td:nth-child(3) {
+		width: 20%;
+	}
+	.recipe-header-body-kneader-a td:nth-child(4) {
+		width: 20%;
+	}
+	.recipe-header-body-kneader-a td:nth-child(5) {
+		width: 20%;
 	}
 
 	/*

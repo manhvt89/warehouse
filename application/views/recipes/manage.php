@@ -14,7 +14,7 @@
         #body-recipe-view-modal {
             display: block;
             float: left;
-            font-size: 14px;
+            font-size: 10px;
             width: 96%;
             margin: 10px;
         }

@@ -8,7 +8,7 @@
         body * {
             visibility: hidden;
         }
-        #body-recipe-view-modal * {
+        #recipe_basic_info * {
             visibility: visible;
         }
         #body-recipe-view-modal {

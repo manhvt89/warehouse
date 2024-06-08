@@ -149,8 +149,8 @@ function openPaymentPopup(e, value, row, index) {
 <div class="modal fade" id="DetailRecipeView" tabindex="-1" role="dialog" aria-labelledby="RecipeModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="paymentModalLabel">Thanh Toán Đơn Hàng</h5>
+      <div class="modal-header print_hide">
+        <h5 class="modal-title" id="RecipeModalLabel">...</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -158,7 +158,7 @@ function openPaymentPopup(e, value, row, index) {
       <div id="body-recipe-view-modal" class="modal-body">
         <!-- Form để nhập số tiền và chọn phương thức thanh toán -->
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer print_hide">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
         <button type="button" class="btn btn-primary" id="PrintBtn">Print</button>
       </div>

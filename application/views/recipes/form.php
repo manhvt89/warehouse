@@ -1,4 +1,3 @@
-
 <style type="text/css">
 	#recipe_basic_info {
 		width : 100%;

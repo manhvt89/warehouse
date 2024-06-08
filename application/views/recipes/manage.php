@@ -76,7 +76,8 @@ $(document).ready(function()
     
 });
 function paymentFormatter(value, row, index) {
-        console.log(row.istatus);
+        console.log(row);
+        console.log(value);
         if(row.istatus != "5") {
             return '...';
         }

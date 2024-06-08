@@ -1394,7 +1394,7 @@ function get_recipe_data_row($item, $controller)
 	
 	
 	$return = array (
-		'recipes.recipe_id' => $item->recipe_id,
+		'recipes.recipe_uuid' => $item->recipe_uuid,
 		'name' => $item->name,
 		'master_batch' => $item->master_batch,
 		//'company_name' => $item->company_name,
@@ -1403,7 +1403,8 @@ function get_recipe_data_row($item, $controller)
 		'certificate_no'=>$item->certificate_no,
 		'status'=>$status,
 		'file'=>$file,
-		'istatus'=>$item->status
+		'istatus'=>$item->status,
+		'recipe_uuid'=>$item->recipe_uuid
 		);
 	return $return;
 }

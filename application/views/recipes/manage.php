@@ -3,6 +3,16 @@
     #DetailRecipeView .modal-dialog{
         width: 1024px;
     }
+
+    @media print {
+        #body-recipe-view-modal {
+            display: block;
+            float: left;
+            font-size: 14px;
+            width: 96%;
+            margin: 10px;
+        }
+    }
 </style>
 <script src="/dist/jquery.number.min.js"></script>
 <script type="text/javascript">

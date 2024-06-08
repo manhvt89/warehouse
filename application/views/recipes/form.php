@@ -185,61 +185,60 @@
     }
 	*/
 </style>
-<table id="recipe_basic_info" width="100%">
-	<tr>
-		<td>
-			<table id="recipe-header">
-				<tr>
-					<td><div class="recipe-header-company-name"><?=$this->config->item('company')?></div></td>
-					<td>
-					<div class="recipe-header-company-info">
-						<p><?=$this->config->item('address')?></p>
-						<p>Tel : (251) 352 5199 / 352 5200  _ Fax:(251) 352 5222</p>
-					</div>
-					</td>
-				</tr>
+<div id="recipe_basic_info" width="100%">
+	<table id="recipe-header">
+		<tr>
+			<td><div class="recipe-header-company-name"><?=$this->config->item('company')?></div></td>
+			<td>
+			<div class="recipe-header-company-info">
+				<p><?=$this->config->item('address')?></p>
+				<p>Tel : (251) 352 5199 / 352 5200  _ Fax:(251) 352 5222</p>
+			</div>
+			</td>
+		</tr>
 
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<div class="recipe-title">
-					<?=$this->lang->line('recipe_title')?>
-				</div>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<table id="recipe-info">
-				<tr>
-					<td rowspan="3">
-						QRCODE
-					</td>
-					<td><?=$this->lang->line('recipes_master_batch')?>:</td>
-					<td><b><?=$item_info->name?></b></td>
-					<td><?=$this->lang->line('recipes_grade_of_standard')?>:</td>
-					<td><b><?=$item_info->grade_of_standard?></b></td>
-				</tr>
-				<tr>
-					
-					<td><?=$this->lang->line('recipes_date_issued')?>:</td>
-					<td><b><?=date('d/m/Y',$item_info->date_issued)?></b></td>
-					<td><?=$this->lang->line('recipes_certificate_no')?>:</td>
-					<td><b><?=$item_info->certificate_no?></b></td>
-				</tr>
-				<tr>
-					
-					<td><?=$this->lang->line('recipe_product_code')?>:</td>
-					<td colspan="3"><b>N/A</b></td>
-					
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<table id="recipe-header-kneader-a">
+	</table>
+	<!-- #endregion recipe-header -->
+	<!-- #region recipe-title-->
+	<table id="recipe-title">
+		<tr>
+			<td>
+				<div class="recipe-title">
+						<?=$this->lang->line('recipe_title')?>
+					</div>
+			</td>
+		</tr>
+
+	</table>
+	<!-- #endregion -->
+	<!-- #region recipe-info-->
+	<table id="recipe-info">
+		<tr>
+			<td rowspan="3">
+				QRCODE
+			</td>
+			<td><?=$this->lang->line('recipes_master_batch')?>:</td>
+			<td><b><?=$item_info->name?></b></td>
+			<td><?=$this->lang->line('recipes_grade_of_standard')?>:</td>
+			<td><b><?=$item_info->grade_of_standard?></b></td>
+		</tr>
+		<tr>
+			
+			<td><?=$this->lang->line('recipes_date_issued')?>:</td>
+			<td><b><?=date('d/m/Y',$item_info->date_issued)?></b></td>
+			<td><?=$this->lang->line('recipes_certificate_no')?>:</td>
+			<td><b><?=$item_info->certificate_no?></b></td>
+		</tr>
+		<tr>
+			
+			<td><?=$this->lang->line('recipe_product_code')?>:</td>
+			<td colspan="3"><b>N/A</b></td>
+			
+		</tr>
+	</table>
+	<!-- #endregion -->
+	<!-- #region recipe-header-kneader-a-->
+	<table id="recipe-header-kneader-a">
 				<tr>
 					<td colspan="2">
 						<?=$item_info->kneader_a?>
@@ -258,11 +257,9 @@
 					</td>	
 				<tr>
 			</table>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<table id="recipe-body-kneader-a">
+	<!-- #endregion -->
+	<!-- #region recipe-body-kneader-a-->
+	<table id="recipe-body-kneader-a">
 				<tr class="recipe-header-body-kneader-a">
 					<td>
 						<?=$this->lang->line('recipe_group')?>
@@ -308,35 +305,30 @@
 					<?php endforeach; ?>
 				<?php endif; ?>
 			</table>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<table id="recipe-header-kneader-b">
-				<tr>
-					<td colspan="2">
-						<?=$item_info->kneader_b?>
-					</td>
-					<td>
-						<?=$this->lang->line('recipe_processing_time')?>:
-					</td>
-					<td>
-						<?=$item_info->processing_time_b?> phút
-					</td>
-					<td>
-						<?=$this->lang->line('recipe_weight')?>:
-					</td>
-					<td>
-						<?=$item_info->weight_b?> Kg
-					</td>	
-				<tr>
-			</table>
-		</td>
-	</tr>
-
-	<tr>
-		<td>
-			<table id="recipe-body-kneader-b">
+	<!-- #endregion -->
+	<!-- #region -->
+	<table id="recipe-header-kneader-b">
+		<tr>
+			<td colspan="2">
+				<?=$item_info->kneader_b?>
+			</td>
+			<td>
+				<?=$this->lang->line('recipe_processing_time')?>:
+			</td>
+			<td>
+				<?=$item_info->processing_time_b?> phút
+			</td>
+			<td>
+				<?=$this->lang->line('recipe_weight')?>:
+			</td>
+			<td>
+				<?=$item_info->weight_b?> Kg
+			</td>	
+		<tr>
+	</table>
+	<!-- #endregion -->
+	<!-- #region -->
+	<table id="recipe-body-kneader-b">
 				<tr class="recipe-header-body-kneader-b">
 					<td>
 						<?=$this->lang->line('recipe_group')?>
@@ -382,10 +374,8 @@
 					<?php endforeach; ?>
 				<?php endif; ?>
 			</table>
-		</td>
-	</tr>
-</table>
-
+	<!-- #endregion -->
+</div>
 <script type="text/javascript">
 	//validation and submit handling
 	//(function($) {

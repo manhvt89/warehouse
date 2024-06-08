@@ -145,12 +145,12 @@
 	@media print {
 		#table_holder {
 			display: none;
-		}	
+		}
 		.modal-header, .modal-footer{
 			display: none;
 		}
 		.modal-content{
-			
+			border: 0px solid rgba(0,0,0,0.2);
 		}
 	}
 

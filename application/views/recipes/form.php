@@ -28,25 +28,27 @@
 
 	.recipe-header-body-kneader-a td:first-child {
 		width: 10%;
-		
+		text-align: center;
 	}
 	.recipe-header-body-kneader-a td:nth-child(2) {
 		width: 20%;
+		text-align: center;
 	}
 	.recipe-header-body-kneader-a td:nth-child(3) {
 		width: 15%;
-		
+		text-align: center;
 	}
 	.recipe-header-body-kneader-a td:nth-child(4) {
 		width: 15%;
-		
+		text-align: center;
 	}
 	.recipe-header-body-kneader-a td:nth-child(5) {
 		width: 15%;
-		
+		text-align: center;
 	}
 	.recipe-header-body-kneader-a td:nth-child(6) {
 		width: 25%;
+		text-align: center;
 	}
 
 	.recipe-item-body-kneader-a td:first-child {
@@ -79,26 +81,30 @@
 
 	.recipe-header-body-kneader-b td:first-child {
 		width: 10%;
-		
+		text-align: center;
 	}
 	.recipe-header-body-kneader-b td:nth-child(2) {
 		width: 20%;
+		text-align: center;
 	}
 	.recipe-header-body-kneader-b td:nth-child(3) {
 		width: 15%;
+		text-align: center;
 		
 	}
 	.recipe-header-body-kneader-b td:nth-child(4) {
 		width: 15%;
+		text-align: center;
 		
 	}
 	.recipe-header-body-kneader-b td:nth-child(5) {
 		width: 15%;
+		text-align: center;
 		
 	}
 	.recipe-header-body-kneader-b td:nth-child(6) {
 		width: 25%;
-		
+		text-align: center;
 	}
 
 	.recipe-item-body-kneader-b td:first-child {

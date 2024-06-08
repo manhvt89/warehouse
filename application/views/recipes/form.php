@@ -26,6 +26,10 @@
 		font-weight: bold;
 	}
 
+	#recipe_basic_info table td{
+		padding: 5px;
+	}
+
 	.recipe-header-body-kneader-a td:first-child {
 		width: 10%;
 		text-align: center;

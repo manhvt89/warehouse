@@ -5,6 +5,12 @@
     }
 
     @media print {
+        body * {
+            visibility: hidden;
+        }
+        #body-recipe-view-modal * {
+            visibility: visible;
+        }
         #body-recipe-view-modal {
             display: block;
             float: left;

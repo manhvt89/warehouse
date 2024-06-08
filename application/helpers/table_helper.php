@@ -1337,7 +1337,7 @@ function get_recipe_manage_table_headers()
 	$CI =& get_instance();
 	
 	$headers = array(
-			array('recipes.recipe_id' => $CI->lang->line('common_id')),
+			array('recipes.recipe_uuid' => $CI->lang->line('common_id')),
 			array('name' => $CI->lang->line('recipes_name')),
 			array('master_batch' => $CI->lang->line('recipes_master_batch')),
 			array('date_issued' => $CI->lang->line('recipes_date_issued')),

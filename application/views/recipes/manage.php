@@ -11,7 +11,7 @@
         #recipe_basic_info * {
             visibility: visible;
         }
-        #body-recipe-view-modal {
+        #recipe_basic_info {
             display: block;
             float: left;
             font-size: 10px;

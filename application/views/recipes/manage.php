@@ -76,8 +76,8 @@ $(document).ready(function()
     
 });
 function paymentFormatter(value, row, index) {
-        //console.log(row.remain_amount);
-        if(row.status != "5") {
+        console.log(row.istatus);
+        if(row.istatus != "5") {
             return '...';
         }
         return '<button class="btn btn-info view-recipe-btn btn-sm">Xem</button>';

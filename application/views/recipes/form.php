@@ -1,3 +1,42 @@
+
+<style type="text/css">
+	#recipe_basic_info {
+		width : 100%;
+	}
+
+	#recipe_basic_info table {
+		width : 100%;
+	}
+	.name {
+        font-size: 20px;
+    }
+    .time {
+        font-size: 15px;
+    }
+    .customer_number,
+    .phone {
+        font-size: 16px;
+    }
+    #receipt_items {
+        font-size: 16px;
+    }
+    #receipt_items thead th:not(:first-child) {
+        display: none;
+    }
+    #receipt_items tbody th {
+        font-weight: normal;
+    }
+    #receipt_items td:not(:last-child) {
+        display: none;
+    }
+    td,
+    th {
+        display: block;
+    }
+    td[data-th]:before {
+        content: attr(data-th);
+    }
+</style>
 <table id="recipe_basic_info" width="100%">
 	<tr>
 		<td>

@@ -146,6 +146,12 @@
 		#table_holder {
 			display: none;
 		}	
+		.modal-header, .modal-footer{
+			display: none;
+		}
+		.modal-content{
+			
+		}
 	}
 
 	/*

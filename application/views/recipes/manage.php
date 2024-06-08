@@ -55,7 +55,7 @@ $(document).ready(function()
         resource: '<?php echo site_url($controller_name);?>',
         headers: _headers,
         pageSize: <?php echo $this->config->item('lines_per_page'); ?>,
-        uniqueId: 'recipes.recipe_id',
+        uniqueId: 'recipes.recipe_uuid',
         showExport: true,
         queryParams: function() {
             return $.extend(arguments[0], {

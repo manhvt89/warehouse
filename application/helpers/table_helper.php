@@ -1343,7 +1343,7 @@ function get_recipe_manage_table_headers()
 			array('status' => $CI->lang->line('recipes_status')),
 		);
 	//var_dump($headers);
-	return transform_headers($headers);
+	return transform_headers($headers,FALSE,FALSE);
 }
 
 function get_recipe_data_row($item, $controller)

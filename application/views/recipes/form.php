@@ -142,6 +142,12 @@
 		height: 50px;
 	}
 
+	@media print {
+		#table_holder {
+			display: none;
+		}	
+	}
+
 	/*
 	.name {
         font-size: 20px;

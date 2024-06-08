@@ -441,7 +441,7 @@ function transform_headers_readonly_raw($array)
 }
 /**
  * $editable = true: Hiển thị cột có các hoạt động edit
- * $readonly = FALSE: Hiển thị thêm cột select;
+ * $readonly = FALSE: Hiển thị thêm cột select; TRUE: Không hiển thị cột tick box đầu tiên
  */
 function transform_headers($array, $readonly = FALSE, $editable = TRUE)
 {

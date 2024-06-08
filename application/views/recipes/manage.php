@@ -42,11 +42,11 @@ $(document).ready(function()
 
     var _headers = <?php echo $table_headers; ?>;
     $_obt = {
-                field: 'payment_button',
-                title: 'Thanh Toán',
+                field: 'view_button',
+                title: 'Xem đơn pha chế',
                 formatter: paymentFormatter,
                 events: {
-                    'click .payment-btn': openPaymentPopup,
+                    'click .view-recipe-btn': openPaymentPopup,
                 },
             };
     _headers.push($_obt);
@@ -77,25 +77,19 @@ $(document).ready(function()
 });
 function paymentFormatter(value, row, index) {
         //console.log(row.remain_amount);
-        if(row.remain_amount == "0") {
-            return 'Đã thanh toán';
+        if(row.status != "5") {
+            return '...';
         }
-        return '<button class="btn btn-info payment-btn btn-sm">Thanh Toán</button>';
+        return '<button class="btn btn-info view-recipe-btn btn-sm">Xem</button>';
 }
 
 function openPaymentPopup(e, value, row, index) {
     // Hiển thị popup và truyền thông tin đơn hàng (row) vào popup
     // ...
     console.log(index);
-    $('#paymentModalLabel').html('Thanh Toán Đơn Hàng <b>'+row.code+'</b>');
-    $('#lblRemainAmount').html('Số tiền thanh toán (<b>'+row.remain_amount+'</b>)');
-    $('#hdd_remain_amount').val(row.remain_amount);
-    $('#hdd_receiving_id').val(row.receiving_uuid);
-    $('#hdd_row_index').val(index);
-    $('#hdd_total_amount').val(row.total_amount);
-    $('#hdd_paid_amount').val(row.paid_amount);
+   
     // Ví dụ sử dụng Bootstrap Modal
-    $('#paymentModal').modal('show');
+    $('#DetailRecipeView').modal('show');
 }
 </script>
 
@@ -138,5 +132,27 @@ function openPaymentPopup(e, value, row, index) {
         data-export-types="['excel']">
     </table>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="DetailRecipeView" tabindex="-1" role="dialog" aria-labelledby="RecipeModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="paymentModalLabel">Thanh Toán Đơn Hàng</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="body-recipe-view-modal" class="modal-body">
+        <!-- Form để nhập số tiền và chọn phương thức thanh toán -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="button" class="btn btn-primary" id="PrintBtn">Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
 
 <?php $this->load->view("partial/footer"); ?>

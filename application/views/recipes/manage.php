@@ -1,4 +1,9 @@
 <?php $this->load->view("partial/header"); ?>
+<style type="text/css">
+    #DetailRecipeView .modal-dialog{
+        width: 1024px;
+    }
+</style>
 <script src="/dist/jquery.number.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function()

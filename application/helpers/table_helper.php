@@ -1398,8 +1398,8 @@ function get_recipe_data_row($item, $controller)
 		'grade_of_standard'=> $item->grade_of_standard,
 		'certificate_no'=>$item->certificate_no,
 		'status'=>$status,
-		'file'=>$file,
-		'edit' => $edit);
+		'file'=>$file
+		);
 	return $return;
 }
 ?>

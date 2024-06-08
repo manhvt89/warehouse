@@ -7,6 +7,23 @@
 	#recipe_basic_info table {
 		width : 100%;
 	}
+
+	#recipe-info td {
+		width: 20%;
+	}
+
+	#recipe-header-kneader-a td {
+		width: 20%;
+	}
+
+	.recipe-header-body-kneader-a td:first-child {
+		width: 10%;
+	}
+	.recipe-header-body-kneader-a td:nth-child(2) {
+		width: 50%;
+	}
+
+	
 	.name {
         font-size: 20px;
     }

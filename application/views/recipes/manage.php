@@ -40,10 +40,20 @@ $(document).ready(function()
 
     <?php $this->load->view('partial/bootstrap_tables_locale'); ?>
 
+    var _headers = <?php echo $table_headers; ?>;
+    $_obt = {
+                field: 'payment_button',
+                title: 'Thanh Toán',
+                formatter: paymentFormatter,
+                events: {
+                    'click .payment-btn': openPaymentPopup,
+                },
+            };
+    _headers.push($_obt);
     table_support.init({
         employee_id: <?php echo $this->Employee->get_logged_in_employee_info()->person_id; ?>,
         resource: '<?php echo site_url($controller_name);?>',
-        headers: <?php echo $table_headers; ?>,
+        headers: _headers,
         pageSize: <?php echo $this->config->item('lines_per_page'); ?>,
         uniqueId: 'recipes.recipe_id',
         showExport: true,
@@ -62,7 +72,31 @@ $(document).ready(function()
 			})
         }
     });
+
+    
 });
+function paymentFormatter(value, row, index) {
+        //console.log(row.remain_amount);
+        if(row.remain_amount == "0") {
+            return 'Đã thanh toán';
+        }
+        return '<button class="btn btn-info payment-btn btn-sm">Thanh Toán</button>';
+}
+
+function openPaymentPopup(e, value, row, index) {
+    // Hiển thị popup và truyền thông tin đơn hàng (row) vào popup
+    // ...
+    console.log(index);
+    $('#paymentModalLabel').html('Thanh Toán Đơn Hàng <b>'+row.code+'</b>');
+    $('#lblRemainAmount').html('Số tiền thanh toán (<b>'+row.remain_amount+'</b>)');
+    $('#hdd_remain_amount').val(row.remain_amount);
+    $('#hdd_receiving_id').val(row.receiving_uuid);
+    $('#hdd_row_index').val(index);
+    $('#hdd_total_amount').val(row.total_amount);
+    $('#hdd_paid_amount').val(row.paid_amount);
+    // Ví dụ sử dụng Bootstrap Modal
+    $('#paymentModal').modal('show');
+}
 </script>
 
 <div id="title_bar" class="btn-toolbar print_hide">
@@ -95,7 +129,7 @@ $(document).ready(function()
     </div>
 </div>
 
-<div id="table_holder">
+<div id="table_holder" class="print_hide">
     <table 
         id="table" 
         data-sort-order="desc" 

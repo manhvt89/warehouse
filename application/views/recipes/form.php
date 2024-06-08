@@ -11,7 +11,7 @@
 	#recipe-info td {
 		width: 20%;
 	}
-	#recipe-header-kneader-a, recipe-header-kneader-b {
+	#recipe-header-kneader-a, #recipe-header-kneader-b {
 		height: 40px;
 	}
 	#recipe-header-kneader-a td {

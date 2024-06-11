@@ -215,7 +215,8 @@
 	<table id="recipe-info">
 		<tr>
 			<td rowspan="3">
-				QRCODE
+				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->name); ?>
+				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
 			</td>
 			<td><?=$this->lang->line('recipes_master_batch')?>:</td>
 			<td><b><?=$item_info->name?></b></td>

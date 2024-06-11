@@ -12,7 +12,7 @@ class Recipes extends Secure_Controller
 	public function __construct()
 	{
 		parent::__construct('recipes');
-
+		$this->load->library('barcode_lib');
 		$this->load->library('item_lib');
 	}
 	

@@ -23,6 +23,24 @@ class Recipes extends Secure_Controller
 
 		//$data['table_headers'] = $this->xss_clean(get_items_manage_table_headers());
 
+		$grant_id = 0;
+		if($this->Employee->has_grant('recipes_is_action'))
+		{
+			$grant_id = 1;
+		}
+		if($this->Employee->has_grant('recipes_is_production_order'))
+		{
+			$grant_id = 2;
+		}
+		if($this->Employee->has_grant('recipes_is_editor'))
+		{
+			$grant_id = 3;
+		}
+		if($this->Employee->has_grant('recipes_is_approved'))
+		{
+			$grant_id = 5;
+		}
+
 		
 		$data['stock_location'] = $this->xss_clean($this->item_lib->get_item_location());
 		$data['stock_locations'] = $this->xss_clean($this->Stock_location->get_allowed_locations());
@@ -33,6 +51,7 @@ class Recipes extends Secure_Controller
 			'is_deleted' => $this->lang->line('items_is_deleted'));
 
 		$data['hide_unitprice'] = false;
+		$data['grant_id'] = $grant_id; //Phân quyền module recipe
 		$this->load->view('recipes/manage', $data);
 	}
 
@@ -747,6 +766,34 @@ class Recipes extends Secure_Controller
 		 * Phân quyền cho người lập kế hoạch
 		 **/
 		return true;
+	}
+
+	public function detail($item_id=-1)
+	{
+		$person_id = $this->session->userdata('person_id');
+		$data['is_approved'] = $this->Employee->has_grant('reipces_is_approved');
+		$data['is_editor'] = $this->Employee->has_grant('reipces_is_editor');
+		$data['is_action'] = $this->Employee->has_grant('reipces_is_action');
+		$data['is_production_order'] = $this->Employee->has_grant('reipces_is_production_order');
+
+		$data['item_tax_info'] = '';
+		$data['default_tax_1_rate'] = '';
+		$data['default_tax_2_rate'] = '';
+
+		$item_info = $this->Recipe->get_info($item_id);
+		foreach(get_object_vars($item_info) as $property => $value)
+		{
+			$item_info->$property = $this->xss_clean($value);
+		}
+
+		$data['item_info'] = $item_info;
+
+		$arrItem_as = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'A')->result();
+		$arrItem_bs = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'B')->result();
+		$data['arrItem_as'] = $arrItem_as;
+		$data['arrItem_bs'] = $arrItem_bs;
+		//var_dump($data);
+		$this->load->view('recipes/detail', $data);
 	}
 
 }

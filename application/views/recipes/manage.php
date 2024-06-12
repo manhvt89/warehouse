@@ -21,6 +21,7 @@
     }
 </style>
 <script src="/dist/jquery.number.min.js"></script>
+<?php if($grant_id  > 2): ?>
 <script type="text/javascript">
 $(document).ready(function()
 {
@@ -182,5 +183,7 @@ function openPaymentPopup(e, value, row, index) {
   </div>
 </div>
 <!-- Modal -->
+<?php else : ?>
 
+<?php endif; ?>
 <?php $this->load->view("partial/footer"); ?>

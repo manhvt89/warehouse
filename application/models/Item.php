@@ -633,5 +633,79 @@ class Item extends CI_Model
 		}
 		return 0;
 	}
+
+	/*
+	Gets information about a particular item bay mác nguyên liệu/ Chỉ dành cho COmpound A và B.
+	*/
+	public function get_info_by_ms($ms='')
+	{
+		if($ms == '')
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			return $this->get_object();
+		}
+			
+		$this->db->select('items.*');
+		$this->db->select('suppliers.company_name');
+		$this->db->from('items');
+		$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
+		
+		$this->db->where('items.ms', $ms);
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			return $this->get_object();
+		}
+	}
+
+	/**
+	 * Tạo một đối tượng item có các thuộc tính bảng item; set các giá trị mặc định;
+	 * item_id = 0; đối tượng không tồn tại trong csdl;
+	 */
+	private function get_object()
+	{
+		$item_obj = new stdClass();
+
+			//Get all the fields from items table
+		foreach($this->db->list_fields('items') as $field)
+		{
+			$item_obj->$field = '';
+		}
+		$item_obj->unit_price = 0;
+		$item_obj->item_id = 0;
+		$item_obj->cost_price = 0;
+		$item_obj->supplier_id = 0;
+		$item_obj->reorder_level = 0.000;
+		$item_obj->receiving_quantity = 1.000;
+		$item_obj->pic_id = 0;
+		$item_obj->allow_alt_description = 0;
+		$item_obj->is_serialized = 0;
+		$item_obj->deleted = 0;
+		$item_obj->standard_amount = 0.000;
+		$item_obj->status = 0;
+		$item_obj->purchase_item_per_purchase_unit = 1.00;
+		$item_obj->purchase_quality_per_packge     = 1.00;
+		$item_obj->purchase_packing_length         = 1.00;
+		$item_obj->purchase_packing_height         = 1.00;
+		$item_obj->purchase_packing_width          = 1.00;
+		$item_obj->purchase_packing_volume         = 1.00;
+		$item_obj->purchase_packing_weigth         = 1.00;
+		$item_obj->sale_item_per_sale_unit         = 1.00;
+		$item_obj->sale_quality_per_packge         = 1.00;
+		$item_obj->sale_packing_length             = 1.00;
+		$item_obj->sale_packing_height             = 1.00;
+		$item_obj->sale_packing_width              = 1.00;
+		$item_obj->sale_packing_volume             = 1.00;
+		$item_obj->sale_packing_weigth             = 1.00;
+		$item_obj->set_default_warehouse_id        = 0;
+		$item_obj->inventory_weigth_per_unit       = 1.00;
+		$item_obj->uom_group_id                    = 0;
+		return $item_obj;
+	} 
 }
 ?>

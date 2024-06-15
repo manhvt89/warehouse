@@ -255,10 +255,91 @@ CREATE TABLE `ospos_item_recipes` (
   `item_mix` varchar(10) NOT NULL DEFAULT '',
   `uom_code` varchar(10) NOT NULL DEFAULT '',
   `uom_name` varchar(10) NOT NULL DEFAULT '',
-  `weight` decimal(15,2) NOT NULL DEFAULT 0.00,
-  `tolerace` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `weight` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `tolerace` decimal(15,3) NOT NULL DEFAULT 0.00,
   `type` varchar(1) NOT NULL DEFAULT '',
 
   PRIMARY KEY (`item_recipe_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+
+DROP TABLE IF EXISTS `ospos_compounda_orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_compounda_orders` (
+  `compounda_order_id` int(10) NOT NULL AUTO_INCREMENT,
+  `compounda_order_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `compounda_order_no` varchar(15) NOT NULL DEFAULT '',
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `creator_id` int(11) NOT NULL DEFAULT 0,
+  `creator_name` varchar(150) NOT NULL DEFAULT '',
+  `creator_account` varchar(150) NOT NULL DEFAULT '',
+  `order_date` int(11) NOT NULL DEFAULT 0,
+  `use_date` int(11) NOT NULL DEFAULT 0,
+  `completed_at` int(11) NOT NULL DEFAULT 0,
+  `start_at` int(11) NOT NULL DEFAULT 0,
+  `suppervisor_id` int(11) NOT NULL DEFAULT 0,
+  `suppervisor_name` int(11) NOT NULL DEFAULT 0,
+  `suppervisor_account` int(11) NOT NULL DEFAULT 0,
+  `area_make_order` varchar(50) DEFAULT NULL, 
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`compounda_order_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+
+
+DROP TABLE IF EXISTS `ospos_compounda_order_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_compounda_order_item` (
+  `compounda_order_item_id` int(10) NOT NULL AUTO_INCREMENT,
+  `compounda_order_item_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `compounda_order_id` int(11) NOT NULL DEFAULT 0,
+  `item_id` int(11) NOT NULL DEFAULT 0,
+  `item_name` varchar(150) NOT NULL DEFAULT '',
+  `uom_code` varchar(10) NOT NULL DEFAULT '',
+  `uom_name` varchar(10) NOT NULL DEFAULT '',
+  `ms` varchar(50) DEFAULT '', 
+  `quantity_batch` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `quantity_schedule` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `quantity_use` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `quantity_completed` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `start_at` int(11) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`compounda_order_item_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+DROP TABLE IF EXISTS `ospos_compounda_order_item_completed`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_compounda_order_item_completed` (
+  `compounda_order_item_completed_id` int(10) NOT NULL AUTO_INCREMENT,
+  `compounda_order_item_completed_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `compounda_order_item_id` int(11) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `item_name` varchar(150) NOT NULL DEFAULT '',
+  `ms` varchar(50) NOT NULL DEFAULT '',
+  `uom_code` varchar(10) NOT NULL DEFAULT '',
+  `uom_name` varchar(10) NOT NULL DEFAULT '',
+  `creator_id` int(11) NOT NULL DEFAULT 0,
+  `creator_name` varchar(150) NOT NULL DEFAULT '',
+  `quantity_completed` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `completed_at` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`compounda_order_item_completed_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

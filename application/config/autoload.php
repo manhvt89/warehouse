@@ -140,4 +140,4 @@ $autoload['model'] = ['Appconfig', 'Person',
                         'Item_quantity','Testex','Accounting',
                         'Customer_infoex','Reminder','Messages','SmsSale',
                         'Ctv','Orders','Purchase','Prescription',
-                        'History_ctv','Recipe'];
+                        'History_ctv','Recipe','Compounda'];

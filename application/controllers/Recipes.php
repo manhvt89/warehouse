@@ -588,6 +588,7 @@ class Recipes extends Secure_Controller
 			//var_dump($sheet_data);
 			$i = 8;
 			$data = $sheet_data[$i];
+			//var_dump($data);
 			debug_log(count($data),'data['.$i.']');
 			$name = $data['5'];
 			$master_batch = $data['5']; //F

@@ -103,4 +103,16 @@ $lang['recipe_contains_percentage'] = "Chiếm tỉ lệ (%)";
 /** Location */
 $lang['location_deleted'] = 'Trạng thái hoạt động';
 
+/** Lệnh SX Compound A */
+$lang['compoundas_no_compoundas_to_display'] = "Chưa có lệnh sản xuất nào";
+$lang['compounda_order_no'] = "Số lệnh SX";
+$lang['compounda_order_creator_name'] = "Người lập";
+$lang['compounda_order_order_date'] = "Ngày cán dự kiến";
+$lang['compounda_order_use_date'] = "Ngày nhu cầu";
+$lang['compounda_order_suppervisor_name'] = "Người phụ trách";
+$lang['compounda_order_area_make_order'] = "Đơn vị SX";
+$lang['compounda_order_start_at'] = "Ngày bắt đầu";
+$lang['compounda_order_status'] ="Trạng thái";
+$lang['compoundas_new'] = "Tạo mới";
+
 

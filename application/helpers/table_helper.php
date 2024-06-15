@@ -849,6 +849,7 @@ function get_item_data_row($item, $controller)
 	$controller_name = strtolower(get_class($CI));
 
 	$image = '';
+	/*
 	if ($item->pic_id != '')
 	{
 		$images = glob('./uploads/item_pics/' . $item->pic_id . '.*');
@@ -857,6 +858,7 @@ function get_item_data_row($item, $controller)
 			$image .= '<a class="rollover" href="'. base_url($images[0]) .'"><img src="'.site_url('items/pic_thumb/'.$item->pic_id).'"></a>';
 		}
 	}
+	*/
 	if ($CI->Employee->has_grant($controller_name.'_inventory')) {
 		$inventory = anchor(
 			$controller_name."/inventory/$item->item_id",
@@ -890,7 +892,7 @@ function get_item_data_row($item, $controller)
 		'item_number' => $item->item_number,
 		'name' => $item->name,
 		'category' => $item->category,
-		'company_name' => $item->company_name,
+		//'company_name' => $item->company_name,
 		'cost_price' => to_currency($item->cost_price),
 		'unit_price' => to_currency($item->unit_price),
 		'quantity' => to_quantity_decimals($item->quantity),
@@ -1409,4 +1411,34 @@ function get_recipe_data_row($item, $index=1)
 		];
 	return $return;
 }
+
+
+function get_compoundas_manage_table_headers()
+{
+	$CI =& get_instance();
+	$person_id = $CI->session->userdata('person_id');
+	
+	$headers = array(
+			array('compounda_orders.compounda_orders_id' => $CI->lang->line('common_id')),
+			array('compounda_order_no' => $CI->lang->line('compounda_order_no')),
+			array('creator_name' => $CI->lang->line('compounda_order_creator_name')),
+			array('order_date' => $CI->lang->line('compounda_order_order_date')),
+			array('use_date' => $CI->lang->line('compounda_order_use_date')),
+			array('suppervisor_name' => $CI->lang->line('compounda_order_suppervisor_name')),
+			array('area_make_order' => $CI->lang->line('compounda_order_area_make_order')),
+			array('start_at' => $CI->lang->line('compounda_order_start_at')),
+			array('status' => $CI->lang->line('compounda_order_status')),
+			
+		);
+		
+	//var_dump($headers);
+	if($CI->Employee->has_grant('items_unitprice_hide'))
+	{
+		//unset();
+		$headers = remove_array_by_key($headers,'cost_price');
+	}
+	//var_dump($headers);
+	return transform_headers($headers);
+}
+
 ?>

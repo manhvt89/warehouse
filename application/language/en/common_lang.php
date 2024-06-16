@@ -104,15 +104,43 @@ $lang['recipe_contains_percentage'] = "Chiếm tỉ lệ (%)";
 $lang['location_deleted'] = 'Trạng thái hoạt động';
 
 /** Lệnh SX Compound A */
+$lang['compounda-order_title'] = 'Kế hoạch cán luyện Compound A';
 $lang['compoundas_no_compoundas_to_display'] = "Chưa có lệnh sản xuất nào";
-$lang['compounda_order_no'] = "Số lệnh SX";
+$lang['compounda_order_no'] = "Số lệnh cán";
 $lang['compounda_order_creator_name'] = "Người lập";
-$lang['compounda_order_order_date'] = "Ngày cán dự kiến";
+$lang['compounda_order_order_date'] = "Ngày dự kiến cán";
 $lang['compounda_order_use_date'] = "Ngày nhu cầu";
 $lang['compounda_order_suppervisor_name'] = "Người phụ trách";
-$lang['compounda_order_area_make_order'] = "Đơn vị SX";
+$lang['compounda_order_area_make_order'] = "Đơn vị cán";
 $lang['compounda_order_start_at'] = "Ngày bắt đầu";
 $lang['compounda_order_status'] ="Trạng thái";
 $lang['compoundas_new'] = "Tạo mới";
+$lang['compounda_order_num'] = 'STT';
+$lang['compounda_order_ms'] = 'Mác nguyên liệu';
+$lang['compounda_order_batch_per_one'] = 'Tl/mẻ (Kg)';
+$lang['compounda_order_schedule'] = 'Kế hoạch';
+$lang['compounda_order_batch'] = 'Mẻ';
+$lang['compounda_order_total'] = 'Tl';
+$lang['compounda_order_sum'] = 'Tổng cộng';
+
+$lang['compounda_order_weight'] = 'Trọng lượng';
+$lang['compounda_order_start_weight'] = 'Tồn đầu';
+$lang['compounda_order_use_weight'] = 'Sử dụng';
+$lang['compounda_order_end_weight'] = 'Tồn cuối';
+
+$lang['compounda_order_input_quantity'] = 'Tl nhập kho';
+$lang['compounda_order_signal'] = 'Ký xác nhận';
+$lang['compounda_order_note'] = 'Ghi chú';
+
+$lang['compounda_order_status_new'] = 'Mới tạo';
+$lang['compounda_order_status_sent'] = 'Đã gửi phê duyệt';
+$lang['compounda_order_status_reject'] = 'Yêu cầu sửa lại';
+$lang['compounda_order_status_resent'] = 'Đã gửi phê duyệt lại';
+$lang['compounda_order_status_approved'] = 'Đã phê duyệt';
+$lang['compounda_order_status_receiving_material'] ='Đang nhận NVL';
+$lang['compounda_order_status_receiving_material_comfirm'] = 'Đã nhận NVL';
+$lang['compounda_order_status_doing'] = 'Đang sản xuất';
+$lang['compounda_order_status_done'] = 'Hoàn thành';
+
 
 

@@ -5,6 +5,9 @@ class Secure_Controller extends CI_Controller
 	public $module_id = '';
 	public $submodule_id = '';
 	public $task = '';
+	public $person_id = 0;//$this->session->userdata('person_id');
+
+	public $grant_id = 0;
 	/*
 	* Controllers that are considered secure extend Secure_Controller, optionally a $module_id can
 	* be set to also check if a user can access a particular module in the system.
@@ -20,8 +23,10 @@ class Secure_Controller extends CI_Controller
 		{
 			redirect('login');
 		}
+		$this->grant_id = 0;
 		$this->module_id = $module_id;
 		$this->$submodule_id = $submodule_id;
+		$this->person_id = $this->session->userdata('person_id');
 		//$this->router->fetch_class();
 		$action = $this->router->fetch_method();
 		//echo $action;

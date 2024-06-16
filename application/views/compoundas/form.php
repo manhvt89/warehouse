@@ -1,249 +1,376 @@
-<div id="required_fields_message"><?php echo $this->lang->line('common_fields_required_message'); ?></div>
+<style type="text/css">
+	#recipe_basic_info {
+		width : 100%;
+	}
 
-<ul id="error_message_box" class="error_message_box"></ul>
+	#recipe_basic_info table {
+		width : 100%;
+		border-collapse: collapse;
+	}
 
-<?php echo form_open('items/save/'.$item_info->item_id, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
-	<fieldset id="item_basic_info">
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_item_number'), 'item_number', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<div class="input-group">
-					<span class="input-group-addon input-sm"><span class="glyphicon glyphicon-barcode"></span></span>
-					<?php echo form_input(array(
-							'name'=>'item_number',
-							'id'=>'item_number',
-							'class'=>'form-control input-sm',
-							'value'=>$item_info->item_number)
-							);?>
-				</div>
-			</div>
-		</div>
+	#recipe_basic_info table, th, td {
+		border: 1px solid;
+	}
+	#recipe-info td {
+		width: 20%;
+	}
+	#recipe-header-kneader-a, #recipe-header-kneader-b {
+		height: 40px;
+	}
+	#recipe-header-kneader-a td {
+		width: 20%;
+	}
+	#recipe-header-kneader-a td:first-child,#recipe-header-kneader-b td:first-child {
+		width: 20%;
+		font-weight: bold;
+	}
 
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_name'), 'name', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<?php echo form_input(array(
-						'name'=>'name',
-						'id'=>'name',
-						'class'=>'form-control input-sm',
-						'value'=>$item_info->name)
-						);?>
-			</div>
-		</div>
+	#recipe_basic_info table td{
+		padding: 5px;
+	}
 
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_category'), 'category', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<div class="input-group">
-					<span class="input-group-addon input-sm"><span class="glyphicon glyphicon-tag"></span></span>
-					<?php echo form_input(array(
-							'name'=>'category',
-							'id'=>'category',
-							'class'=>'form-control input-sm',
-							'value'=>$item_info->category)
-							);?>
-				</div>
-			</div>
-		</div>
+	.compounda-order-header-body-kneader-a td:first-child {
+		max-width: 35px;
+		text-align: center;
+	}
+	.compounda-order-header-body-kneader-a td:nth-child(2) {
+		
+		text-align: center;
+	}
+	.compounda-order-header-body-kneader-a td:nth-child(3) {
+		max-width: 45px;
+		text-align: center;
+	}
+	.compounda-order-header-body-kneader-a td:nth-child(4) {
+		max-width: 75px;
+		text-align: center;
+	}
+	.compounda-order-header-body-kneader-a td:nth-child(5) {
+		max-width: 75px;
+		text-align: center;
+	}
+	.compounda-order-header-body-kneader-a td:nth-child(6) {
+		max-width: 95px;
+		text-align: center;
+	}
+	.compounda-order-header-body-kneader-a td:nth-child(8) {
+		max-width: 95px;
+		text-align: center;
+	}
+	.compounda-order-header-body-kneader-a td:nth-child(9) {
+		max-width: 95px;
+		text-align: center;
+	}
 
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_supplier'), 'supplier', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<?php echo form_dropdown('supplier_id', $suppliers, $selected_supplier, array('class'=>'form-control')); ?>
-			</div>
-		</div>
-		<?php if($has_grant): ?>
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_cost_price'), 'cost_price', array('class'=>'required control-label col-xs-3')); ?>
-			<div class="col-xs-4">
-				<div class="input-group input-group-sm">
-					<?php if (!currency_side()): ?>
-						<span class="input-group-addon input-sm"><b><?php echo $this->config->item('currency_symbol'); ?></b></span>
-					<?php endif; ?>
-					<?php echo form_input(array(
-							'name'=>'cost_price',
-							'id'=>'cost_price',
-							'class'=>'form-control input-sm',
-							'value'=>number_format($item_info->cost_price,0,',','.'))
-							);?>
-					<?php if (currency_side()): ?>
-						<span class="input-group-addon input-sm"><b><?php echo $this->config->item('currency_symbol'); ?></b></span>
-					<?php endif; ?>
-				</div>
-			</div>
-		</div>
-		<?php endif; ?>
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_unit_price'), 'unit_price', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<div class="input-group input-group-sm">
-					<?php if (!currency_side()): ?>
-						<span class="input-group-addon input-sm"><b><?php echo $this->config->item('currency_symbol'); ?></b></span>
-					<?php endif; ?>
-					<?php echo form_input(array(
-							'name'=>'unit_price',
-							'id'=>'unit_price',
-							'class'=>'form-control input-sm',
-							'value'=>number_format($item_info->unit_price,0,',','.'))
-							);?>
-					<?php if (currency_side()): ?>
-						<span class="input-group-addon input-sm"><b><?php echo $this->config->item('currency_symbol'); ?></b></span>
-					<?php endif; ?>
-				</div>
-			</div>
-		</div>
+	.compounda-order-item-body-kneader-a td:first-child {
+		max-width: 35px;
+		text-align: center;
+	}
+	.compounda-order-item-body-kneader-a td:nth-child(2) {
+		width: 20%;
+	}
+	.compounda-order-item-body-kneader-a td:nth-child(3) {
+		max-width: 45px;
+		text-align: center;
+	}
+	.compounda-order-item-body-kneader-a td:nth-child(4) {
+		max-width: 75px;
+		text-align: right;
+	}
+	.compounda-order-item-body-kneader-a td:nth-child(5) {
+		max-width: 75px;
+		text-align: right;
+	}
+	.compounda-order-item-body-kneader-a td:nth-child(6) {
+		max-width: 95px;
+		text-align: center;
+	}
+	.compounda-order-item-body-kneader-a td:nth-child(7) {
+		max-width: 95px;
+		text-align: right;
+	}
+	.compounda-order-item-body-kneader-a td:nth-child(8) {
+		max-width: 95px;
+		text-align: right;
+	}
+	.compounda-order-item-body-kneader-a td:nth-child(9) {
+		max-width: 95px;
+		text-align: center;
+	}
 
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_tax_1'), 'tax_percent_1', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'tax_names[]',
-						'id'=>'tax_name_1',
-						'class'=>'form-control input-sm',
-						'value'=>isset($item_tax_info[0]['name']) ? $item_tax_info[0]['name'] : $this->config->item('default_tax_1_name'))
-						);?>
-			</div>
-			<div class="col-xs-4">
-				<div class="input-group input-group-sm">
-					<?php echo form_input(array(
-							'name'=>'tax_percents[]',
-							'id'=>'tax_percent_name_1',
-							'class'=>'form-control input-sm',
-							'value'=>isset($item_tax_info[0]['percent']) ? to_tax_decimals($item_tax_info[0]['percent']) : to_tax_decimals($default_tax_1_rate))
-							);?>
-					<span class="input-group-addon input-sm"><b>%</b></span>
-				</div>
-			</div>
-		</div>
+	.compounda-order-footer-body-kneader-a td:nth-child(1){
+		text-align: center;
+		font-weight: bold;
+	}
 
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_tax_2'), 'tax_percent_2', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'tax_names[]',
-						'id'=>'tax_name_2',
-						'class'=>'form-control input-sm',
-						'value'=>isset($item_tax_info[1]['name']) ? $item_tax_info[1]['name'] : $this->config->item('default_tax_2_name'))
-						);?>
-			</div>
-			<div class="col-xs-4">
-				<div class="input-group input-group-sm">
-					<?php echo form_input(array(
-							'name'=>'tax_percents[]',
-							'class'=>'form-control input-sm',
-							'id'=>'tax_percent_name_2',
-							'value'=>isset($item_tax_info[1]['percent']) ? to_tax_decimals($item_tax_info[1]['percent']) : to_tax_decimals($default_tax_2_rate))
-							);?>
-					<span class="input-group-addon input-sm"><b>%</b></span>
-				</div>
-			</div>
-		</div>
+	.compounda-order-footer-body-kneader-a td:nth-child(2){
+		text-align: right;
+		font-weight: bold;
+	}
+	.compounda-order-footer-body-kneader-a td:nth-child(3){
+		text-align: right;
+		font-weight: bold;
+	}
+	.compounda-order-footer-body-kneader-a td:nth-child(4){
+		text-align: right;
+		font-weight: bold;
+	}
+	.compounda-order-footer-body-kneader-a td:nth-child(5){
+		text-align: right;
+		font-weight: bold;
+	}
+	.compounda-order-footer-body-kneader-a td:nth-child(6){
+		text-align: right;
+		font-weight: bold;
+	}
 
-		<?php
-		foreach($stock_locations as $key=>$location_detail)
-		{
-		?>
-			<div class="form-group form-group-sm">
-				<?php echo form_label($this->lang->line('items_quantity').' '.$location_detail['location_name'], 'quantity_' . $key, array('class'=>'required hidden control-label col-xs-3')); ?>
-				<div class='col-xs-4'>
-					<?php echo form_input(array(
-							'name'=>'quantity_' . $key,
-							'id'=>'quantity_' . $key,
-							'class'=>'required quantity form-control hidden',
-							'value'=>isset($item_info->item_id) ? to_quantity_decimals($location_detail['quantity']) : to_quantity_decimals(0))
-							);?>
-					</div>
-			</div>
-		<?php
+	
+
+	.compounda-order-title {
+		text-align: center;
+		font-size: 25px;
+		font-weight: bold;
+		height: 50px;
+	}
+
+	@media print {
+		#table_holder {
+			display: none;
 		}
-		?>
-
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_receiving_quantity'), 'receiving_quantity', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'receiving_quantity',
-						'id'=>'receiving_quantity',
-						'class'=>'required form-control input-sm',
-						'value'=>isset($item_info->item_id) ? to_quantity_decimals($item_info->receiving_quantity) : to_quantity_decimals(0))
-						);?>
-			</div>
-		</div>
-
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_reorder_level'), 'reorder_level', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'reorder_level',
-						'id'=>'reorder_level',
-						'class'=>'form-control input-sm',
-						'value'=>isset($item_info->item_id) ? to_quantity_decimals($item_info->reorder_level) : to_quantity_decimals(0))
-						);?>
-			</div>
-		</div>
-
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_standard_amount_level'), 'standard_amount_level', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'standard_amount',
-						'id'=>'standard_amount',
-						'class'=>'form-control input-sm',
-						'value'=>isset($item_info->standard_amount) ? to_quantity_decimals($item_info->standard_amount) : to_quantity_decimals(0))
-				);?>
-			</div>
-		</div>
-
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_description'), 'description', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<?php echo form_textarea(array(
-						'name'=>'description',
-						'id'=>'description',
-						'class'=>'form-control input-sm',
-						'value'=>$item_info->description)
-						);?>
-			</div>
-		</div>
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_is_deleted'), 'is_deleted', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-1'>
-				<?php echo form_checkbox(array(
-						'name'=>'is_deleted',
-						'id'=>'is_deleted',
-						'value'=>1,
-						'checked'=>($item_info->deleted) ? 1 : 0)
-						);?>
-			</div>
-		</div>
-
-		<?php
-		for ($i = 1; $i <= 10; ++$i)
-		{
-		?>
-			<?php
-			if($this->config->item('custom'.$i.'_name') != null)
-			{
-				$item_arr = (array)$item_info;
-			?>
-				<div class="form-group form-group-sm">
-					<?php echo form_label($this->config->item('custom'.$i.'_name'), 'custom'.$i, array('class'=>'control-label col-xs-3')); ?>
-					<div class='col-xs-8'>
-						<?php echo form_input(array(
-								'name'=>'custom'.$i,
-								'id'=>'custom'.$i,
-								'class'=>'form-control input-sm',
-								'value'=>$item_arr['custom'.$i])
-								);?>
-					</div>
-				</div>
-		<?php
-			}
+		.modal-header, .modal-footer, .bootstrap-dialog-footer{
+			display: none;
 		}
-		?>
-	</fieldset>
-<?php echo form_close(); ?>
+		.modal-content{
+			border: 0px solid rgba(0,0,0,0.2);
+		}
+		.modal-footer{
+			border: 0px solid rgba(0,0,0,0.2);
+		}
+	}
 
+	/*
+	.name {
+        font-size: 20px;
+    }
+    .time {
+        font-size: 15px;
+    }
+    .customer_number,
+    .phone {
+        font-size: 16px;
+    }
+    #receipt_items {
+        font-size: 16px;
+    }
+    #receipt_items thead th:not(:first-child) {
+        display: none;
+    }
+    #receipt_items tbody th {
+        font-weight: normal;
+    }
+    #receipt_items td:not(:last-child) {
+        display: none;
+    }
+   
+    td[data-th]:before {
+        content: attr(data-th);
+    }
+	*/
+</style>
+<div id="recipe_basic_info" width="100%">
+	<table id="recipe-header">
+		<tr>
+			<td><div class="recipe-header-company-name"><?=$this->config->item('company')?></div></td>
+			<td>
+			<div class="recipe-header-company-info">
+				<p><?=$this->config->item('address')?></p>
+				<p>Tel : (251) 352 5199 / 352 5200  _ Fax:(251) 352 5222</p>
+			</div>
+			</td>
+		</tr>
+
+	</table>
+	<!-- #endregion recipe-header -->
+	<!-- #region recipe-title-->
+	<table id="compounda-order-title">
+		<tr>
+			<td>
+				<div class="compounda-order-title">
+						<?=$this->lang->line('compounda-order_title')?>
+					</div>
+			</td>
+		</tr>
+
+	</table>
+	<!-- #endregion -->
+	<!-- #region recipe-info-->
+	<table id="compounda-order-info">
+		<tr>
+			<td rowspan="3">
+				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->compounda_order_id); ?>
+				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
+			</td>
+			<td><?=$this->lang->line('compounda_order_order_date')?>:</td>
+			<td><b><?=date('d/m/Y',$item_info->order_date)?></b></td>
+			<td><?=$this->lang->line('compounda_order_no')?>:</td>
+			<td><b><?=$item_info->compounda_order_no?></b></td>
+		</tr>
+		<tr>
+			
+			<td><?=$this->lang->line('compounda_order_use_date')?>:</td>
+			<td><b><?=date('d/m/Y',$item_info->use_date)?></b></td>
+			<td><?=$this->lang->line('compounda_order_area_make_order')?>:</td>
+			<td><b><?=$item_info->area_make_order?></b></td>
+		</tr>
+		<tr>
+			
+			<td><?=$this->lang->line('compounda_order_creator_name')?>:</td>
+			<td><b><?=$item_info->creator_name?></b></td>
+			<td><?=$this->lang->line('compounda_order_suppervisor_name')?>:</td>
+			<td><b><?=$item_info->suppervisor_name?></b></td>
+			
+		</tr>
+	</table>
+	<!-- #endregion -->
+	<!-- #region recipe-body-kneader-a-->
+	<table id="compounda-order-body-kneader-a">
+				<tr class="compounda-order-header-body-kneader-a">
+					<td rowspan="2">
+						<?=$this->lang->line('compounda_order_num')?>
+					</td>
+					<td rowspan="2">
+					<?=$this->lang->line('compounda_order_ms')?>
+					</td>
+					<td rowspan="2">
+					<?=$this->lang->line('compounda_order_batch_per_one')?>
+					</td>
+
+					<td colspan="2">
+					<?=$this->lang->line('compounda_order_schedule')?>
+					</td>
+					<td colspan="3">
+					<?=$this->lang->line('compounda_order_weight')?>
+					</td>
+					<td rowspan="2">
+						<?=$this->lang->line('compounda_order_input_quantity')?>
+					</td>
+					<td rowspan="2">
+					<?=$this->lang->line('compounda_order_signal')?>
+					</td>
+					<td rowspan="2">
+					<?=$this->lang->line('compounda_order_note')?>
+					</td>
+				</tr>
+				<tr class="compounda-order-header-body-kneader-a">
+					<td>
+						<?=$this->lang->line('compounda_order_batch')?>
+						</td>
+						<td>
+						<?=$this->lang->line('compounda_order_total')?>
+						</td>
+						<td>
+						<?=$this->lang->line('compounda_order_start_weight')?>
+						</td>
+						<td>
+						<?=$this->lang->line('compounda_order_use_weight')?>
+						</td>
+						<td>
+						<?=$this->lang->line('compounda_order_end_weight')?>
+					</td>
+				</tr>
+				<?php if(!empty($item_info->list_compound_a)): ?>
+					<?php 
+						$_i = 0; 
+						$_total_batch = 0;
+						$_total_schedule = 0;
+						$_total_use = 0;
+						$_total_end = 0;
+					?>
+					<?php foreach($item_info->list_compound_a as $item_a): ?>
+					<?php 
+						$_i++; 
+						$_total_batch = $_total_batch + $item_a->quantity_batch;
+						$_total_schedule = $_total_schedule + 75 * $item_a->quantity_batch;
+						$_total_use = $_total_use + $item_a->quantity_use;
+						
+					?>
+					<tr class="compounda-order-item-body-kneader-a">
+						<td>
+							<?=$_i?>
+						</td>
+						<td>
+						<?=$item_a->item_name?>
+						</td>
+						<td>
+						<?='75'?>
+						</td>
+						<td>
+						<?=number_format($item_a->quantity_batch,0)?>
+						</td>
+						<td>
+						<?=number_format($item_a->quantity_batch*75,3)?>
+						</td>
+						<td>
+						<?php echo '-'?>
+						</td>
+						<td>
+						<?=$item_a->quantity_use?>
+						</td>
+						<td>
+						<?=number_format($item_a->quantity_batch*75 - $item_a->quantity_use,3)?>
+						</td>
+						<td>
+						
+						</td>
+						<td>
+						
+						</td>
+						<td>
+						
+						</td>
+					</tr>
+					<?php endforeach; ?>
+				<?php endif; ?>
+				<!-- #region Tổng cộng-->
+				<tr class="compounda-order-footer-body-kneader-a">
+					<?php $_total_end = $_total_schedule - $_total_use; ?>
+					<td colspan="3">
+					<?=$this->lang->line('compounda_order_sum')?>
+					
+					</td>
+					<td>
+					<?=number_format($_total_batch ,0)?>
+					</td>
+					<td>
+					<?=number_format($_total_schedule,3)?>
+					</td>
+					<td>
+					<?php echo '-'?>
+					</td>
+					<td>
+					<?=number_format($_total_use,3)?>
+					</td>
+					<td>
+					<?=number_format($_total_end,3)?>
+					</td>
+					<td>
+					
+					</td>
+					<td>
+					
+					</td>
+					<td>
+					
+					</td>
+					
+				</tr>
+
+				<!-- #endregion -->
+			</table>
+	<!-- #endregion -->
+	
+	
+</div>
 <script type="text/javascript">
 	//validation and submit handling
 	//(function($) {
@@ -253,191 +380,12 @@
 	//$(document).ready(function()
 	(function($)
 	{
-		$('#unit_price').number(true,0,',','.');
-		$('#cost_price').number(true,0,',','.');
-		$("#new").click(function() {
-			stay_open = true;
-			$("#item_form").submit();
-		});
+		
 
 		$("#submit").click(function() {
 			stay_open = false;
 		});
-
-		var no_op = function(event, data, formatted){};
-		$("#category").autocomplete({
-			source: "<?php echo site_url('items/suggest_category');?>",
-			delay:10,
-			appendTo: '.modal-content'});
-
-		<?php for ($i = 1; $i <= 10; ++$i)
-		{
-		?>
-			$("#custom"+<?php echo $i; ?>).autocomplete({
-				source:function (request, response) {
-					$.ajax({
-						type: "POST",
-						url: "<?php echo site_url('items/suggest_custom');?>",
-						dataType: "json",
-						data: $.extend(request, $extend(csrf_form_base(), {field_no: <?php echo $i; ?>})),
-						success: function(data) {
-							response($.map(data, function(item) {
-								return {
-									value: item.label
-								};
-							}))
-						}
-					});
-				},
-				delay:10,
-				appendTo: '.modal-content'});
-		<?php
-		}
-		?>
-
-		$("a.fileinput-exists").click(function() {
-			$.ajax({
-				type: "GET",
-				url: "<?php echo site_url("$controller_name/remove_logo/$item_info->item_id"); ?>",
-				dataType: "json"
-			})
-		});
-
-		$('#item_form').validate($.extend({
-			submitHandler: function(form, event) {
-				$(form).ajaxSubmit({
-					success: function(response) {
-						var stay_open = dialog_support.clicked_id() != 'submit';
-						if (stay_open)
-						{
-							// set action of item_form to url without item id, so a new one can be created
-							$("#item_form").attr("action", "<?php echo site_url("items/save/")?>");
-							// use a whitelist of fields to minimize unintended side effects
-							$(':text, :password, :file, #description, #item_form').not('.quantity, #reorder_level, #tax_name_1,' +
-								'#tax_percent_name_1, #reference_number, #name, #cost_price, #unit_price, #taxed_cost_price, #taxed_unit_price').val('');
-							// de-select any checkboxes, radios and drop-down menus
-							$(':input', '#item_form').not('#item_category_id').removeAttr('checked').removeAttr('selected');
-						}
-						else
-						{
-							dialog_support.hide();
-						}
-						table_support.handle_submit('<?php echo site_url('items'); ?>', response, stay_open);
-					},
-					dataType: 'json'
-				});
-			},
-
-			rules:
-			{
-				name:"required",
-				category:"required",
-				item_number:
-				{
-					required: false,
-					remote:
-					{
-						url: "<?php echo site_url($controller_name . '/check_item_number')?>",
-						type: "post",
-						data: $.extend(csrf_form_base(),
-						{
-							"item_id" : "<?php echo $item_info->item_id; ?>",
-							"item_number" : function()
-							{
-								return $("#item_number").val();
-							},
-						})
-					}
-				},
-				cost_price:
-				{
-					required: true,
-					number: true
-					//remote: "<?php echo site_url($controller_name . '/check_numeric')?>"
-				},
-				unit_price:
-				{
-					required:true,
-					number: true
-					//remote: "<?php echo site_url($controller_name . '/check_numeric')?>"
-				},
-				<?php
-				foreach($stock_locations as $key=>$location_detail)
-				{
-				?>
-					<?php echo 'quantity_' . $key ?>:
-					{
-						required:true,
-						number: true
-						//remote: "<?php echo site_url($controller_name . '/check_numeric')?>"
-					},
-				<?php
-				}
-				?>
-				receiving_quantity:
-				{
-					required:true,
-					number: true
-					//remote: "<?php echo site_url($controller_name . '/check_numeric')?>"
-				},
-				reorder_level:
-				{
-					required:true,
-					number: true
-					//remote: "<?php echo site_url($controller_name . '/check_numeric')?>"
-				},
-				tax_percent:
-				{
-					required:true,
-					number: true
-					//remote: "<?php echo site_url($controller_name . '/check_numeric')?>"
-				}
-			},
-
-			messages:
-			{
-				name:"<?php echo $this->lang->line('items_name_required'); ?>",
-				item_number: "<?php echo $this->lang->line('items_item_number_duplicate'); ?>",
-				category:"<?php echo $this->lang->line('items_category_required'); ?>",
-				cost_price:
-				{
-					required:"<?php echo $this->lang->line('items_cost_price_required'); ?>",
-					number:"<?php echo $this->lang->line('items_cost_price_number'); ?>"
-				},
-				unit_price:
-				{
-					required:"<?php echo $this->lang->line('items_unit_price_required'); ?>",
-					number:"<?php echo $this->lang->line('items_unit_price_number'); ?>"
-				},
-				<?php
-				foreach($stock_locations as $key=>$location_detail)
-				{
-				?>
-					<?php echo 'quantity_' . $key ?>:
-					{
-						required:"<?php echo $this->lang->line('items_quantity_required'); ?>",
-						number:"<?php echo $this->lang->line('items_quantity_number'); ?>"
-					},
-				<?php
-				}
-				?>
-				receiving_quantity:
-				{
-					required:"<?php echo $this->lang->line('items_quantity_required'); ?>",
-					number:"<?php echo $this->lang->line('items_quantity_number'); ?>"
-				},
-				reorder_level:
-				{
-					required:"<?php echo $this->lang->line('items_reorder_level_required'); ?>",
-					number:"<?php echo $this->lang->line('items_reorder_level_number'); ?>"
-				},
-				tax_percent:
-				{
-					required:"<?php echo $this->lang->line('items_tax_percent_required'); ?>",
-					number:"<?php echo $this->lang->line('items_tax_percent_number'); ?>"
-				}
-			}
-		}, form_support.error));
+	
 	})(jQuery);
 </script>
 

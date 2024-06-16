@@ -13,7 +13,7 @@ class Compoundas extends Secure_Controller
 	{
 		parent::__construct('compoundas');
 		$this->load->library('item_lib');
-
+		$this->load->library('barcode_lib');
 	}
 	
 	public function index()
@@ -32,7 +32,7 @@ class Compoundas extends Secure_Controller
 			'low_inventory' => $this->lang->line('items_low_inventory_items'),
 			'is_deleted' => $this->lang->line('items_is_deleted'));
 
-		$data['hide_unitprice'] = $this->Employee->has_grant('items_unitprice_hide');
+		$data['grant_id'] = $this->grant_id; //Phân quyền module 
 		$this->load->view('compoundas/manage', $data);
 	}
 
@@ -48,11 +48,11 @@ class Compoundas extends Secure_Controller
 		$order = $this->input->get('order');
 
         //$search = str_replace(' ','%',$search);
-		$this->item_lib->set_item_location($this->input->get('stock_location'));
+		//$this->item_lib->set_item_location($this->input->get('stock_location'));
 
 		$filters = array('start_date' => $this->input->get('start_date'),
 						'end_date' => $this->input->get('end_date'),
-						'stock_location_id' => $this->item_lib->get_item_location(),
+						//'stock_location_id' => $this->item_lib->get_item_location(),
 						'empty_upc' => FALSE,
 						'low_inventory' => FALSE, 
 						'is_serialized' => FALSE,
@@ -64,14 +64,16 @@ class Compoundas extends Secure_Controller
 		$filledup = array_fill_keys($this->input->get('filters'), TRUE);
 		$filters = array_merge($filters, $filledup);
 
-		$items = $this->Item->search($search, $filters, $limit, $offset, $sort, $order);
-		$total_rows = $this->Item->get_found_rows($search, $filters);
+		$items = $this->Compounda->search($search, $filters, $limit, $offset, $sort, $order);
+		$total_rows = $this->Compounda->get_found_rows($search, $filters);
 
 		$data_rows = array();
+		$index = 1;
 		foreach($items->result() as $item)
 		{
 			debug_log($item,'$item');
-			$data_rows[] = $this->xss_clean(get_item_data_row($item, $this));
+			$data_rows[] = $this->xss_clean(get_compounda_data_row($item, $index));
+			$index++;
 		}
 
 		echo json_encode(array('total' => $total_rows, 'rows' => $data_rows));
@@ -179,65 +181,30 @@ class Compoundas extends Secure_Controller
 
 	public function view($item_id = -1)
 	{
-		$person_id = $this->session->userdata('person_id');
-		$data['has_grant'] = $this->Employee->has_grant('items_accounting', $person_id);
-		$data['item_tax_info'] = $this->xss_clean($this->Item_taxes->get_info($item_id));
+		//$person_id = $this->person_id;
+		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
+		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
+		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
+		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
+		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
+
+		$data['item_tax_info'] = '';
 		$data['default_tax_1_rate'] = '';
 		$data['default_tax_2_rate'] = '';
 
-		$item_info = $this->Item->get_info($item_id);
+		$item_info = $this->Compounda->get_info($item_id);
 		foreach(get_object_vars($item_info) as $property => $value)
 		{
-			$item_info->$property = $this->xss_clean($value);
-		}
-
-		if($item_id == -1)
-		{
-			$data['default_tax_1_rate'] = $this->config->item('default_tax_1_rate');
-			$data['default_tax_2_rate'] = $this->config->item('default_tax_2_rate');
-			
-			$item_info->receiving_quantity = 0;
-			$item_info->reorder_level = 0;
-			$item_info->standard_amount = 0;
+			if(!is_object($value) && !is_array($value))
+			{
+				$item_info->$property = $this->xss_clean($value);
+			}
 		}
 
 		$data['item_info'] = $item_info;
 
-		$suppliers = array('' => $this->lang->line('items_none'));
-		foreach($this->Supplier->get_all()->result_array() as $row)
-		{
-			$suppliers[$this->xss_clean($row['person_id'])] = $this->xss_clean($row['company_name']);
-		}
-		$data['suppliers'] = $suppliers;
-		$data['selected_supplier'] = $item_info->supplier_id;
-
-		$data['logo_exists'] = $item_info->pic_id != '';
-		if($item_info->pic_id != '') {
-			$images = glob('./uploads/item_pics/' . $item_info->pic_id . '.*');
-			$data['image_path'] = sizeof($images) > 0 ? base_url($images[0]) : '';
-		}else{
-			$data['image_path'] = '';
-		}
-
-		$stock_locations = $this->Stock_location->get_undeleted_all()->result_array();
-        foreach($stock_locations as $location)
-        {
-			$location = $this->xss_clean($location);
-			$oTheItemQuantity = $this->Item_quantity->get_item_quantity($item_id, $location['location_id']);
-
-			$quantity = $this->xss_clean($oTheItemQuantity->quantity);
-			
-			$location_array[$location['location_id']] = [
-				'location_name' => $location['location_name'], 
-				'quantity' => $quantity,
-				'inventory_uom_name'=> $oTheItemQuantity->inventory_uom_name,
-				'inventory_uom_code' => $oTheItemQuantity->inventory_uom_code,
-				'item_location' => $oTheItemQuantity->item_location
-			];
-			$data['stock_locations'] = $location_array;
-        }
-
-		$this->load->view('items/form', $data);
+		//var_dump($data);
+		$this->load->view('compoundas/form', $data);
 	}
     
 	public function inventory($item_id = -1)
@@ -742,19 +709,43 @@ class Compoundas extends Secure_Controller
 
 			$i = $i+1;
 			$data = $sheet_data[$i];
-			$_str_use_date = trim($data['5']); //C
+			$_str_use_date = trim($data['2']); //C
 			$_str_use_date = str_replace('/', '-', $_str_use_date);
 			$use_date = strtotime($_str_use_date);
 			$area_make_order=$data['9']; //J
 
 			$i = $i+1;
 			$data = $sheet_data[$i];
-			$creator_account = trim($data['5']); //C
-			$suppervisor_account=$data['9']; //J
+			$creator_account = trim($data['2']); //C
+			$suppervisor_account=trim($data['9']); //J
+
+			//Get creator by account
+			$_oCreator = $this->Employee->get_info_by_account($creator_account);
+			$creator_id = 0; //C
+			$creator_name = ''; //C
+			if(empty($_oCreator))
+			{
+				$failCodes[] = 'TK người lập chưa tồn tại';
+			} else {
+				$creator_id = $_oCreator->person_id; //C
+				$creator_name = $_oCreator->last_name . ' '. $_oCreator->first_name; //C
+			} 
 
 
 
-			
+
+			//Get Suppervisor by account
+			$_oSuppervisor = $this->Employee->get_info_by_account($suppervisor_account);
+			$suppervisor_id = 0; //C
+			$suppervisor_name = ''; //C
+			if(empty($_oSuppervisor))
+			{
+				$failCodes[] = 'TK người phụ trách chưa tồn tại';
+			} else {
+				$suppervisor_id = $_oSuppervisor->person_id;//C
+				$suppervisor_name = $_oSuppervisor->last_name . ' '. $_oSuppervisor->first_name; //C; //C
+			}
+
 			if($use_date === false)
 			{
 				$use_date = strtotime('17-09-2022'); //dèault
@@ -772,12 +763,18 @@ class Compoundas extends Secure_Controller
 				'use_date' => $use_date,
 				'area_make_order'=>$area_make_order,
 				'creator_account'=>$creator_account,
+				'creator_id'=>$creator_id,
+				'creator_name'=>$creator_name,
 				'suppervisor_account'=>$suppervisor_account,
+				'suppervisor_id'=>$suppervisor_id,
+				'suppervisor_name'=>$suppervisor_name,
 				'status'=>4 //Đã chập nhận
 			];
 
+			debug_log($compounda_data,'$compounda_data');
+			//var_dump($compounda_data);
+
 			$j = 13; // Bắt đầu đọc từ dòng thứ 14,
-			$failCodes = [];
 			$item_orders = [];
 			for($i = $j; $i < count($sheet_data); $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
@@ -786,15 +783,22 @@ class Compoundas extends Secure_Controller
 				
 				$data = $sheet_data[$i];
 				//var_dump($data);
+				if(trim($data[0]) == "Tổng cộng:")
+				{
+					break;
+				}
 				debug_log($sheet_data[$i],'$sheet_data[$i]');
 				$ms = trim($data[12]) != null ? trim($data[12]):'';
 				$item_data = [
 					'ms'					=> trim($data[12]) != null ? trim($data[12]):'',
 					'quantity_batch'			=> is_numeric(str_replace(',','',$data[3])) == true ? (float) str_replace(',','',$data[3]):0,
-					'quantity_use'			=> is_numeric(str_replace(',','',$data[6])) == true ? (float) str_replace(',','',$data[6]):0
+					'quantity_use'			=> is_numeric(str_replace(',','',trim($data[6]))) == true ? (float) str_replace(',','',trim($data[6])):0,
+					'note'=>trim($data[10])
 				];
 				
 				$_oItem = $this->Item->get_info_by_ms($ms);
+
+				
 
 				if($_oItem->item_id == 0) // Nếu không tìm thấy item với mác nguyên liệu
 				{
@@ -812,7 +816,7 @@ class Compoundas extends Secure_Controller
 				}
 			}
 
-			if(empty($failCodes)){ // Nếu xuất hiện lỗi, không làm gì cả, hiển thị thông báo lỗi tại dòng nào;
+			if(!empty($failCodes)){ // Nếu xuất hiện lỗi, không làm gì cả, hiển thị thông báo lỗi tại dòng nào;
 				$message = $this->lang->line('items_excel_import_partially_failed') . ' (' . count($failCodes) . '): ' . implode(', ', $failCodes);
 				echo json_encode(array('success' => FALSE, 'message' => $message));
 
@@ -831,145 +835,59 @@ class Compoundas extends Secure_Controller
 	}
 
 	// Added by ManhVT to support field permissions
-	public function unitprice_hide()
+	public function is_view()
 	{
-		exit();
+		/**
+		 * Phân quyền cho người xét duyện lệnh sx
+		 * xem được đầy đủ, tên các chất
+		 */
+		return true;
+	}
+	public function is_approved()
+	{
+		/**
+		 * Phân quyền cho người xét duyện lệnh sx
+		 * xem được đầy đủ, tên các chất
+		 */
+		return true;
 	}
 
-	public function run_synchro()
+	public function is_editor()
 	{
-		$time = time();
-		$bCanUpdate = true;
-        $lfile =  str_replace('/public/','/',FCPATH).'log-lens.txt';
-        //echo $lfile;exit();
-        $_flog=fopen($lfile, 'a');
-        fwrite($_flog, 'Bat dau dong bo theo SP'.PHP_EOL);
-        //echo 'Bat dau dong bo';
-        $input = $this->Product->get_max_synched_time();
-        echo "INPUT ".$input;
-        //var_dump($input);die();
-        //$id = 15294;
-        $_aProducts = $this->get_last_products($input);
-        //echo 'manhvt';
-        //var_dump($_aProducts);
-        $i = 0;
-        foreach($_aProducts as $_oProduct)
-        {   //echo '.';
-            $i++;
-            $item_number = $_oProduct->item_number;
-            $invalidated = $this->Item->item_number_exists($item_number);
-            if($invalidated == true) // update
-            {
-                    if($bCanUpdate) {
-                        //echo 'update:' . $item_number . ' \n';
-                        fwrite($_flog, 'SP.Update' . PHP_EOL);
-                        $_oItem = array();
-                        $_oItem['unit_price'] = $_oProduct->unit_price;
-                        $_oItem['name'] = $_oProduct->name;
-                        $_oItem['cost_price'] = $_oProduct->cost_price;
-                    }
-                    $_oItem['ref_item_id'] = $_oProduct->item_id;
-					$_oItem['updated_time'] = $time;
-                    $_oItem['synched_time'] = $time;
-                    //var_dump($_oItem);
-                    $this->Product->update_product($_oItem,$item_number);
-                
-
-            } else{ // create mới
-                if($_oProduct->name != '')
-                {
-                    //echo 'Create: ' .$item_number.' \n';
-                    $item_data = array(
-                        'name'					=> $_oProduct->name,
-                        'description'			=> $_oProduct->description,
-                        'category'				=> $_oProduct->category,
-                        'cost_price'			=> $_oProduct->cost_price,
-                        'unit_price'			=> $_oProduct->unit_price,
-                        'reorder_level'			=> $_oProduct->reorder_level,
-                        'supplier_id'			=> $_oProduct->supplier_id,
-                        'allow_alt_description'	=> $_oProduct->allow_alt_description,
-                        'is_serialized'			=> $_oProduct->is_serialized,
-                        'item_number'           => $_oProduct->item_number,
-                        'ref_item_id'   =>$_oProduct->item_id,
-                        'custom1'				=> '',
-                        'custom2'				=> '',
-                        'custom3'				=> '',
-                        'custom4'				=> '',
-                        'custom5'				=> '',
-                        'custom6'				=> '',
-                        'custom7'				=> '',
-                        'custom8'				=> '',
-                        'custom9'				=> '',
-                        'custom10'				=> ''
-                    );
-					$_oItem['updated_time'] = $time;
-                    $_oItem['created_time'] = $time;
-                    $_oItem['synched_time'] = $time;
-                    if( $this->Product->save_item($item_data))
-                    {
-                        fwrite($_flog, 'SP.Add Thanh cong'.PHP_EOL);
-                    } 
-                    else //insert or update item failure
-                    {
-                            $failCodes[$i] = $item_data['item_number'];
-                            $message = "". $item_data['item_number'];
-                            fwrite($_flog, $message.PHP_EOL);
-                            //echo 	$message .PHP_EOL;
-                    }
-                }else {
-                    $message = "Dữ liệu trống";
-                    fwrite($_flog, $message.PHP_EOL);
-                    //echo 	$message .PHP_EOL;
-                }
-
-            }
-        }
-        //echo 'Toal:'.$i;
-		// Phản hồi cho Ajax
-		echo json_encode(['success' => true]);
+		/**
+		 * Phân quyền cho người tạo lệnh sản xuất
+		 * Xem được đầy đủ tên các chất
+		 */
+		return true;
 	}
 
-	/**
-	 * Lấy các sản phẩm chưa update từ thời điểm đồng bộ cuối cùng
-	 */
-	private function get_last_products($time)
-    {
-        //insert data
-        $url = $this->url."/api/item/last_products/$time";
-        
-        //create a new cURL resource
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_USERPWD, 'admin:123456789');
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-        curl_setopt($ch, CURLOPT_HTTPGET, 1);
-        //curl_setopt($ch, CURLOPT_POSTFIELDS, $userData);
-        //curl_setopt($ch, CURLOPT_POSTFIELDS,$query);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
-        $response = curl_exec($ch);
+	public function is_action()
+	{
+		/**
+		 * Xem được đã được mã hóa
+		 * Phân quyền dành cho cán bộ công nhân thực hiện
+		 **/
+		return true;
+	}
 
-        // Then, after your curl_exec call:
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $header = substr($response, 0, $header_size);
-        $body = substr($response, $header_size);
-        $result = json_decode($body);
-        //var_dump($result);
-        curl_close($ch);
-        if(empty($result))
-        {
-            return array();
-        }
-        if($result->status == TRUE)
-        {
-            return $result->data;
-        } else {
-            return array();
-        }
-        
-    }
+	public function is_production_order()
+	{
+		/**
+		 * Xem được đã được mã hóa
+		 * Phân quyền cho ...
+		 **/
+		return true;
+	}
+
+	public function is_inventory()
+	{
+		/**
+		 * Xem được đã được mã hóa
+		 * Phân quyền cho thủ kho; với vai trò thủ kho; scan barcode  lệnh sx sẽ view chi tiết lệnh sx, để xuất kho theo từng mục; (mác nguyên liệu --> ra nguyên liệu)
+		 **/
+		return true;
+	}
+	
 
 }
 ?>

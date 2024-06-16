@@ -273,14 +273,14 @@ CREATE TABLE `ospos_compounda_orders` (
   `created_at` int(11) NOT NULL DEFAULT 0,
   `creator_id` int(11) NOT NULL DEFAULT 0,
   `creator_name` varchar(150) NOT NULL DEFAULT '',
-  `creator_account` varchar(150) NOT NULL DEFAULT '',
+  `creator_account` varchar(50) NOT NULL DEFAULT '',
   `order_date` int(11) NOT NULL DEFAULT 0,
   `use_date` int(11) NOT NULL DEFAULT 0,
   `completed_at` int(11) NOT NULL DEFAULT 0,
   `start_at` int(11) NOT NULL DEFAULT 0,
   `suppervisor_id` int(11) NOT NULL DEFAULT 0,
-  `suppervisor_name` int(11) NOT NULL DEFAULT 0,
-  `suppervisor_account` int(11) NOT NULL DEFAULT 0,
+  `suppervisor_name` varchar(150) NOT NULL DEFAULT '',
+  `suppervisor_account` varchar(50) NOT NULL DEFAULT '',
   `area_make_order` varchar(50) DEFAULT NULL, 
   `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`compounda_order_id`)
@@ -306,6 +306,7 @@ CREATE TABLE `ospos_compounda_order_item` (
   `quantity_completed` decimal(15,3) NOT NULL DEFAULT 0.00,
   `start_at` int(11) NOT NULL DEFAULT 0,
   `created_at` int(11) NOT NULL DEFAULT 0,
+  `note` varchar(150) NOT NULL DEFAULT '',
   PRIMARY KEY (`compounda_order_item_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 

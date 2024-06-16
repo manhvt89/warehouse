@@ -1,5 +1,26 @@
 <?php $this->load->view("partial/header"); ?>
 <script src="/dist/jquery.number.min.js"></script>
+<style type="text/css">
+    #DetailRecipeView .modal-dialog{
+        width: 1194px;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #recipe_basic_info * {
+            visibility: visible;
+        }
+        #recipe_basic_info {
+            display: block;
+            float: left;
+            font-size: 10px;
+            width: 96%;
+            margin: 10px;
+        }
+    }
+</style>
 <script type="text/javascript">
 $(document).ready(function()
 {
@@ -44,12 +65,23 @@ $(document).ready(function()
 
     <?php $this->load->view('partial/bootstrap_tables_locale'); ?>
 
+    var _headers = <?php echo $table_headers; ?>;
+    $_obt = {
+                field: 'view_button',
+                title: 'Xem lệnh cán CA',
+                formatter: paymentFormatter,
+                events: {
+                    'click .view-recipe-btn': openPaymentPopup,
+                },
+            };
+    _headers.push($_obt);
+
     table_support.init({
         employee_id: <?php echo $this->Employee->get_logged_in_employee_info()->person_id; ?>,
         resource: '<?php echo site_url($controller_name);?>',
-        headers: <?php echo $table_headers; ?>,
+        headers: _headers,
         pageSize: <?php echo $this->config->item('lines_per_page'); ?>,
-        uniqueId: 'items.item_id',
+        uniqueId: 'compounda_orders.compounda_order_id',
         showExport: true,
         queryParams: function() {
             return $.extend(arguments[0], {
@@ -67,6 +99,30 @@ $(document).ready(function()
         }
     });
 });
+
+function paymentFormatter(value, row, index) {
+        console.log(row);
+        console.log(value);
+        if(row.istatus < 5) {
+            return '...';
+        }
+        return '<button class="btn btn-info view-recipe-btn btn-sm">Xem</button>';
+}
+
+function openPaymentPopup(e, value, row, index) {
+    // Hiển thị popup và truyền thông tin đơn hàng (row) vào popup
+    // ...
+    console.log(index);
+    console.log(row);
+    console.log(e);
+    console.log(value);
+    var node = $('#body-recipe-view-modal');
+    $.get(row.view, function(data) {
+        node.html(data);
+    });
+    // Ví dụ sử dụng Bootstrap Modal
+    $('#DetailRecipeView').modal('show');
+}
 </script>
 
 <div id="title_bar" class="btn-toolbar print_hide">
@@ -111,10 +167,32 @@ $(document).ready(function()
     <table 
         id="table" 
         data-sort-order="desc" 
-        data-sort-name="item_number" 
+        data-sort-name="compounda_order_no" 
         data-search="true" 
         data-export-types="['excel']">
     </table>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="DetailRecipeView" tabindex="-1" role="dialog" aria-labelledby="RecipeModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header print_hide">
+        <h5 class="modal-title" id="RecipeModalLabel">...</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="body-recipe-view-modal" class="modal-body">
+        <!-- Form để nhập số tiền và chọn phương thức thanh toán -->
+      </div>
+      <div class="modal-footer print_hide">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+        <button type="button" class="btn btn-primary" id="PrintBtn">Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
 
 <?php $this->load->view("partial/footer"); ?>

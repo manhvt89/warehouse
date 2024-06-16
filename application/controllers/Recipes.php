@@ -14,6 +14,24 @@ class Recipes extends Secure_Controller
 		parent::__construct('recipes');
 		$this->load->library('barcode_lib');
 		$this->load->library('item_lib');
+
+		$this->grant_id = 0;
+		if($this->Employee->has_grant('recipes_is_action'))
+		{
+			$this->grant_id = 1;
+		}
+		if($this->Employee->has_grant('recipes_is_production_order'))
+		{
+			$this->grant_id = 2;
+		}
+		if($this->Employee->has_grant('recipes_is_editor'))
+		{
+			$this->grant_id = 3;
+		}
+		if($this->Employee->has_grant('recipes_is_approved'))
+		{
+			$this->grant_id = 5;
+		}
 	}
 	
 	public function index()
@@ -22,36 +40,15 @@ class Recipes extends Secure_Controller
 		$data['table_headers'] = $this->xss_clean(get_recipe_manage_table_headers());
 
 		//$data['table_headers'] = $this->xss_clean(get_items_manage_table_headers());
-
-		$grant_id = 0;
-		if($this->Employee->has_grant('recipes_is_action'))
-		{
-			$grant_id = 1;
-		}
-		if($this->Employee->has_grant('recipes_is_production_order'))
-		{
-			$grant_id = 2;
-		}
-		if($this->Employee->has_grant('recipes_is_editor'))
-		{
-			$grant_id = 3;
-		}
-		if($this->Employee->has_grant('recipes_is_approved'))
-		{
-			$grant_id = 5;
-		}
-
 		
 		$data['stock_location'] = $this->xss_clean($this->item_lib->get_item_location());
 		$data['stock_locations'] = $this->xss_clean($this->Stock_location->get_allowed_locations());
-
 		// filters that will be loaded in the multiselect dropdown
 		$data['filters'] = array('empty_upc' => $this->lang->line('items_empty_upc_items'),
 			'low_inventory' => $this->lang->line('items_low_inventory_items'),
 			'is_deleted' => $this->lang->line('items_is_deleted'));
-
 		$data['hide_unitprice'] = false;
-		$data['grant_id'] = $grant_id; //Phân quyền module recipe
+		$data['grant_id'] = $this->grant_id; //Phân quyền module recipe
 		$this->load->view('recipes/manage', $data);
 	}
 

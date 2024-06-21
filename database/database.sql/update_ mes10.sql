@@ -256,9 +256,9 @@ CREATE TABLE `ospos_item_recipes` (
   `uom_code` varchar(10) NOT NULL DEFAULT '',
   `uom_name` varchar(10) NOT NULL DEFAULT '',
   `weight` decimal(15,3) NOT NULL DEFAULT 0.00,
-  `tolerace` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `tolerace` varchar(15) NOT NULL DEFAULT '0.00',
   `type` varchar(1) NOT NULL DEFAULT '',
-
+  /* `master_batch` varchar(55) NOT NULL DEFAULT '', */
   PRIMARY KEY (`item_recipe_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -330,9 +330,51 @@ CREATE TABLE `ospos_compounda_order_item_completed` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
+DROP TABLE IF EXISTS `ospos_export_documents`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_export_documents` (
+`export_document_id` int(10) NOT NULL AUTO_INCREMENT,
+`export_document_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+`compounda_order_id` int(11) NOT NULL DEFAULT 0,
+`compounda_order_item_id` int(11) NOT NULL DEFAULT 0,
+`created_at` int(11) NOT NULL DEFAULT 0,
+`export_code` varchar(50) NOT NULL DEFAULT '', 
+`ms` varchar(50) NOT NULL DEFAULT '',
+`compounda_id` int(11) NOT NULL DEFAULT 0,
+`compounda_name` varchar(150) NOT NULL DEFAULT '',
+`item_name` varchar(150) NOT NULL DEFAULT '',
+`item_id` int(11) NOT NULL DEFAULT 0,
+`uom_code` varchar(10) NOT NULL DEFAULT '',
+`uom_name` varchar(10) NOT NULL DEFAULT '',
+`creator_from_id` int(11) NOT NULL DEFAULT 0,
+`creator_from_name` varchar(150) NOT NULL DEFAULT '',
+`creator_to_id` int(11) NOT NULL DEFAULT 0,
+`creator_to_name` varchar(150) NOT NULL DEFAULT '',
+`completed_at` int(11) NOT NULL DEFAULT 0,
+`batch_number` int(3) NOT NULL DEFAULT 0,
+`status` tinyint(1) NOT NULL DEFAULT 4,
+  PRIMARY KEY (`export_document_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
+DROP TABLE IF EXISTS `ospos_export_document_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_export_document_items` (
+`export_document_item_id` int(10) NOT NULL AUTO_INCREMENT,
+`export_document_id` int(11) NOT NULL DEFAULT 0,
+`item_name` varchar(150) NOT NULL DEFAULT '',
+`item_id` int(11) NOT NULL DEFAULT 0,
+`uom_code` varchar(10) NOT NULL DEFAULT '',
+`uom_name` varchar(10) NOT NULL DEFAULT '',
+`encode` varchar(15) NOT NULL DEFAULT '',
+`quantity` decimal(15,3) NOT NULL DEFAULT 0.00,
+  PRIMARY KEY (`export_document_item_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+
+/* ALTER TABLE `ospos_export_documents` ADD `status` tinyint(1) NOT NULL DEFAULT 4 AFTER `batch_number`; */
 
 
 

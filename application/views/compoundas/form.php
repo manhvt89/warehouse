@@ -207,7 +207,7 @@
 	<table id="compounda-order-info">
 		<tr>
 			<td rowspan="3">
-				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->compounda_order_id); ?>
+				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->compounda_order_no); ?>
 				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
 			</td>
 			<td><?=$this->lang->line('compounda_order_order_date')?>:</td>
@@ -326,7 +326,7 @@
 						
 						</td>
 						<td>
-						
+						<?=$item_a->note?>
 						</td>
 					</tr>
 					<?php endforeach; ?>

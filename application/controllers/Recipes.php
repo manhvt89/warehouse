@@ -561,8 +561,9 @@ class Recipes extends Secure_Controller
             }
 
 			$spreadsheet = $reader->load($_FILES['file_path']['tmp_name']);
-            $sheet_data  = $spreadsheet->getActiveSheet(0)->toArray();
-			$worksheet = $spreadsheet->getActiveSheet(0);
+            //$sheet_data  = $spreadsheet->getActiveSheet(0)->toArray();
+			$sheet_data  = $spreadsheet->getActiveSheet(0)->rangeToArray('A1:T100');
+			//$worksheet = $spreadsheet->getActiveSheet(0);
 			//var_dump($worksheet);
             
 			$highestColumn = 5;
@@ -608,7 +609,8 @@ class Recipes extends Secure_Controller
 				$_int_date_issued = strtotime('17-09-2022'); //dèault
 			}
 
-
+			$master_batch = str_replace('>','',$master_batch);
+			$master_batch = str_replace('<','',$master_batch);
 			$recipe_data = [
 				'name' => $name,
 				'master_batch'=>$master_batch,
@@ -623,10 +625,16 @@ class Recipes extends Secure_Controller
 			$item_bs = [];
 			$neader = '';
 			//$max = count($sheet_data); //1000
-			$max = 200;
+			$max = 101;
 			for($i = 14; $i < $max; $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
 				debug_log($i,'START FOR: ');
+				//echo $i;
+				if(!isset($sheet_data[$i]))
+				{
+					//echo $i;
+					break;
+				}
 				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
 				$data = $sheet_data[$i];
 				//var_dump($data);
@@ -659,14 +667,10 @@ class Recipes extends Secure_Controller
 				}
 				debug_log($neader,'$neader');
 				$_strTolerace = $data[9];
-				$_arrTolerace = explode($_strTolerace);
-				$_dTolerace = 0.000;
-				if(count($_arrTolerace) == 2)
-				{
-					$_dTolerace = $_arrTolerace[1];
-				} else {
-					$_dTolerace = 0.000;
-				}
+				//var_dump($_strTolerace);die();
+				//$_arrTolerace = explode($_strTolerace);
+				//$_dTolerace = 0.000;
+				
 				if($neader == 'A')
 				{
 					$item_a = [

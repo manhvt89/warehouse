@@ -1380,4 +1380,38 @@ function trimA($array)
     } 
     return $return;
 }
+/**
+ * Lọc ra những phần tử khớp với $patterns
+ */
+function filter_elements($elements, $field, $patterns) {
+    $filtered_elements = array();
+    foreach ($elements as $element) {
+        $group = $element[$field];
+        foreach ($patterns as $pattern) {
+            if (fnmatch($pattern, $group)) {
+                $filtered_elements[] = $element;
+                break;
+            }
+        }
+    }
+    return $filtered_elements;
+}
+/**
+ * Đầu vào các item cán trọn compound A của công thức.
+ * Đầu ra là mảng các item nguyên vật liệu chính nhập tại TK;
+ * $c = ['1.*','2.*'], tức là nhóm 1,2 là nguyên vật liệu nhập từ kho: 1.x và 2.x
+ * hoặc '1.2' khớp chính xác 1.2
+ */
+function get_nvlc($aItemAs,$field='group',$c=['1.*','2.*']){
+    if(empty($aItemAs))
+    {
+        return [];
+    }
+    if(!array_key_exists($field, $aItemAs[0]))
+    {
+        // Kiểm tra xem phần tử có tồn tại không key này không,
+        return [];
+    }
+    return filter_elements($aItemAs,$field,$c);
+}
 ?>

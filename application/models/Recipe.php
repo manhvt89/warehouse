@@ -560,5 +560,20 @@ class Recipe extends CI_Model
 		$this->db->order_by('item_group', 'asc');
 		return $this->db->get();
 	}
+	/**
+	 * Lấy công thức theo mác nguyên liệu
+	 * $type = "A" hoặc "B";
+	 */
+	public function get_item_by_ms($master_batch,$type='A')
+	{
+		$this->db->select('item_recipes.*,items.name, items.encode');
+		$this->db->from('item_recipes');
+		$this->db->join('items', 'items.item_id=item_recipes.item_id','left');
+		$this->db->join('recipes', 'recipes.recipe_id=item_recipes.recipe_id','left');
+		$this->db->where('master_batch', $master_batch);
+		$this->db->where('item_recipes.type', $type);
+		$this->db->order_by('item_group', 'asc');
+		return $this->db->get();
+	}
 }
 ?>

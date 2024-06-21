@@ -1559,11 +1559,16 @@ class Items extends Secure_Controller
 					$item_data['item_number'] = $item_number;
 					$invalidated = $this->Item->item_number_exists($item_number);
 				}
+				if($invalidated)
+				{
+					$failCodes[] = $i;
+					
+				} else {
 				$save_rs = $this->Item->save($item_data);
 				debug_log($item_data,'$item_data');
 				debug_log($invalidated,'$invalidated');
 				debug_log($save_rs,'$save_rs');
-				if(!$invalidated && $save_rs)
+				if($save_rs)
 				{
 					$items_taxes_data = [];
 					//tax 1
@@ -1650,13 +1655,13 @@ class Items extends Secure_Controller
 						$this->Inventory->insert($excel_data);
 					}
 					*/
+					}
+					else //insert or update item failure
+					{
+						$failCodes[] = $i;
+					}
+				
 				}
-						else //insert or update item failure
-						{
-							$failCodes[] = $i;
-						}
-				
-				
 			}
 			if(count($failCodes) > 0)
 			{

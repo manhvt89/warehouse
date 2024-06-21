@@ -142,5 +142,22 @@ $lang['compounda_order_status_receiving_material_comfirm'] = 'Đã nhận NVL';
 $lang['compounda_order_status_doing'] = 'Đang sản xuất';
 $lang['compounda_order_status_done'] = 'Hoàn thành';
 
+$lang['export_document_no'] = 'STT';
+$lang['export_document_weight'] = 'Trọng lượng';
+$lang['export_document_mix'] = 'Thành phần hỗn hợp';
+$lang['export_document_uom_name'] = 'Đơn vị tính';
+$lang['export_document_do_export_status'] = 'Xuất kho';
+$lang['export_document_do_export_btn'] = 'Xuất kho';
+$lang['export_document_waiting_export_status'] = 'Chờ xuất kho';
+$lang['export_document_waiting_confirm_status'] = 'Chờ xác nhận';
+$lang['export_document_do_confirmed_status'] = 'Đã xác nhận';
+$lang['export_document_do_confirm_btn'] = 'Xác nhận';
+$lang['export_document_ready_to_do_status'] = 'Sẵn sàng cán';
+$lang['export_document_doing_status'] = 'Đang cán';
+$lang['export_document_completed_status'] = 'Đã cán xong';
+$lang['export_document_ready_to_do_btn'] = "Bắt đầu cán";
+$lang['export_document_completed_btn'] = 'Hoàn thành cán';
+
+
 
 

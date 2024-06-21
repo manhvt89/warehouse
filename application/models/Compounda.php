@@ -164,6 +164,7 @@ class Compounda extends CI_Model
 			{
 				$item_obj->$field = '';
 			}
+			$item_obj->item_id = 0;
 			$item_obj->compounda_order_no = '';
 			$item_obj->compounda_order_uuid = '';
 			$item_obj->compounda_order_id = 0;
@@ -225,15 +226,64 @@ class Compounda extends CI_Model
 			//Insert Item_a
 			if(!empty($item_orders))
 			{
-				foreach($item_orders as $item)
+				foreach($item_orders as $key=>$value)
 				{
+				
+					$item = $value['item_order'];
+					if(empty($item))
+					{
+						$this->db->trans_rollback();
+						$this->db->trans_complete();
+						return FALSE;
+					}
 					$item['created_at'] = $time;
 					$item['compounda_order_id'] = $compounda_data['compounda_order_id'];
 					$this->db->insert('compounda_order_item', $item);
+					$compounda_order_item_id = $this->db->insert_id();
+
+					$export_data = $value['export_data'];
+					if(empty($export_data))
+					{
+						$this->db->trans_rollback();
+						$this->db->trans_complete();
+						return FALSE;
+					}
+					
+					foreach($export_data as $k=>$v)
+					{
+						$_aListItems = $v['list_items'];
+						if(empty($_aListItems))
+						{
+							$this->db->trans_rollback();
+							$this->db->trans_complete();
+							return FALSE;
+						}
+						unset($v['list_items']);
+						$v['created_at'] = $time;
+						$v['compounda_order_id'] = $compounda_data['compounda_order_id'];
+						$v['compounda_order_item_id'] = $compounda_order_item_id;
+						
+						$this->db->insert('export_documents', $v);
+						$_iExportDocumentId =  $this->db->insert_id();
+						foreach($_aListItems as $_k=>$_item)
+						{
+							$_item['export_document_id'] = $_iExportDocumentId;
+							$_aListItems[$_k] = $_item;
+						}
+						$this->db->insert_batch('export_document_items', $_aListItems);
+					}
+					
 				}	
 			}
 
-			
+			if ($this->db->trans_status() === FALSE) {
+				// Có lỗi xảy ra, rollback lại giao dịch
+				$this->db->trans_rollback();
+			} else {
+				// Không có lỗi, commit giao dịch
+				$this->db->trans_commit();
+			}
+
 			$this->db->trans_complete();
 
 			return $this->db->trans_status();
@@ -546,5 +596,175 @@ class Compounda extends CI_Model
 		$this->db->where('compounda_order_item_id', $order_item_id);
 		return $this->db->get()->result();
 	}
+	/**
+	 * Lấy các vật tư theo mẻ
+	 */
+
+	public function get_list_items_in_export_document($export_document_id)
+	{
+		$this->db->select('export_document_items.*, items.name, items.encode as item_encode');
+		$this->db->from('export_document_items');
+		$this->db->join('items', 'items.item_id=export_document_items.item_id','left');
+		$this->db->where('export_document_items.export_document_id', $export_document_id);
+		
+		return $this->db->get()->result();
+	}
+	/**
+	 * Lấy danh sách các phiếu xuất theo Batch (mẻ) theo  job trong lệnh sản xuất
+	 */
+	public function get_list_export_document_in_order_item($compounda_order_item_id)
+	{
+		$this->db->select('export_documents.*');
+		$this->db->from('export_documents');
+		$this->db->where('export_documents.compounda_order_item_id', $compounda_order_item_id);
+		
+		return $this->db->get()->result();
+	}
+
+
+
+
+	public function get_info_by_no($compounda_order_no)
+	{
+		$this->db->select('compounda_orders.*');
+		$this->db->from('compounda_orders');
+		
+		$this->db->where('compounda_order_no', $compounda_order_no);
+		
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			$item_obj = $query->row();
+
+			$_list_compound_as = $this->get_list_items_in_order($item_obj->compounda_order_id);
+
+			if(empty($_list_compound_as))
+			{
+				$item_obj->list_compound_a = [];
+
+			} else {
+				foreach($_list_compound_as as $key=>$value)
+				{
+					$value->list_tasks = $this->get_list_tasks_in_order_item($value->compounda_order_item_id);
+
+					if($value->quantity_batch > 0)
+					{
+						//$_aExport_documents = [];
+						
+						$_aExport_documents = $this->get_list_export_document_in_order_item($value->compounda_order_item_id);
+						if(empty($_aExport_documents))
+						{
+							$_aExport_documents = [];
+						} else {
+							foreach($_aExport_documents as $ex_key=>$ex_document)
+							{
+								$_aItems = $this->get_list_items_in_export_document($ex_document->export_document_id);
+								$ex_document->list_items = $_aItems;
+								$_aExport_documents[$ex_key] = $ex_document;
+							}
+							
+						}
+						
+						$value->export_documents = $_aExport_documents;
+					} else {
+						$value->export_documents = [];
+					}
+
+					$item_obj->list_compound_a[] = $value;
+				}
+			}
+
+			
+			return $item_obj;
+		}
+		else
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			$item_obj = new stdClass();
+
+			//Get all the fields from items table
+			foreach($this->db->list_fields('items') as $field)
+			{
+				$item_obj->$field = '';
+			}
+			$item_obj->item_id = 0;
+			$item_obj->compounda_order_no = '';
+			$item_obj->compounda_order_uuid = '';
+			$item_obj->compounda_order_id = 0;
+			$item_obj->created_at = 0;
+			$item_obj->creator_id = 0;
+			$item_obj->creator_name = '';
+			$item_obj->creator_account = '';
+			$item_obj->order_date  = 0;
+			$item_obj->use_date = 0;
+			$item_obj->completed_at = 0;
+			$item_obj->start_at = 0;
+			$item_obj->suppervisor_id = 0;
+			$item_obj->suppervisor_name = '';
+			$item_obj->suppervisor_account = '';
+			$item_obj->area_make_order = '';
+			$item_obj->status = 0;
+			$item_obj->list_compound_a = [];
+			return $item_obj;
+		}
+	}
+
+	public function get_info_export_document($export_document_uuid)
+	{
+		
+		$this->db->select('export_documents.*');
+		$this->db->from('export_documents');
+		if(strlen($export_document_uuid) > 20)
+		{
+			$this->db->where('export_documents.export_document_uuid', $export_document_uuid);
+		} else {
+			$this->db->where('export_documents.export_document_id', $export_document_uuid);
+		}
+		
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			$item_obj = $query->row();
+			return $item_obj;
+		}
+		 else {
+			$item_obj = null;
+			return $item_obj;
+		}
+	}
+
+	public function update_export_document($export_document)
+	{
+		$this->db->where('export_document_id',$export_document['export_document_id']);
+		return $this->db->update('export_documents', $export_document);	
+	}
+
+	public function do_export_document($export_document)
+	{
+		$export_document['status'] = 5;
+		return $this->update_export_document($export_document);	
+	}
+
+	public function do_confirm_document($export_document)
+	{
+		$export_document['status'] = 6;
+		return $this->update_export_document($export_document);	
+	}
+	public function do_start_document($export_document)
+	{
+		$export_document['status'] = 7;
+		return $this->update_export_document($export_document);
+	}
+	public function do_completed_document($export_document)
+	{
+		$export_document['status'] = 8;
+		return $this->update_export_document($export_document);
+	}
+
+
+		
+	
 }
 ?>

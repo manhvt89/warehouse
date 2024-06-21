@@ -16,24 +16,93 @@ class Compoundas extends Secure_Controller
 		$this->load->library('barcode_lib');
 	}
 	
-	public function index()
+	public function index($search='')
 	{
+		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
+		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
+		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
+		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
+		$data['is_worker'] = $this->Employee->has_grant($this->module_id.'_is_worker');
+		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
 
-		$data['table_headers'] = $this->xss_clean(get_compoundas_manage_table_headers());
+		$search = $this->input->get('search');
 
-		//$data['table_headers'] = $this->xss_clean(get_items_manage_table_headers());
+		if($data['is_inventory']){ //Ưu tiên quyền quản lý kho
+			//$person_id = $this->person_id;
+			//echo $search; die();
+			if($search == '')
+			{
+				$data['item_info'] = null;
+			} else {
+				$item_info = $this->Compounda->get_info_by_no($search);
+				
+				if($item_info->compounda_order_id != 0 )
+				{
+					foreach(get_object_vars($item_info) as $property => $value)
+					{
+						if(!is_object($value) && !is_array($value))
+						{
+							$item_info->$property = $this->xss_clean($value);
+						}
+					}
 
-		
-		$data['stock_location'] = $this->xss_clean($this->item_lib->get_item_location());
-		$data['stock_locations'] = $this->xss_clean($this->Stock_location->get_allowed_locations());
+					$data['item_info'] = $item_info;
+				} else {
+					$data['item_info'] = null;
+					$data['message'] = 'Chưa tìm thấy lệnh sx theo số lệnh: <b>' .$search.'</b>, hãy thử với lệnh khác';
+				}
+			}
 
-		// filters that will be loaded in the multiselect dropdown
-		$data['filters'] = array('empty_upc' => $this->lang->line('items_empty_upc_items'),
-			'low_inventory' => $this->lang->line('items_low_inventory_items'),
-			'is_deleted' => $this->lang->line('items_is_deleted'));
+			//var_dump($data);
+			$this->load->view('compoundas/detail', $data);
+			//$this->load->view('recipes/detail', $data);
 
-		$data['grant_id'] = $this->grant_id; //Phân quyền module 
-		$this->load->view('compoundas/manage', $data);
+		} 
+		else if($data['is_worker']){ // Tiếp theo Worker
+			if($search == '')
+			{
+				$data['item_info'] = null;
+			} else {
+				$item_info = $this->Compounda->get_info_by_no($search);
+				
+				if($item_info->compounda_order_id != 0 )
+				{
+					foreach(get_object_vars($item_info) as $property => $value)
+					{
+						if(!is_object($value) && !is_array($value))
+						{
+							$item_info->$property = $this->xss_clean($value);
+						}
+					}
+
+					$data['item_info'] = $item_info;
+				} else {
+					$data['item_info'] = null;
+					$data['message'] = 'Chưa tìm thấy lệnh sx theo số lệnh: <b>' .$search.'</b>, hãy thử với lệnh khác';
+				}
+			}
+
+			//var_dump($data);
+			$this->load->view('compoundas/detail', $data);
+		}
+		else {
+
+			$data['table_headers'] = $this->xss_clean(get_compoundas_manage_table_headers());
+
+			//$data['table_headers'] = $this->xss_clean(get_items_manage_table_headers());
+
+			
+			$data['stock_location'] = $this->xss_clean($this->item_lib->get_item_location());
+			$data['stock_locations'] = $this->xss_clean($this->Stock_location->get_allowed_locations());
+
+			// filters that will be loaded in the multiselect dropdown
+			$data['filters'] = array('empty_upc' => $this->lang->line('items_empty_upc_items'),
+				'low_inventory' => $this->lang->line('items_low_inventory_items'),
+				'is_deleted' => $this->lang->line('items_is_deleted'));
+
+			$data['grant_id'] = $this->grant_id; //Phân quyền module 
+			$this->load->view('compoundas/manage', $data);
+		}
 	}
 
 	/*
@@ -774,9 +843,11 @@ class Compoundas extends Secure_Controller
 			debug_log($compounda_data,'$compounda_data');
 			//var_dump($compounda_data);
 
-			$j = 13; // Bắt đầu đọc từ dòng thứ 14,
+			$_istart_index = 13; // Bắt đầu đọc từ dòng thứ 14,
 			$item_orders = [];
-			for($i = $j; $i < count($sheet_data); $i++) {
+			$export_data = [];
+			for($i = $_istart_index; $i < count($sheet_data); $i++) {
+				//echo $i;
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
 				//debug_log($sheet_data[$i],'$sheet_data[$i]');
 				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
@@ -785,10 +856,12 @@ class Compoundas extends Secure_Controller
 				//var_dump($data);
 				if(trim($data[0]) == "Tổng cộng:")
 				{
+					//echo $i;
 					break;
 				}
 				debug_log($sheet_data[$i],'$sheet_data[$i]');
 				$ms = trim($data[12]) != null ? trim($data[12]):'';
+				//$_item_orders = [];
 				$item_data = [
 					'ms'					=> trim($data[12]) != null ? trim($data[12]):'',
 					'quantity_batch'			=> is_numeric(str_replace(',','',$data[3])) == true ? (float) str_replace(',','',$data[3]):0,
@@ -798,24 +871,77 @@ class Compoundas extends Secure_Controller
 				
 				$_oItem = $this->Item->get_info_by_ms($ms);
 
-				
+				$_aItemAs = $this->Recipe->get_item_by_ms($ms,'A')->result_array();
 
+				//var_dump($_aItemAs);
+				//var_dump($_oItem);
+				
+				if(empty($_aItemAs))
+				{
+					$failCodes[] = $i . 'Chưa tồn tại công thức với MAC nguyên liệu này: '.$ms;
+					continue;
+				}
 				if($_oItem->item_id == 0) // Nếu không tìm thấy item với mác nguyên liệu
 				{
-					$failCodes[] = $i;
+					$failCodes[] = $i . 'Chưa tồn tại sản phẩm với mác nguyên liệu này: '. $ms;
 					continue;
 				} else {
 					$item_data['item_id'] = $_oItem->item_id;
 					$item_data['item_name'] = $_oItem->name;
-					$item_data['uom_code'] = $_oItem->inventory_uom_name;
+					$item_data['uom_code'] = $_oItem->inventory_uom_code;
 					$item_data['uom_name'] = $_oItem->inventory_uom_name;
 					$item_data['quantity_schedule'] = 75 * $item_data['quantity_batch'];
 					$item_data['created_at'] = time();
 
-					$item_orders[] = $item_data;
+					$item_orders[$i]['item_order'] = $item_data;
 				}
-			}
 
+				$_aNvlItems = get_nvlc($_aItemAs,'item_group',['1.*','2.*']);
+				//var_dump($_aNvlItems);
+				$_export_data = [];
+
+				if(!empty($_aNvlItems))
+				{
+					$_sCode = time();
+					for($j = 1; $j <= $item_data['quantity_batch']; $j++)
+					{
+						$_export_doc_data = [];
+						$_export_doc_data['ms'] = $ms;
+						$_export_doc_data['compounda_id'] = $_oItem->item_id;
+						$_export_doc_data['compounda_name'] = $_oItem->name;						
+						$_export_doc_data['creator_from_id'] = 0;
+						$_export_doc_data['creator_from_name'] = '';
+						$_export_doc_data['creator_to_id'] = '';
+						$_export_doc_data['creator_to_name'] = '';
+						
+						$_export_doc_data['completed_at'] = 0;
+						$_export_doc_data['status'] = 4;
+						$_export_doc_data['export_code'] = 'EXD'.$_sCode.$j;
+						$_export_doc_data['batch_number'] = $j;
+
+						foreach($_aNvlItems as $key=>$value)
+						{
+							$_export_item_data = [];
+							$_export_item_data['item_name']= $value['name'];
+							$_export_item_data['item_id'] = $value['item_id'];
+							$_export_item_data['uom_code'] = $value['uom_code'];
+							$_export_item_data['uom_name'] = $value['uom_name'];
+							$_export_item_data['encode'] = $value['encode'];
+							$_export_item_data['quantity'] = $value['weight'];
+
+							$_export_doc_data['list_items'][] = $_export_item_data; //mảng các bản ghi export_document_items
+						}
+						//$export_data[] = $_export_data[]
+						$_export_data[] = $_export_doc_data;
+						
+					}
+				}
+				
+				$item_orders[$i]['export_data'] = $_export_data;
+				
+			}
+			//var_dump($failCodes);
+			//var_dump($item_orders); die();
 			if(!empty($failCodes)){ // Nếu xuất hiện lỗi, không làm gì cả, hiển thị thông báo lỗi tại dòng nào;
 				$message = $this->lang->line('items_excel_import_partially_failed') . ' (' . count($failCodes) . '): ' . implode(', ', $failCodes);
 				echo json_encode(array('success' => FALSE, 'message' => $message));
@@ -870,6 +996,15 @@ class Compoundas extends Secure_Controller
 		return true;
 	}
 
+	public function is_worker()
+	{
+		/**
+		 * Xem được đã được mã hóa
+		 * Phân quyền dành cho cán bộ công nhân thực hiện
+		 **/
+		return true;
+	}
+
 	public function is_production_order()
 	{
 		/**
@@ -887,6 +1022,112 @@ class Compoundas extends Secure_Controller
 		 **/
 		return true;
 	}
+
+	public function detail($item_id=-1)
+	{
+		//$person_id = $this->person_id;
+		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
+		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
+		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
+		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
+		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
+
+		$data['item_tax_info'] = '';
+		$data['default_tax_1_rate'] = '';
+		$data['default_tax_2_rate'] = '';
+
+		$item_info = $this->Compounda->get_info($item_id);
+		foreach(get_object_vars($item_info) as $property => $value)
+		{
+			if(!is_object($value) && !is_array($value))
+			{
+				$item_info->$property = $this->xss_clean($value);
+			}
+		}
+
+		$data['item_info'] = $item_info;
+
+		//var_dump($data);
+		$this->load->view('compoundas/detail', $data);
+		//$this->load->view('recipes/detail', $data);
+	}
+
+	public function ajax_export_document()
+	{
+		$uuid = $this->input->post('uuid');
+		
+		
+		$_oDocument = $this->Compounda->get_info_export_document($uuid);
+		if($_oDocument != null)
+		{
+			$_aDocument = (array) $_oDocument;
+
+			$rs = $this->Compounda->do_export_document($_aDocument);
+			if($rs)
+			{
+				echo json_encode(array('success' => TRUE,'status'=>$this->lang->line('export_document_waiting_confirm_status') ,'message' => $this->lang->line('items_excel_import_success')));
+			} else {
+				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
+			}
+		} else {
+			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
+		}
+	}
+
+	public function ajax_confirm_document()
+	{
+		$uuid = $this->input->post('uuid');
+		
+		
+		$_oDocument = $this->Compounda->get_info_export_document($uuid);
+		if($_oDocument != null)
+		{
+			$_aDocument = (array) $_oDocument;
+
+			$rs = $this->Compounda->do_confirm_document($_aDocument);
+			if($rs)
+			{
+				echo json_encode(
+						array('success' => TRUE,
+								'status'=>$this->lang->line('export_document_do_confirmed_status'),
+								'text'=>$this->lang->line('export_document_ready_to_do_btn'),
+								'message' => $this->lang->line('items_excel_import_success')));
+			} else {
+				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
+			}
+		} else {
+			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
+		}
+	}
+
+	public function ajax_ready_document()
+	{
+		$uuid = $this->input->post('uuid');
+		
+		
+		$_oDocument = $this->Compounda->get_info_export_document($uuid);
+		if($_oDocument != null)
+		{
+			$_aDocument = (array) $_oDocument;
+
+			$rs = $this->Compounda->do_start_document($_aDocument);
+			if($rs)
+			{
+				echo json_encode(
+						array('success' => TRUE,
+								'status'=>$this->lang->line('export_document_doing_status'),
+								'text'=>$this->lang->line('export_document_completed_btn'),
+								'message' => $this->lang->line('items_excel_import_success')));
+			} else {
+				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
+			}
+		} else {
+			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
+		}
+	}
+
+
+	
 	
 
 }

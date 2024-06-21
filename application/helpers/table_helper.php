@@ -1490,7 +1490,8 @@ function get_compounda_data_row($item, $index)
 		'area_make_order'=>$item->area_make_order,
 		'start_at'=>$start_at,
 		'status'=>$status,
-		'view'=>$controller_name."/view/".$item->compounda_order_uuid
+		'view'=>$controller_name."/view/".$item->compounda_order_uuid,
+		'detail'=>$controller_name."/detail/".$item->compounda_order_uuid,
 		];
 	return $return;
 }

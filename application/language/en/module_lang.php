@@ -36,3 +36,4 @@ $lang['module_barcodes'] = "In Barcode";
 $lang['module_purchases'] = "Đơn đặt hàng";
 $lang['module_ctvs'] = "Cộng tác viên";
 $lang["module_ctvs_desc"] = "Quản lý cộng tác viên";
+$lang["module_compoundas"] = "Kế hoạch Compound";

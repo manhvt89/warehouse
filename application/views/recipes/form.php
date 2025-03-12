@@ -1,4 +1,33 @@
 <style type="text/css">
+	.approved {
+		position: relative;
+	}
+
+	.approved::before {
+		content: "ĐÃ PHÊ DUYỆT";
+		position: absolute;
+		top: 150px;
+		left: 90px;
+		transform: translate(-50%, -50%);
+		font-size: 50px;
+		color: rgba(200, 0, 0, 0.3);
+		font-weight: bold;
+		text-transform: uppercase;
+		pointer-events: none;
+		z-index: 10;
+		transform: rotate(-45deg);
+	}
+	.approved-footer {
+    position: absolute;
+    top: 120px;
+    right: 90px;
+    font-size: 18px;
+    color: rgba(200, 0, 0, 0.7);
+    font-weight: bold;
+    text-transform: uppercase;
+    pointer-events: none;
+    transform: rotate(-45deg);
+	}
 	#recipe_basic_info {
 		width : 100%;
 	}
@@ -154,6 +183,9 @@
 		.modal-footer{
 			border: 0px solid rgba(0,0,0,0.2);
 		}
+		.approved-footer, .approved {
+			opacity: 0.2; /* Giảm độ đậm khi in */
+		}
 	}
 
 	/*
@@ -185,6 +217,13 @@
     }
 	*/
 </style>
+<?php
+	$_sApproved = '';
+	if($isApproved == 1)
+	{
+		$_sApproved = 'approved';
+	}
+?>
 <div id="recipe_basic_info" width="100%">
 	<table id="recipe-header">
 		<tr>
@@ -203,7 +242,7 @@
 	<table id="recipe-title">
 		<tr>
 			<td>
-				<div class="recipe-title">
+				<div class="recipe-title <?=$_sApproved ?>">
 						<?=$this->lang->line('recipe_title')?>
 					</div>
 			</td>
@@ -376,6 +415,9 @@
 				<?php endif; ?>
 			</table>
 	<!-- #endregion -->
+	<?php if ($isApproved): ?>
+        <div class="approved-footer">ĐÃ PHÊ DUYỆT</div>
+    <?php endif; ?>
 </div>
 <script type="text/javascript">
 	//validation and submit handling

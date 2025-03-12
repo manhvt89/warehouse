@@ -710,7 +710,7 @@ class Compoundas extends Secure_Controller
 
 	
 	// Import kế hoạch cán luyện Compound A từ file excel
-	public function do_excel_import()
+	public function do_excel_import_bk()
 	{
 		$this->load->helper('file');
 
@@ -724,7 +724,8 @@ class Compoundas extends Secure_Controller
             'application/csv', 
             'application/excel', 
             'application/vnd.msexcel', 
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
 		if($_FILES['file_path']['error'] != UPLOAD_ERR_OK)
 		{
@@ -732,12 +733,22 @@ class Compoundas extends Secure_Controller
 		}
 		else
 		{
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$file_type = finfo_file($finfo, $_FILES['file_path']['tmp_name']);
+			finfo_close($finfo);
+			$extension = pathinfo($_FILES['file_path']['name'], PATHINFO_EXTENSION);
+		
+			if (!in_array($file_type, $file_mimes) || !in_array($extension, ['csv', 'xlsx', 'xls'])) {
+				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_nodata_wrongformat')));
+				exit();
+			}
 			//$array_file = explode('.', $_FILES['file_path']['name']);
             //$extension  = end($array_file);
            
             $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
             
 			try {
+				$reader->setReadDataOnly(true); // Xử lý tối ưu giảm bộ nhớ
 				$spreadsheet = $reader->load($_FILES['file_path']['tmp_name']);
 			} catch(Exception $e) { // File upload không đúng định dạng
 				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_nodata_wrongformat')));
@@ -888,7 +899,7 @@ class Compoundas extends Secure_Controller
 				}
 				if($_oItem->item_id == 0) // Nếu không tìm thấy item với mác nguyên liệu // Version tiếp theo có thể tự tạo Compound A;
 				{
-					$failCodes[] = $i . 'Chưa tồn tại Nguyên Liệu (Compound A) với mác nguyên liệu này: '. $ms;
+					$failCodes[] = "{$i} Chưa tồn tại Nguyên Liệu (Compound A) với mác nguyên liệu này: $ms";
 					continue;
 				} else {
 					$item_data['item_id'] = $_oItem->item_id;
@@ -903,6 +914,332 @@ class Compoundas extends Secure_Controller
 				$_aNvlItems = get_nvlc($_aItemAs,'item_group',['1.*','2.*']);
 				//var_dump($_aNvlItems);
 				$_export_data = [];
+
+				if(!empty($_aNvlItems))
+				{
+					$_sCode = time();
+					for($j = 1; $j <= $item_data['quantity_batch']; $j++)
+					{
+						$_export_doc_data = [];
+						$_export_doc_data['ms'] = $ms;
+						$_export_doc_data['compounda_id'] = $_oItem->item_id;
+						$_export_doc_data['compounda_name'] = $_oItem->name;						
+						$_export_doc_data['creator_from_id'] = 0;
+						$_export_doc_data['creator_from_name'] = '';
+						$_export_doc_data['creator_to_id'] = '';
+						$_export_doc_data['creator_to_name'] = '';
+						
+						$_export_doc_data['completed_at'] = 0;
+						$_export_doc_data['status'] = 4;
+						$_export_doc_data['export_code'] = 'EXD'.$_sCode.$j;
+						$_export_doc_data['batch_number'] = $j;
+
+						foreach($_aNvlItems as $key=>$value)
+						{
+							$_export_item_data = [];
+							$_export_item_data['item_name']= $value['name'];
+							$_export_item_data['item_id'] = $value['item_id'];
+							$_export_item_data['uom_code'] = $value['uom_code'];
+							$_export_item_data['uom_name'] = $value['uom_name'];
+							$_export_item_data['encode'] = $value['encode'];
+							$_export_item_data['quantity'] = $value['weight'];
+
+							$_export_doc_data['list_items'][] = $_export_item_data; //mảng các bản ghi export_document_items
+						}
+						//$export_data[] = $_export_data[]
+						$_export_data[] = $_export_doc_data;
+						
+					}
+				}
+				
+				$item_orders[$i]['export_data'] = $_export_data;
+				
+			}
+			//var_dump($failCodes);
+			//var_dump($item_orders); die();
+			if(!empty($failCodes)){ // Nếu xuất hiện lỗi, không làm gì cả, hiển thị thông báo lỗi tại dòng nào;
+				$message = $this->lang->line('items_excel_import_partially_failed') . ' (' . count($failCodes) . '): ' . implode(', ', $failCodes);
+				echo json_encode(array('success' => FALSE, 'message' => $message));
+
+			} else {
+	
+				$save_rs = $this->Compounda->save($compounda_data,$item_orders);
+
+				if($save_rs)
+				{
+					echo json_encode(array('success' => TRUE, 'message' => $this->lang->line('items_excel_import_success')));
+				} else {
+					echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
+				}
+			}
+		}
+	}
+
+	public function do_excel_import()
+	{
+		$this->load->helper('file');
+
+        /* Allowed MIME(s) File */
+        $file_mimes = array(
+            'application/octet-stream', 
+            'application/vnd.ms-excel', 
+            'application/x-csv', 
+            'text/x-csv', 
+            'text/csv', 
+            'application/csv', 
+            'application/excel', 
+            'application/vnd.msexcel', 
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        );
+		if($_FILES['file_path']['error'] != UPLOAD_ERR_OK)
+		{
+			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_failed')));
+		}
+		else
+		{
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$file_type = finfo_file($finfo, $_FILES['file_path']['tmp_name']);
+			finfo_close($finfo);
+			$extension = pathinfo($_FILES['file_path']['name'], PATHINFO_EXTENSION);
+		
+			if (!in_array($file_type, $file_mimes) || !in_array($extension, ['csv', 'xlsx', 'xls'])) {
+				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_nodata_wrongformat')));
+				exit();
+			}
+			//$array_file = explode('.', $_FILES['file_path']['name']);
+            //$extension  = end($array_file);
+           
+            $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+            
+			try {
+				$reader->setReadDataOnly(true); // Xử lý tối ưu giảm bộ nhớ
+				$spreadsheet = $reader->load($_FILES['file_path']['tmp_name']);
+			} catch(Exception $e) { // File upload không đúng định dạng
+				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_nodata_wrongformat')));
+                //$reader = new Csv();
+				exit();
+			}
+            $sheet_data  = $spreadsheet->getActiveSheet(0)->toArray(); // Lây sheet đầu tiên và chuyển thành mảng; rangeToArray('A1:T100');
+			//$worksheet = $spreadsheet->getActiveSheet(0); // Lấy sheet đầu tiên
+			//var_dump($sheet_data);
+            
+			$highestColumn = 5;
+			
+			$_iMaxColumn = 0;
+
+			foreach($sheet_data[0] as $item)
+			{
+				if($item != null)
+				{
+					$_iMaxColumn++;
+
+				} else {
+					break;
+				}
+			}
+			$failCodes = [];
+			// Bỏ qua dòng đầu tiên, start với i=1
+			debug_log(count($sheet_data),'count($sheet_data)');
+			$i = 5;
+			$data = $sheet_data[$i];
+			$creator_account = trim($data['10']); //
+			$executor_account=trim($data['13']); //
+			$approver_account=trim($data['11']); //
+
+			
+			$thangNam = date('mY'); // Lấy tháng và năm hiện tại
+			$maDinhDanh = "KHCL {$thangNam}";
+			$compounda_order_no = $maDinhDanh;
+
+			
+			//$area_make_order=$data['9']; //J
+			$area_make_order = 'KV CÁN LUYỆN';
+			
+
+			// Begin Thông tin người lập kế hoạch
+			//Get creator by account// sử dụng account upload file excel;
+			// Sau này cần thay thế bằng tài khoản đăng nhập;
+			$_oCreator = $this->Employee->get_info_by_account($creator_account);
+			$creator_id = 0; 
+			$creator_name = '';
+			if(empty($_oCreator))
+			{
+				$failCodes[] = 'TK người lập chưa tồn tại';
+			} else {
+				$creator_id = $_oCreator->person_id; //C
+				$creator_name = $_oCreator->last_name . ' '. $_oCreator->first_name; //C
+			} 
+
+			// End thông tin người lập kế hoạch
+
+
+			//Begin Thông tin người giám sát 
+			// Mặc định khi được phân quyền giám sát (kiểm tra) is_check (có quyền kiểm tra)
+			//Get Suppervisor by account
+			$_oExecutor = $this->Employee->get_info_by_account($executor_account);
+			$executor_id = 0; //C
+			$executor_name = ''; //C
+			if(empty($_oExecutor))
+			{
+				$failCodes[] = 'TK người phụ trách chưa tồn tại';
+			} else {
+				$executor_id = $_oExecutor->person_id;//C
+				$executor_name = $_oExecutor->last_name . ' '. $_oExecutor->first_name; //C;
+			}
+
+			$_oApprover = $this->Employee->get_info_by_account($approver_account);
+			$approver_id = 0; //C
+			$approver_name = ''; //C
+			if(empty($_oApprover))
+			{
+				$failCodes[] = 'TK người phụ phê duyệt không tồn tại';
+			} else {
+				$approver_id = $_oApprover->person_id;//C
+				$approver_name = $_oApprover->last_name . ' '. $_oApprover->first_name; //C;
+			}
+			// Thông tin người giám sát sẽ được cập nhật vào khi click "Đạt", chuyển sang trạng thái "Đã xem xét"
+			// End thông tin người giám sát;
+
+			// Thông tin về kế hoạch cán luyện
+
+			$compounda_data = [
+				'compounda_order_no'=>$compounda_order_no,
+				'creator_account'=>$creator_account,
+				'creator_id'=>$creator_id,
+				'creator_name'=>$creator_name,
+
+				'executor_id'=>$executor_id,
+				'executor_name'=>$executor_name,
+				'executor_account'=>$executor_account,
+				'approver_id'=>$approver_id,
+				'approver_name'=>$approver_name,
+				'approver_account'=>$approver_account,
+				'area_make_order'=>$area_make_order,
+				'status'=>4 //Đã chập nhận
+			];
+
+			debug_log($compounda_data,'$compounda_data');
+			//var_dump($compounda_data);
+
+			$_istart_index = 10; // Bắt đầu đọc từ dòng thứ 14, // Lấy chi tiết về kế hoạch
+			$item_orders = [];
+			for($i = $_istart_index; $i < count($sheet_data); $i++) {
+				//echo $i;
+				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
+				//debug_log($sheet_data[$i],'$sheet_data[$i]');
+				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
+				
+				$data = $sheet_data[$i];
+				//var_dump($data); die();
+				$_sTmp = explode(' ',$data[0] ?? '');
+				if(trim($_sTmp[0]) == "KHCL")
+				{
+					//echo $i;
+					break; // đến dòng này thì dừng
+				}
+				
+				debug_log($sheet_data[$i],'$sheet_data[$i]');
+				$ms =  trim($data[3] ?? '');
+				$item_code = trim($data[1] ?? '');
+				$order_number = trim($data[0] ?? '');
+				$quantity = is_numeric(str_replace(',','',$data[2])) == true ? (float) str_replace(',','',$data[2]):0;
+				$kl_phoi = is_numeric(str_replace(',','',$data[4])) == true ? (float) str_replace(',','',$data[4]):0;
+				$kl_su_dung = ($quantity*$kl_phoi)/1000; //Kg
+				
+				$kl_batch = is_numeric(str_replace(',','',$data[6])) == true ? (int) str_replace(',','',$data[6]):1;
+				$so_luong_batch = ceil($kl_su_dung/$kl_batch);
+				$quantity_schedule = $so_luong_batch * $kl_batch;
+
+				$phan_cong = trim($data[12] ?? '');
+				$phan_cong ??= trim($data[13] ?? '');
+
+				$kl_cuoi_ky = $quantity_schedule - $kl_su_dung;
+				$created_at = time();
+				$start_at = 0;
+				$end_at = 0;
+				$note = trim($data[14] ?? '');
+				$uom_code = '';
+				$uom_name = '';
+
+				
+				$item_code = preg_replace('/[<>]/', '', $item_code); // remove <>
+				$_oProduct = $this->Item->get_info_by_code($item_code);
+				$item_id = $_oProduct->item_id;
+				$item_name = $_oProduct->name;
+
+				if($_oProduct->item_id == 0) // lỗi
+				{
+					$failCodes[] = "Không tìm thấy Mã SP tại dòng $i";
+					continue;
+				} 
+
+				//$_item_orders = [];
+				$item_data = [
+					'ms' => $ms,
+					'item_code' => $item_code,
+					'order_number' =>$order_number,
+					'quantity' => $quantity,
+					'kl_phoi' => $kl_phoi,
+					'kl_su_dung'=>$kl_su_dung,
+					'kl_batch' => $kl_batch,
+					'so_luong_batch' =>$so_luong_batch,
+					'quantity_schedule' =>$quantity_schedule,
+					'phan_cong' => $phan_cong,
+					'kl_cuoi_ky' =>$kl_cuoi_ky,
+					'created_at' =>$created_at,
+					'start_at' => $start_at,
+					'end_at'=>$end_at,
+					'note' => $note,
+					'uom_code' => $uom_code,
+					'uom_name' =>$uom_name,
+					'item_id' => $item_id,
+					'item_name'=>$item_name
+				];
+				
+				$_oItem = $this->Item->get_info_by_ms($ms);
+
+				$_aItemAs = $this->Recipe->get_item_by_ms($ms,'A')->result_array(); // Nguyên liệu và Vật tư để cán luyện ra compound A này;
+				$_aItemBs = $this->Recipe->get_item_by_ms($ms,'B')->result_array(); // Nguyên liệu và Vật tư để cán luyện ra compound A này;
+				$_oRecipes = $this->Recipe->get_info_by_ms($ms); // Nguyên liệu và Vật tư để cán luyện ra compound A này;
+
+
+				//var_dump($_aItemAs);
+				//var_dump($_oItem);
+				
+				if(empty($_aItemAs))
+				{
+					$failCodes[] = $i . 'Chưa tồn tại công thức với MÁC nguyên liệu này: '.$ms;
+					continue;
+				}
+				if(empty($_aItemBs))
+				{
+					$failCodes[] = $i . 'Chưa tồn tại công thức với MÁC nguyên liệu này: '.$ms;
+					continue;
+				}
+				if($_oItem->item_id == 0) // Nếu không tìm thấy item với mác nguyên liệu // Version tiếp theo có thể tự tạo Compound A;
+				{
+					$failCodes[] = "{$i} Chưa tồn tại Nguyên Liệu (Compound A) với mác nguyên liệu này: $ms";
+					continue;
+				} 
+				if($_oRecipes->recipe_id == 0) // Nếu không tìm thấy item với mác nguyên liệu // Version tiếp theo có thể tự tạo Compound A;
+				{
+					$failCodes[] = "{$i} Chưa tồn tại Nguyên Liệu (Compound A) với mác nguyên liệu này: $ms";
+					continue;
+				}
+
+				$results = json_encode([
+					"A"=>$_aItemAs,
+					"B" => $_aItemBs,
+					"R" => (array) $_oRecipes
+				]);
+
+				// Chi tiết mẻ
+
+				
+				//var_dump($_aNvlItems);
+				$_qc_data = [];
+
 
 				if(!empty($_aNvlItems))
 				{

@@ -276,9 +276,7 @@ class Recipe extends CI_Model
 			}
 			
 			$this->db->trans_complete();
-
 			return $this->db->trans_status();
-			
 			
 		} else {
 
@@ -574,6 +572,38 @@ class Recipe extends CI_Model
 		$this->db->where('item_recipes.type', $type);
 		$this->db->order_by('item_group', 'asc');
 		return $this->db->get();
+	}
+
+	public function get_info_by_ms($ms)
+	{
+		$this->db->select('recipes.*');
+		$this->db->from('recipes');		
+		$this->db->where('master_batch', $ms);
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			$item_obj = new stdClass();
+
+			//Get all the fields from items table
+			foreach($this->db->list_fields('recipes') as $field)
+			{
+				$item_obj->$field = '';
+			}
+			$item_obj->date_issued = 0;
+			$item_obj->processing_time_a =0;
+			$item_obj->weight_a = 75.00;
+			$item_obj->processing_time_b =0;
+			$item_obj->weight_b = 25.50;
+			$item_obj->status = 0;
+			$item_obj->deleted = 0;
+			return $item_obj;
+		}
 	}
 }
 ?>

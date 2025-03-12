@@ -186,6 +186,8 @@ class Recipes extends Secure_Controller
 		$arrItem_bs = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'B')->result();
 		$data['arrItem_as'] = $arrItem_as;
 		$data['arrItem_bs'] = $arrItem_bs;
+		$data['isApproved'] = 1;
+		$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
 		//var_dump($data);
 		$this->load->view('recipes/form', $data);
 	}
@@ -544,7 +546,8 @@ class Recipes extends Secure_Controller
             'application/csv', 
             'application/excel', 
             'application/vnd.msexcel', 
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         );
 		if($_FILES['file_path']['error'] != UPLOAD_ERR_OK)
 		{
@@ -552,14 +555,24 @@ class Recipes extends Secure_Controller
 		}
 		else
 		{
-			$array_file = explode('.', $_FILES['file_path']['name']);
-            $extension  = end($array_file);
+
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$file_type = finfo_file($finfo, $_FILES['file_path']['tmp_name']);
+			finfo_close($finfo);
+			$extension = pathinfo($_FILES['file_path']['name'], PATHINFO_EXTENSION);
+		
+			if (!in_array($file_type, $file_mimes) || !in_array($extension, ['csv', 'xlsx', 'xls'])) {
+				echo json_encode(['success' => FALSE, 'message' => 'File không đúng định dạng']);
+				exit();
+			}
+
+			
             if('csv' == $extension) {
 		
             } else {
                 $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
             }
-
+			$reader->setReadDataOnly(true); // Xử lý tối ưu giảm bộ nhớ
 			$spreadsheet = $reader->load($_FILES['file_path']['tmp_name']);
             //$sheet_data  = $spreadsheet->getActiveSheet(0)->toArray();
 			$sheet_data  = $spreadsheet->getActiveSheet(0)->rangeToArray('A1:T100');
@@ -645,6 +658,7 @@ class Recipes extends Secure_Controller
 				debug_log($neader_machine,'$neader_machine');
 				if(strpos($neader_machine, "A/ Công đoạn máy nhào trộn") !== false)
 				{
+					
 					$recipe_data['kneader_a'] = "A/ Công đoạn máy nhào trộn";
 					$processing_time_a = explode(' ',$data[7]);
 					$weight_a = explode(' ',$data[10]);
@@ -672,7 +686,7 @@ class Recipes extends Secure_Controller
 				//$_dTolerace = 0.000;
 				
 				if($neader == 'A')
-				{
+				{ 
 					$item_a = [
 						'item_group'=>$data[0],
 						'item_mix'=>$data[2],
@@ -685,6 +699,7 @@ class Recipes extends Secure_Controller
 					];
 					$item_as[] = $item_a;
 				} else {
+					
 					$item_b = [
 						'item_group'=>$data[0],
 						'item_mix'=>$data[2],
@@ -701,6 +716,7 @@ class Recipes extends Secure_Controller
 
 				
 			}
+
 			array_pop($item_bs);
 			array_pop($item_as);
 			$recipe_data = trimA($recipe_data);

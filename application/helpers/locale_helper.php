@@ -1476,9 +1476,9 @@ if (!function_exists('form_dropdown_item')) {
         $extra['hidden'] ??= '';
 
         return "<div class='form-group form-group-sm {$extra['hidden']}'>"
-            . form_label($label, $name, ['class' => 'control-label col-xs-3'])
+            . form_label($label, $name, $attributes)
             . '<div class="col-xs-8">'
-            . form_dropdown($name, $options, $selected, $attributes)
+            . form_dropdown($name, $options, $selected, ['class'=>'form-control'])
             . '</div></div>';
     }
 }

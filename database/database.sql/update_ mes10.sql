@@ -263,71 +263,7 @@ CREATE TABLE `ospos_item_recipes` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
-DROP TABLE IF EXISTS `ospos_compounda_orders`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `ospos_compounda_orders` (
-  `compounda_order_id` int(10) NOT NULL AUTO_INCREMENT,
-  `compounda_order_uuid` varchar(36) NOT NULL DEFAULT uuid(),
-  `compounda_order_no` varchar(15) NOT NULL DEFAULT '',
-  `created_at` int(11) NOT NULL DEFAULT 0,
-  `creator_id` int(11) NOT NULL DEFAULT 0,
-  `creator_name` varchar(150) NOT NULL DEFAULT '',
-  `creator_account` varchar(50) NOT NULL DEFAULT '',
-  `order_date` int(11) NOT NULL DEFAULT 0,
-  `use_date` int(11) NOT NULL DEFAULT 0,
-  `completed_at` int(11) NOT NULL DEFAULT 0,
-  `start_at` int(11) NOT NULL DEFAULT 0,
-  `suppervisor_id` int(11) NOT NULL DEFAULT 0,
-  `suppervisor_name` varchar(150) NOT NULL DEFAULT '',
-  `suppervisor_account` varchar(50) NOT NULL DEFAULT '',
-  `area_make_order` varchar(50) DEFAULT NULL, 
-  `status` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`compounda_order_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
-
-
-DROP TABLE IF EXISTS `ospos_compounda_order_item`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `ospos_compounda_order_item` (
-  `compounda_order_item_id` int(10) NOT NULL AUTO_INCREMENT,
-  `compounda_order_item_uuid` varchar(36) NOT NULL DEFAULT uuid(),
-  `compounda_order_id` int(11) NOT NULL DEFAULT 0,
-  `item_id` int(11) NOT NULL DEFAULT 0,
-  `item_name` varchar(150) NOT NULL DEFAULT '',
-  `uom_code` varchar(10) NOT NULL DEFAULT '',
-  `uom_name` varchar(10) NOT NULL DEFAULT '',
-  `ms` varchar(50) DEFAULT '', 
-  `quantity_batch` decimal(15,3) NOT NULL DEFAULT 0.00,
-  `quantity_schedule` decimal(15,3) NOT NULL DEFAULT 0.00,
-  `quantity_use` decimal(15,3) NOT NULL DEFAULT 0.00,
-  `quantity_completed` decimal(15,3) NOT NULL DEFAULT 0.00,
-  `start_at` int(11) NOT NULL DEFAULT 0,
-  `created_at` int(11) NOT NULL DEFAULT 0,
-  `note` varchar(150) NOT NULL DEFAULT '',
-  PRIMARY KEY (`compounda_order_item_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
-DROP TABLE IF EXISTS `ospos_compounda_order_item_completed`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `ospos_compounda_order_item_completed` (
-  `compounda_order_item_completed_id` int(10) NOT NULL AUTO_INCREMENT,
-  `compounda_order_item_completed_uuid` varchar(36) NOT NULL DEFAULT uuid(),
-  `compounda_order_item_id` int(11) NOT NULL DEFAULT 0,
-  `created_at` int(11) NOT NULL DEFAULT 0,
-  `item_name` varchar(150) NOT NULL DEFAULT '',
-  `ms` varchar(50) NOT NULL DEFAULT '',
-  `uom_code` varchar(10) NOT NULL DEFAULT '',
-  `uom_name` varchar(10) NOT NULL DEFAULT '',
-  `creator_id` int(11) NOT NULL DEFAULT 0,
-  `creator_name` varchar(150) NOT NULL DEFAULT '',
-  `quantity_completed` decimal(15,3) NOT NULL DEFAULT 0.00,
-  `completed_at` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`compounda_order_item_completed_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
 DROP TABLE IF EXISTS `ospos_export_documents`;
@@ -514,6 +450,115 @@ ADD COLUMN `qcb_so_luong` int(11) DEFAULT 0,
 ADD COLUMN `qcb_tl_thung` VARCHAR(50) DEFAULT '',
 ADD COLUMN `san_luong_dong_goi` int(11) DEFAULT 0;
 
+
+DROP TABLE IF EXISTS `ospos_compounda_orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_compounda_orders` (
+  `compounda_order_id` int(10) NOT NULL AUTO_INCREMENT,
+  `compounda_order_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `compounda_order_no` varchar(15) NOT NULL DEFAULT '',
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `creator_id` int(11) NOT NULL DEFAULT 0,
+  `creator_name` varchar(150) NOT NULL DEFAULT '',
+  `creator_account` varchar(50) NOT NULL DEFAULT '',
+
+  `updated_date` int(11) NOT NULL DEFAULT 0,
+  `executor_id` int(11) NOT NULL DEFAULT 0,
+  `executor_name` varchar(150) NOT NULL DEFAULT '',
+  `executor_account` varchar(50) NOT NULL DEFAULT '',
+
+  `approver_id` int(11) NOT NULL DEFAULT 0,
+  `approver_name` varchar(150) NOT NULL DEFAULT '',
+  `approver_account` varchar(50) NOT NULL DEFAULT '',
+  
+  `area_make_order` varchar(50) DEFAULT NULL, 
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`compounda_order_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+
+
+DROP TABLE IF EXISTS `ospos_compounda_order_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_compounda_order_item` (
+  `compounda_order_item_id` int(10) NOT NULL AUTO_INCREMENT,
+  `compounda_order_item_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `compounda_order_id` int(11) NOT NULL DEFAULT 0,
+  `item_id` int(11) NOT NULL DEFAULT 0,
+  `item_name` varchar(150) NOT NULL DEFAULT '',
+  `uom_code` varchar(10) NOT NULL DEFAULT '',
+  `uom_name` varchar(10) NOT NULL DEFAULT '',
+  `ms` varchar(50) DEFAULT '', 
+  `order_number` varchar(50) DEFAULT '', 
+  `item_code` varchar(50) DEFAULT '', 
+
+  `quantity` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `kl_phoi` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `kl_batch` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `start_at` int(11) NOT NULL DEFAULT 0,
+  `end_at` int(11) NOT NULL DEFAULT 0,
+  `phan_cong` varchar(5) DEFAULT '08h',
+  `kl_su_dung` decimal(15,3) NOT NULL DEFAULT 0.00,
+  `kl_cuoi_ky` decimal(15,3) NOT NULL DEFAULT 0.00,
+
+  `so_luong_batch` int(5) NOT NULL DEFAULT 1,
+
+  `quantity_schedule` decimal(15,3) NOT NULL DEFAULT 0.00,
+  
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `note` varchar(255) DEFAULT '',
+
+  PRIMARY KEY (`compounda_order_item_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+DROP TABLE IF EXISTS `ospos_compounda_order_item_completed`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_compounda_order_item_completed` (
+  `compounda_order_item_completed_id` int(10) NOT NULL AUTO_INCREMENT,
+  `compounda_order_item_completed_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `compounda_order_item_id` int(11) NOT NULL DEFAULT 0,
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `ms` varchar(50) NOT NULL DEFAULT '',
+  `item_name` varchar(150) NOT NULL DEFAULT '',
+  `uom_code` varchar(10) NOT NULL DEFAULT '',
+  `uom_name` varchar(10) NOT NULL DEFAULT '',
+  `updated_at` int(11) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+
+  `creator_id` int(11) NOT NULL DEFAULT 0,
+  `creator_name` varchar(150) NOT NULL DEFAULT '',
+  `completed_at` int(11) NOT NULL DEFAULT 0,
+  `started_at` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`compounda_order_item_completed_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+
+DROP TABLE IF EXISTS `ospos_qc_cpa_documents`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_qc_cpa_documents` (
+  `qc_cpa_document_id` int(10) NOT NULL AUTO_INCREMENT,
+  `qc_cpa_document_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+  `qc_cpa_code` varchar(50) NOT NULL DEFAULT '',
+  
+  `compounda_order_item_completed_id` int(11) NOT NULL DEFAULT 0,
+  `compounda_order_id` int(11) NOT NULL DEFAULT 0,
+  `compounda_order_item_id` int(11) NOT NULL DEFAULT 0,
+  
+  `created_at` int(11) NOT NULL DEFAULT 0,
+  `ms` varchar(50) NOT NULL DEFAULT '',
+  `qc_id` int(11) NOT NULL DEFAULT 0,
+  `qc_name` varchar(150) NOT NULL DEFAULT '',
+  `completed_at` int(11) NOT NULL DEFAULT 0,
+  `started_at` int(11) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `results` text NOT NULL DEFAULT '',
+  
+  PRIMARY KEY (`qc_cpa_document_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 
 

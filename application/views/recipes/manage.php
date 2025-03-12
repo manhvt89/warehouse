@@ -129,7 +129,7 @@ function openPaymentPopup(e, value, row, index) {
         <span class="glyphicon glyphicon-import">&nbsp</span><?php echo $this->lang->line('common_import_excel'); ?>
     </button>
     <?php } ?>
-    <?php if ($this->Employee->has_grant($controller_name.'_view')) { ?>
+    <?php if ($this->Employee->has_grant($controller_name.'_viewX')) { ?>
     <button class='btn btn-info btn-sm pull-right modal-dlg' data-btn-new='<?php echo $this->lang->line('common_new') ?>' data-btn-submit='<?php echo $this->lang->line('common_submit') ?>' data-href='<?php echo site_url($controller_name . "/view"); ?>'
             title='<?php echo $this->lang->line($controller_name . '_new'); ?>'>
         <span class="glyphicon glyphicon-tag">&nbsp</span><?php echo $this->lang->line($controller_name . '_new'); ?>

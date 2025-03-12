@@ -187,6 +187,7 @@ $lang['items_san_luong_dong_goi'] = "Sản lượng đóng gói";
 $lang['items_is_robot'] = "Có dùng Rôbot";
 $lang['items_customer_code'] = "Mã khách hàng";
 $lang['items_customer_name'] = "Tên khách hàng";
+$lang['items_code'] = "Mã sản phẩm";
 
 
 

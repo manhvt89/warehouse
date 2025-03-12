@@ -78,6 +78,7 @@
 					echo form_input_item_before('item_number',$item_info->item_number, 'glyphicon glyphicon-barcode',['class'=>'required']);
 
 					echo form_input_item('name',$item_info->name,true,['class'=>'required']); 
+					echo form_input_item_before('code',$item_info->code, 'glyphicon glyphicon-id',['class'=>'']);
 
 					echo form_input_item_before('customer_code',$item_info->customer_code, 'glyphicon glyphicon-user',['class'=>'']);
 

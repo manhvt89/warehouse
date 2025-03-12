@@ -712,6 +712,54 @@ class Item extends CI_Model
 		$item_obj->inventory_weigth_per_unit       = 1.00;
 		$item_obj->uom_group_id                    = 0;
 		return $item_obj;
-	} 
+	}
+	
+	public function exists_by_code($code,$ignore_deleted = FALSE, $deleted = FALSE)
+	{
+		$this->load->helper('locale_helper');
+		$this->db->from('items');
+		$this->db->where('code', $code);
+		if ($ignore_deleted == FALSE)
+		{
+			$this->db->where('deleted', $deleted);
+		}
+		
+		$query = $this->db->get();
+		debug_log($query->num_rows(),'test0');
+		if($query->num_rows() > 0)
+		{
+			$row = $query->row();
+			debug_log($row,'row');
+			return $row->item_id;
+		}
+		return 0;
+	}
+
+	public function get_info_by_code($code='',$type = 'SP')
+	{
+		if($code == '')
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			return $this->get_object();
+		}
+			
+		$this->db->select('items.*');
+		$this->db->select('suppliers.company_name');
+		$this->db->from('items');
+		$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
+		
+		$this->db->where('items.code', $code);
+		$this->db->where('items.type', $type);
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			return $query->row();
+		}
+		else
+		{
+			return $this->get_object();
+		}
+	}
 }
 ?>

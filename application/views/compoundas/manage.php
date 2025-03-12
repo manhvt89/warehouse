@@ -13,18 +13,37 @@
             visibility: visible;
         }
         #recipe_basic_info {
-            display: block;
-            float: left;
-            font-size: 10px;
-            width: 96%;
-            margin: 10px;
+            /*position: absolute;
+            left: 0;
+            top: 0;
+            */
+            width: 210mm;
+            height: 297mm;
+
+            padding: 10mm;
+            box-sizing: border-box;
+            page-break-after: always;
         }
-    }
+
+        #printableArea, #printableArea * {
+            visibility: visible;
+        }
+        #printableArea {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 210mm;
+            height: 297mm;
+            padding: 10mm;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+}
 </style>
 <script type="text/javascript">
 $(document).ready(function()
 {
-   
+
     <?php if ($this->Employee->has_grant($controller_name.'_generate_barcodes')) {?>
     $('#generate_barcodes').click(function()
     {
@@ -42,7 +61,7 @@ $(document).ready(function()
         );
     });
     <?php }?>
-	
+
 	// when any filter is clicked and the dropdown window is closed
 	$('#filters').on('hidden.bs.select', function(e)
 	{
@@ -97,6 +116,10 @@ $(document).ready(function()
 				distanceFromCursor: { top:10, left:-210 }
 			})
         }
+    });
+
+    $('#PrintBtn').click(function() {
+        window.print();
     });
 });
 
@@ -157,18 +180,18 @@ function openPaymentPopup(e, value, row, index) {
         <button id="add_barcodes" class="btn btn-default btn-sm print_hide" data-href='<?php echo site_url($controller_name."/add_barcodes"); ?>' title='<?php echo $this->lang->line('items_generate_barcodes');?>'>
             <span class="glyphicon glyphicon-barcode">&nbsp</span><?php echo 'Thêm SP Tạo barocde'; ?>
         </button>
-    <?php } ?>    
+    <?php } ?>
         <?php echo form_input(array('name'=>'daterangepicker', 'class'=>'form-control input-sm', 'id'=>'daterangepicker')); ?>
         <?php //echo form_multiselect('filters[]', $filters, '', array('id'=>'filters', 'class'=>'selectpicker show-menu-arrow', 'data-none-selected-text'=>$this->lang->line('common_none_selected_text'), 'data-selected-text-format'=>'count > 1', 'data-style'=>'btn-default btn-sm', 'data-width'=>'fit')); ?>
     </div>
 </div>
 
 <div id="table_holder">
-    <table 
-        id="table" 
-        data-sort-order="desc" 
-        data-sort-name="compounda_order_no" 
-        data-search="true" 
+    <table
+        id="table"
+        data-sort-order="desc"
+        data-sort-name="compounda_order_no"
+        data-search="true"
         data-export-types="['excel']">
     </table>
 </div>

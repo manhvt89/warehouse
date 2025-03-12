@@ -2,244 +2,171 @@
 
 <ul id="error_message_box" class="error_message_box"></ul>
 
-<?php echo form_open('items/save/'.$item_info->item_id, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
+<?php echo form_open('items/save/'.$item_info->item_uuid, array('id'=>'item_form', 'enctype'=>'multipart/form-data', 'class'=>'form-horizontal')); ?>
 	<fieldset id="item_basic_info">
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_item_number'), 'item_number', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<div class="input-group">
-					<span class="input-group-addon input-sm"><span class="glyphicon glyphicon-barcode"></span></span>
-					<?php echo form_input(array(
-							'name'=>'item_number',
-							'id'=>'item_number',
-							'class'=>'form-control input-sm',
-							'value'=>$item_info->item_number)
-							);?>
-				</div>
-			</div>
-		</div>
+		
+		<?php 
+			/** Chuẩn bị dữ liệu để hiện thị Hiển thị các thuộc tính của NVL, Vật tư được mã hóa trong công thức*/ 
+			$_aVTFrame = [
+						'dpc_name'=>isset($item_info->dpc_name) ? $item_info->dpc_name : "",
+						'encode'=>$item_info->encode ?? "",
+						'group'=>$item_info->group ?? "",
+						'group_category'=>$item_info->group_category ?? "",
+						'cas_no'=>$item_info->cas_no ?? "",
+						'country'=>isset($item_info->country) ? $item_info->country : "",
+						'brand'=>$item_info->brand ?? "",
+						'manufactory'=>$item_info->manufactory ?? "",
+							];  
+		
+			$input_data = [];
+			switch ($item_info->type) {
+				case 'VT':
+					echo form_input_item_before('item_number',$item_info->category, 'glyphicon glyphicon-barcode',['class'=>'required']);
 
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_name'), 'name', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<?php echo form_input(array(
-						'name'=>'name',
-						'id'=>'name',
-						'class'=>'form-control input-sm',
-						'value'=>$item_info->name)
-						);?>
-			</div>
-		</div>
+					echo form_input_item('name',$item_info->name,true,['class'=>'required']); 
 
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_category'), 'category', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<div class="input-group">
-					<span class="input-group-addon input-sm"><span class="glyphicon glyphicon-tag"></span></span>
-					<?php echo form_input(array(
-							'name'=>'category',
-							'id'=>'category',
-							'class'=>'form-control input-sm',
-							'value'=>$item_info->category)
-							);?>
-				</div>
-			</div>
-		</div>
+					echo form_input_item_before('category',$item_info->category, 'glyphicon glyphicon-tag',['class'=>'required']);
+					
+				
+					echo form_dropdown_item(
+						'supplier_id',      // Tên dropdown
+						$suppliers,         // Danh sách options
+						$selected_supplier, // Giá trị được chọn
+						$this->lang->line('items_supplier') // Nhãn hiển thị
+					);
+					if($has_grant):
+				
+						echo form_input_item_price('cost_price',$item_info->cost_price,['class'=>'required']);
+					endif; 
+					
+					echo form_input_item_price('unit_price',$item_info->unit_price,['class'=>'required']);
+					echo form_input_item_tax($item_tax_info,0);
+					echo form_input_item_tax($item_tax_info,1);
 
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_supplier'), 'supplier', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<?php echo form_dropdown('supplier_id', $suppliers, $selected_supplier, array('class'=>'form-control')); ?>
-			</div>
-		</div>
-		<?php if($has_grant): ?>
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_cost_price'), 'cost_price', array('class'=>'required control-label col-xs-3')); ?>
-			<div class="col-xs-4">
-				<div class="input-group input-group-sm">
-					<?php if (!currency_side()): ?>
-						<span class="input-group-addon input-sm"><b><?php echo $this->config->item('currency_symbol'); ?></b></span>
-					<?php endif; ?>
-					<?php echo form_input(array(
-							'name'=>'cost_price',
-							'id'=>'cost_price',
-							'class'=>'form-control input-sm',
-							'value'=>number_format($item_info->cost_price,0,',','.'))
-							);?>
-					<?php if (currency_side()): ?>
-						<span class="input-group-addon input-sm"><b><?php echo $this->config->item('currency_symbol'); ?></b></span>
-					<?php endif; ?>
-				</div>
-			</div>
-		</div>
-		<?php endif; ?>
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_unit_price'), 'unit_price', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<div class="input-group input-group-sm">
-					<?php if (!currency_side()): ?>
-						<span class="input-group-addon input-sm"><b><?php echo $this->config->item('currency_symbol'); ?></b></span>
-					<?php endif; ?>
-					<?php echo form_input(array(
-							'name'=>'unit_price',
-							'id'=>'unit_price',
-							'class'=>'form-control input-sm',
-							'value'=>number_format($item_info->unit_price,0,',','.'))
-							);?>
-					<?php if (currency_side()): ?>
-						<span class="input-group-addon input-sm"><b><?php echo $this->config->item('currency_symbol'); ?></b></span>
-					<?php endif; ?>
-				</div>
-			</div>
-		</div>
+					echo form_input_locations($stock_locations,['class'=>'required hidden','hidden'=>'hidden']);
 
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_tax_1'), 'tax_percent_1', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'tax_names[]',
-						'id'=>'tax_name_1',
-						'class'=>'form-control input-sm',
-						'value'=>isset($item_tax_info[0]['name']) ? $item_tax_info[0]['name'] : $this->config->item('default_tax_1_name'))
-						);?>
-			</div>
-			<div class="col-xs-4">
-				<div class="input-group input-group-sm">
-					<?php echo form_input(array(
-							'name'=>'tax_percents[]',
-							'id'=>'tax_percent_name_1',
-							'class'=>'form-control input-sm',
-							'value'=>isset($item_tax_info[0]['percent']) ? to_tax_decimals($item_tax_info[0]['percent']) : to_tax_decimals($default_tax_1_rate))
-							);?>
-					<span class="input-group-addon input-sm"><b>%</b></span>
-				</div>
-			</div>
-		</div>
-
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_tax_2'), 'tax_percent_2', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'tax_names[]',
-						'id'=>'tax_name_2',
-						'class'=>'form-control input-sm',
-						'value'=>isset($item_tax_info[1]['name']) ? $item_tax_info[1]['name'] : $this->config->item('default_tax_2_name'))
-						);?>
-			</div>
-			<div class="col-xs-4">
-				<div class="input-group input-group-sm">
-					<?php echo form_input(array(
-							'name'=>'tax_percents[]',
-							'class'=>'form-control input-sm',
-							'id'=>'tax_percent_name_2',
-							'value'=>isset($item_tax_info[1]['percent']) ? to_tax_decimals($item_tax_info[1]['percent']) : to_tax_decimals($default_tax_2_rate))
-							);?>
-					<span class="input-group-addon input-sm"><b>%</b></span>
-				</div>
-			</div>
-		</div>
-
-		<?php
-		foreach($stock_locations as $key=>$location_detail)
-		{
-		?>
-			<div class="form-group form-group-sm">
-				<?php echo form_label($this->lang->line('items_quantity').' '.$location_detail['location_name'], 'quantity_' . $key, array('class'=>'required hidden control-label col-xs-3')); ?>
-				<div class='col-xs-4'>
-					<?php echo form_input(array(
-							'name'=>'quantity_' . $key,
-							'id'=>'quantity_' . $key,
-							'class'=>'required quantity form-control hidden',
-							'value'=>isset($item_info->item_id) ? to_quantity_decimals($location_detail['quantity']) : to_quantity_decimals(0))
-							);?>
-					</div>
-			</div>
-		<?php
-		}
-		?>
-
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_receiving_quantity'), 'receiving_quantity', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'receiving_quantity',
-						'id'=>'receiving_quantity',
-						'class'=>'required form-control input-sm',
-						'value'=>isset($item_info->item_id) ? to_quantity_decimals($item_info->receiving_quantity) : to_quantity_decimals(0))
-						);?>
-			</div>
-		</div>
-
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_reorder_level'), 'reorder_level', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'reorder_level',
-						'id'=>'reorder_level',
-						'class'=>'form-control input-sm',
-						'value'=>isset($item_info->item_id) ? to_quantity_decimals($item_info->reorder_level) : to_quantity_decimals(0))
-						);?>
-			</div>
-		</div>
-
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_standard_amount_level'), 'standard_amount_level', array('class'=>'required control-label col-xs-3')); ?>
-			<div class='col-xs-4'>
-				<?php echo form_input(array(
-						'name'=>'standard_amount',
-						'id'=>'standard_amount',
-						'class'=>'form-control input-sm',
-						'value'=>isset($item_info->standard_amount) ? to_quantity_decimals($item_info->standard_amount) : to_quantity_decimals(0))
-				);?>
-			</div>
-		</div>
-
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_description'), 'description', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-8'>
-				<?php echo form_textarea(array(
+				
+					echo form_input_item('receiving_quantity',to_quantity_decimals($item_info->receiving_quantity) ?? 0,true,['class'=>'required']);
+					echo form_input_item('reorder_level', to_quantity_decimals($item_info->reorder_level) ?? 0,true,['class'=>'required']);
+					// Hiển thị
+					echo form_input_item(
+						'standard_amount',
+						isset($item_info->standard_amount) ? to_quantity_decimals($item_info->standard_amount) : to_quantity_decimals(0),
+						true,
+						['class'=>'required']
+					);
+					// Hiển thị description
+					echo form_textarea_item([
 						'name'=>'description',
 						'id'=>'description',
 						'class'=>'form-control input-sm',
-						'value'=>$item_info->description)
-						);?>
-			</div>
-		</div>
-		<div class="form-group form-group-sm">
-			<?php echo form_label($this->lang->line('items_is_deleted'), 'is_deleted', array('class'=>'control-label col-xs-3')); ?>
-			<div class='col-xs-1'>
-				<?php echo form_checkbox(array(
-						'name'=>'is_deleted',
-						'id'=>'is_deleted',
-						'value'=>1,
-						'checked'=>($item_info->deleted) ? 1 : 0)
-						);?>
-			</div>
-		</div>
+						'value'=>$item_info->description
+					],$this->lang->line('items_description'));
+					
+					$_aVTFrame = [
+								'normal_name'=>isset($item_info->normal_name) ? $item_info->normal_name : "",
+								'short_name'=> isset($item_info->short_name) ? $item_info->short_name : "",
+								
+									];  
 
-		<?php
-		for ($i = 1; $i <= 10; ++$i)
-		{
-		?>
-			<?php
-			if($this->config->item('custom'.$i.'_name') != null)
-			{
-				$item_arr = (array)$item_info;
-			?>
-				<div class="form-group form-group-sm">
-					<?php echo form_label($this->config->item('custom'.$i.'_name'), 'custom'.$i, array('class'=>'control-label col-xs-3')); ?>
-					<div class='col-xs-8'>
-						<?php echo form_input(array(
-								'name'=>'custom'.$i,
-								'id'=>'custom'.$i,
-								'class'=>'form-control input-sm',
-								'value'=>$item_arr['custom'.$i])
-								);?>
-					</div>
-				</div>
-		<?php
+					/** Hiển thị các thuộc tính của NVL, Vật tư được mã hóa trong công thức*/ 
+					echo form_input_item($_aVTFrame); 
+					$input_data = $_aVTFrame; /** Hiển thị các thuộc tính của NVL, Vật tư được mã hóa trong công thức*/
+					echo form_input_item($input_data);
+					break;
+				case 'SP':
+					echo form_input_item_before('item_number',$item_info->item_number, 'glyphicon glyphicon-barcode',['class'=>'required']);
+
+					echo form_input_item('name',$item_info->name,true,['class'=>'required']); 
+
+					echo form_input_item_before('customer_code',$item_info->customer_code, 'glyphicon glyphicon-user',['class'=>'']);
+
+					echo form_input_item_before('category',$item_info->category, 'glyphicon glyphicon-tag',['class'=>'required']);
+					
+					echo form_input_locations($stock_locations,['class'=>'required hidden','hidden'=>'hidden']);
+					
+					
+					echo form_input_item_tax($item_tax_info,0,['class'=>'required hidden','hidden'=>'hidden']);
+					echo form_input_item_tax($item_tax_info,1, ['class'=>'required hidden','hidden'=>'hidden']);
+					//echo form_input_item_tax($item_tax_info,0);
+					//echo form_input_item_tax($item_tax_info,1);
+					
+					// Hiển thị description
+					echo form_textarea_item([
+						'name'=>'description',
+						'id'=>'description',
+						'class'=>'form-control input-sm',
+						'value'=>$item_info->description
+					],$this->lang->line('items_description'));
+					
+					
+				
+					$_aVTFrame = [
+								'normal_name'=>isset($item_info->normal_name) ? $item_info->normal_name : "",
+								'short_name'=> isset($item_info->short_name) ? $item_info->short_name : "",
+								'machine_code' => $item_info->machine_code ?? "",
+								'so_sp_tren_khuan' => $item_info->so_sp_tren_khuan ?? "",
+								'tg_cu' => $item_info->tg_cu ?? "",
+								'tg_luu_hoa' => $item_info->tg_luu_hoa ?? "",
+								'tg_thao_tac' => $item_info->tg_thao_tac ?? "",
+								'tg_thay_khuan' => $item_info->tg_thay_khuan ?? "",
+								'tl_tho' => $item_info->tl_tho ?? "",
+								'tl_tinh' => $item_info->tl_tinh ?? "",
+								'part_no' => $item_info->part_no ?? "",
+								
+									];  
+
+					/** Hiển thị các thuộc tính của NVL, Vật tư được mã hóa trong công thức*/ 
+					echo form_input_item($_aVTFrame); 
+					$input_data = [
+						'nl_ten_thuong_mai'=>isset($item_info->nl_ten_thuong_mai) ? $item_info->nl_ten_thuong_mai : "",
+						'nl_mac_tieu_chuan'=> isset($item_info->nl_mac_tieu_chuan) ? $item_info->nl_mac_tieu_chuan : "",
+						'ms' => $item_info->ms ?? "", // Hiển thị mác nguyên liệu
+						'unit_name'=> $item_info->unit_name ?? ''
+					];
+					echo form_input_item($input_data);
+					//Hiển thị nut delete
+					
+					break;
+				default:
+					// Nếu có trường hợp mặc định, có thể xử lý ở đây
+					break;
 			}
-		}
+			/** Hiển thị */
+			//echo form_input_item($input_data);
+			
+			/** Hiển thi thuộc tính chung*/
+			$_aFrame = [
+						'kind'=>isset($item_info->kind) ? $item_info->kind : "",
+						//'unit_meansure'=> isset($item_info->unit_meansure) ? $item_info->unit_meansure : "",
+						//'packing'=>$item_info->packing ?? "",
+						//'ms'=>$item_info->ms ?? "",
+						'type'=>$item_info->type ?? "",
+							];
+			
+			/** Hiển thi thuộc tính chung*/
+			echo form_input_item($_aFrame);
+			
+			$item_arr = (array) $item_info;
+
+			for ($i = 1; $i <= 10; ++$i) {
+				$custom_name = $this->config->item("custom{$i}_name");
+
+				if (!empty($custom_name)) {
+					$value = $item_arr["custom{$i}"] ?? "";
+					echo form_input_item($custom_name, $value,false);
+				}
+			}
+			echo form_checkbox_item([
+				'name'=>'is_deleted',
+				'id'=>'is_deleted',
+				'value'=>1,
+				'checked'=>$item_info->deleted
+			],
+			$this->lang->line('items_is_deleted')
+		);
+			$_aHiddenInput = ['item_id'=> $item_info->item_id];
+			echo form_hidden($_aHiddenInput); 
 		?>
 	</fieldset>
 <?php echo form_close(); ?>

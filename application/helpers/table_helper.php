@@ -1467,6 +1467,8 @@ function get_compounda_data_row($item, $index)
 		6 => $CI->lang->line('compounda_order_status_receiving_material_comfirm'),
 		7 => $CI->lang->line('compounda_order_status_doing'),
 		8 => $CI->lang->line('compounda_order_status_done'),
+		9 => $CI->lang->line('compounda_order_status_checking'),
+		10 => $CI->lang->line('compounda_order_status_waiting_approve'),
 	];
 	$status = $_arr_status[0];
 	if(isset($_arr_status[$item->status]))
@@ -1494,6 +1496,4 @@ function get_compounda_data_row($item, $index)
 		'detail'=>$controller_name."/detail/".$item->compounda_order_uuid,
 		];
 	return $return;
-}
-
-?>
+}?>

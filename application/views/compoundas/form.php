@@ -134,17 +134,31 @@
 	}
 
 	@media print {
-		#table_holder {
-			display: none;
+		body * {
+            visibility: hidden;
+        }
+        #recipe_basic_info * {
+            visibility: visible;
+        }
+        #recipe_basic_info {
+            /*position: absolute;
+            left: 0;
+            top: 0;
+            */
+            /*width: 210mm;
+            height: 297mm;*/
+            width: 297mm;  /* Width of A4 in Landscape */
+        	height: 210mm; /* Height of A4 in Landscape */
+            padding: 5mm;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+		#recipe_basic_info table {
+			width : 95%;
+			border-collapse: collapse;
 		}
-		.modal-header, .modal-footer, .bootstrap-dialog-footer{
-			display: none;
-		}
-		.modal-content{
-			border: 0px solid rgba(0,0,0,0.2);
-		}
-		.modal-footer{
-			border: 0px solid rgba(0,0,0,0.2);
+		#recipe_basic_info #recipe-header, #recipe_basic_info #compounda-order-title {
+			border: 0px solid;
 		}
 	}
 

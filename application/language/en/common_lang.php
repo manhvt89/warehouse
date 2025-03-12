@@ -141,6 +141,9 @@ $lang['compounda_order_status_receiving_material'] ='Đang nhận NVL';
 $lang['compounda_order_status_receiving_material_comfirm'] = 'Đã nhận NVL';
 $lang['compounda_order_status_doing'] = 'Đang sản xuất';
 $lang['compounda_order_status_done'] = 'Hoàn thành';
+$lang['compounda_order_status_checking'] = 'đang kiểm tra';
+$lang['compounda_order_status_waiting_approve'] = 'Chờ phê duyệt';
+
 
 $lang['export_document_no'] = 'STT';
 $lang['export_document_weight'] = 'Trọng lượng';

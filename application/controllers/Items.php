@@ -238,6 +238,7 @@ class Items extends Secure_Controller
 			];
 			$data['stock_locations'] = $location_array;
         }
+		//var_dump($item_info);die();
 
 		$this->load->view('items/form', $data);
 	}
@@ -402,15 +403,16 @@ class Items extends Secure_Controller
 		$this->load->view('items/form_bulk', $data);
 	}
 
-	public function save($item_id = -1)
+	public function save($item_uuid=-1)
 	{
 		$upload_success = $this->_handle_image_upload();
 		$upload_data = $this->upload->data();
-
+		$item_id = $this->input->post('item_id');
 		//Save item data
 		$person_id = $this->session->userdata('person_id');
 		$has_grant = $this->Employee->has_grant('items_accounting', $person_id);
-		$item_data = array(
+		/*
+		$item_data = [
 			'name' => $this->input->post('name'),
 			'description' => $this->input->post('description'),
 			'category' => $this->input->post('category'),
@@ -432,8 +434,64 @@ class Items extends Secure_Controller
 			'custom7' => $this->input->post('custom7') == NULL ? '' : $this->input->post('custom7'),
 			'custom8' => $this->input->post('custom8') == NULL ? '' : $this->input->post('custom8'),
 			'custom9' => $this->input->post('custom9') == NULL ? '' : $this->input->post('custom9'),
-			'custom10' => $this->input->post('custom10') == NULL ? '' : $this->input->post('custom10')
-		);
+			'custom10' => $this->input->post('custom10') == NULL ? '' : $this->input->post('custom10'),
+			'type' => $this->input->post('type') == NULL ? '':$this->input->post('type'),
+			'kind' => $this->input->post('kind') == NULL ? '' : $this->input->post('kind'),
+			'manufactory' => $this->input->post('manufactory') == NULL ? '' : $this->input->post('manufactory'),
+			'brand' => $this->input->post('brand') == NULL ? '' : $this->input->post('brand'),
+			'country' => $this->input->post('country') == NULL ? '' : $this->input->post('country'),
+			'ms' => $this->input->post('ms') == NULL ? '' : $this->input->post('ms'),
+			'cas_no' => $this->input->post('cas_no') == NULL ? '' : $this->input->post('cas_no'),
+			'group_category' => $this->input->post('group_category') == NULL ? '' : $this->input->post('group_category'),
+			'group' => $this->input->post('group') == NULL ? '' : $this->input->post('group'),
+			'encode' => $this->input->post('encode') == NULL ? '' : $this->input->post('encode'),
+			'dpc_name' => $this->input->post('dpc_name') == NULL ? '' : $this->input->post('dpc_name'),
+			'short_name' => $this->input->post('short_name') == NULL ? '' : $this->input->post('short_name'),
+			'normal_name' => $this->input->post('normal_name') == NULL ? '' : $this->input->post('normal_name'),
+
+			'machine_code' => $this->input->post('machine_code') ?? '',
+			'machine_name' => $this->input->post('machine_name') ?? '',
+			'so_sp_tren_khuan' => $this->input->post('so_sp_tren_khuan') ?? 0,
+			'unit_name' => $this->input->post('unit_name') ?? '',
+			'unit_code' => $this->input->post('unit_code') ?? '',
+			'tg_cu' => $this->input->post('tg_cu') ?? 0,
+			'tg_luu_hoa' => $this->input->post('tg_luu_hoa') ?? 0,
+			'tg_thao_tac' => $this->input->post('tg_thao_tac') ?? 0,
+			'tg_thay_khuan' => $this->input->post('tg_thay_khuan') ?? 0,
+			'tl_tho' => $this->input->post('tl_tho') ?? 0,
+			'tl_tinh' => $this->input->post('tl_tinh') ?? 0,
+			'nl_ten_thuong_mai' => $this->input->post('nl_ten_thuong_mai') ?? '',
+			'nl_mac_tieu_chuan' => $this->input->post('nl_mac_tieu_chuan') ?? '',
+			'ms' => $this->input->post('ms') ?? '',
+			'do_day_xuat_tam' => $this->input->post('do_day_xuat_tam') ?? 0,
+			'nang_suat_gio' => $this->input->post('nang_suat_gio') ?? 0,
+			'don_vi_nang_suat' => $this->input->post('don_vi_nang_suat') ?? '',
+			'san_luong_ngay' => $this->input->post('san_luong_ngay') ?? 0,
+			'don_vi_san_luong' => $this->input->post('don_vi_san_luong') ?? 0,
+			'kt_tong_the' => $this->input->post('kt_tong_the') ?? '',
+			'kt_tren' => $this->input->post('kt_tren') ?? '',
+			'kt_duoi' => $this->input->post('kt_duoi') ?? '',
+			'hdkt' => $this->input->post('hdkt') ?? '',
+			'hdtt' => $this->input->post('hdtt') ?? '',
+			'tbsxhl' => $this->input->post('tbsxhl') ?? '',
+			'qct_ky_hieu' => $this->input->post('qct_ky_hieu') ?? '',
+			'qct_kich_thuoc' => $this->input->post('qct_kich_thuoc') ?? '',
+			'qct_so_luong' => $this->input->post('qct_so_luong') ?? 0,
+			'qct_tl_bich' => $this->input->post('qct_tl_bich') ?? '',
+			'qcb_ky_hieu' => $this->input->post('qcb_ky_hieu') ?? '',
+			'qcb_kich_thuoc' => $this->input->post('qcb_kich_thuoc') ?? '',
+			'qcb_so_luong' => $this->input->post('qcb_so_luong') ?? 0,
+			'qcb_tl_thung' => $this->input->post('qcb_tl_thung') ?? 0,
+			'san_luong_dong_goi' => $this->input->post('san_luong_dong_goi') ?? 0,
+			'is_robot' => $this->input->post('is_robot') ?? 'N',
+			'customer_code' => $this->input->post('customer_code') ?? '',
+			'customer_name' => $this->input->post('customer_name') ?? '',
+			'part_no' => $this->input->post('part_no') ?? '',
+
+		]; */
+
+		$item_data = get_data_from_item_form($this->input->post());
+		//var_dump($item_data);die();
 		if($has_grant) {
 			$item_data['cost_price'] = parse_decimals($this->input->post('cost_price'));
 		}
@@ -449,9 +507,10 @@ class Items extends Secure_Controller
 		
 		$employee_id = $this->Employee->get_logged_in_employee_info()->person_id;
 		//$cur_item_info = $this->Item->get_info($item_id);
-		
+		//echo $item_id; die();
 		if($this->Item->save($item_data, $item_id))
 		{
+			
 			$success = TRUE;
 			$new_item = FALSE;
 			//New item
@@ -461,16 +520,16 @@ class Items extends Secure_Controller
 				$new_item = TRUE;
 			}
 			
-			$items_taxes_data = array();
-			$tax_names = $this->input->post('tax_names');
-			$tax_percents = $this->input->post('tax_percents');
+			$items_taxes_data = [];
+			$tax_names = $this->input->post('tax_names') ?? ['Tax 1', 'Tax 2'];
+			$tax_percents = $this->input->post('tax_percents') ?? [0,0];
 			$count = count($tax_percents);
 			for ($k = 0; $k < $count; ++$k)
 			{
 				$tax_percentage = parse_decimals($tax_percents[$k]);
 				if(is_numeric($tax_percentage))
 				{
-					$items_taxes_data[] = array('name' => $tax_names[$k], 'percent' => $tax_percentage);
+					$items_taxes_data[] = ['name' => $tax_names[$k], 'percent' => $tax_percentage];
 				}
 			}
 			$success &= $this->Item_taxes->save($items_taxes_data, $item_id);
@@ -480,22 +539,23 @@ class Items extends Secure_Controller
             foreach($stock_locations as $location)
             {
                 $updated_quantity = parse_decimals($this->input->post('quantity_' . $location['location_id']));
-                $location_detail = array('item_id' => $item_id,
-                                        'location_id' => $location['location_id'],
-                                        'quantity' => $updated_quantity);  
+                $location_detail = ['item_id' => $item_id,
+                                    'location_id' => $location['location_id'],
+                                    'quantity' => $updated_quantity
+								];  
                 $item_quantity = $this->Item_quantity->get_item_quantity($item_id, $location['location_id']);
                 if($item_quantity->quantity != $updated_quantity || $new_item) 
                 {              
 	                $success &= $this->Item_quantity->save($location_detail, $item_id, $location['location_id']);
 	                
-	                $inv_data = array(
-	                    'trans_date' => date('Y-m-d H:i:s'),
-	                    'trans_items' => $item_id,
-	                    'trans_user' => $employee_id,
-	                    'trans_location' => $location['location_id'],
-	                    'trans_comment' => $this->lang->line('items_manually_editing_of_quantity'),
-	                    'trans_inventory' => $updated_quantity - $item_quantity->quantity
-	                );
+	                $inv_data = [
+						'trans_date' => date('Y-m-d H:i:s'),
+						'trans_items' => $item_id,
+						'trans_user' => $employee_id,
+						'trans_location' => $location['location_id'],
+						'trans_comment' => $this->lang->line('items_manually_editing_of_quantity'),
+						'trans_inventory' => $updated_quantity - $item_quantity->quantity
+					];
 
 	                $success &= $this->Inventory->insert($inv_data);       
                 }                                            
@@ -1250,7 +1310,7 @@ class Items extends Secure_Controller
 		$this->load->helper('file');
 
         /* Allowed MIME(s) File */
-        $file_mimes = array(
+        $file_mimes = [
             'application/octet-stream', 
             'application/vnd.ms-excel', 
             'application/x-csv', 
@@ -1259,16 +1319,30 @@ class Items extends Secure_Controller
             'application/csv', 
             'application/excel', 
             'application/vnd.msexcel', 
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        );
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ];
 		if($_FILES['file_path']['error'] != UPLOAD_ERR_OK)
 		{
 			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_failed')));
 		}
 		else
 		{
-			$array_file = explode('.', $_FILES['file_path']['name']);
-            $extension  = end($array_file);
+		
+			//$array_file = explode('.', $_FILES['file_path']['name']);
+            //$extension  = end($array_file);
+			//$file_type = mime_content_type($_FILES['file_path']['tmp_name']);
+			
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$file_type = finfo_file($finfo, $_FILES['file_path']['tmp_name']);
+			finfo_close($finfo);
+			$extension = pathinfo($_FILES['file_path']['name'], PATHINFO_EXTENSION);
+		
+			if (!in_array($file_type, $file_mimes) || !in_array($extension, ['csv', 'xlsx', 'xls'])) {
+				echo json_encode(['success' => FALSE, 'message' => 'File không đúng định dạng']);
+				exit();
+			}
+			//var_dump($extension);die();
             if('csv' == $extension) {
 				if(($handle = fopen($_FILES['file_path']['tmp_name'], 'r')) !== FALSE)
 				{
@@ -1276,7 +1350,7 @@ class Items extends Secure_Controller
 					fgetcsv($handle);
 					$i = 1;
 
-					$failCodes = array();
+					$failCodes = [];
 
 					while(($data = fgetcsv($handle)) !== FALSE)
 					{
@@ -1465,17 +1539,52 @@ class Items extends Secure_Controller
             } else {
                 $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
             }
-
+			$reader->setReadDataOnly(true); // Xử lý tối ưu giảm bộ nhớ
 			$spreadsheet = $reader->load($_FILES['file_path']['tmp_name']);
             $sheet_data  = $spreadsheet->getActiveSheet(0)->toArray();
-			$worksheet = $spreadsheet->getActiveSheet(0);
+			//$worksheet = $spreadsheet->getActiveSheet(0);
 			//var_dump($worksheet);
             
 			$highestColumn = 2;
 			
 			$_iMaxColumn = 0;
-
-			foreach($sheet_data[0] as $item)
+			$_sType = $sheet_data[0][1];
+			$_iStartIndex = 0;
+			$_func_get_from_row = '';
+			$_func_get_array_tax_from_row = ''; 
+			$_iLocationIndex = 0;
+			//echo $_sType;die();
+			switch(trim($_sType))
+			{
+				case 'SP':
+					$_iStartIndex = 2;
+					$_func_get_from_row = 'get_array_sp';
+					$_func_get_array_tax_from_row = 'get_array_tax_sp';
+					$_iLocationIndex = 46;
+					break;
+				case 'VT':
+					$_iStartIndex = 1;
+					$_func_get_from_row = 'get_array_vt';
+					$_func_get_array_tax_from_row = 'get_array_tax_vt';
+					$_iLocationIndex = 60;
+					break;
+				case 'CA':
+					$_iStartIndex = 1; // Mặc định
+					$_func_get_from_row = 'get_array_ca';
+					$_func_get_array_tax_from_row = 'get_array_tax_ca';
+					$_iLocationIndex = 0;
+					break;
+				case 'CB':
+					$_iStartIndex = 1; // Mặc định
+					$_func_get_from_row = 'get_array_cb';
+					$_func_get_array_tax_from_row = 'get_array_tax_cb';
+					$_iLocationIndex = 0;
+					break;
+				default:
+					break;
+			}
+			//echo $_iStartIndex; die();
+			foreach($sheet_data[$_iStartIndex] as $item)
 			{
 				if($item != null)
 				{
@@ -1485,78 +1594,24 @@ class Items extends Secure_Controller
 					break;
 				}
 			}
+			//echo $_iMaxColumn; die();
 			$failCodes = [];
-			// Bỏ qua dòng đầu tiên, start với i=1
+			// Bỏ qua dòng đầu tiên, start với $_iStartIndex;
+			$_iStartIndex++; // Dòng tiếp theo
 			debug_log(count($sheet_data),'count($sheet_data)');
-			for($i = 1; $i < count($sheet_data); $i++) {
+			for($i = $_iStartIndex; $i < count($sheet_data); $i++) {
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
 				//debug_log($sheet_data[$i],'$sheet_data[$i]');
 				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
 				$data = $sheet_data[$i];
-				//var_dump($data);
 				debug_log($sheet_data[$i],'$sheet_data[$i]');
-				$item_data = array(
-					'name'					=> $data[1] != null ? $data[1]:'',
-					'description'			=> $data[11] != null ? $data[11]:0,
-					'category'				=> $data[2] != null ? $data[2]:'',
-					'cost_price'			=> is_numeric(str_replace(',','',$data[4])) == true ? (float) str_replace(',','',$data[4]):0,
-					'unit_price'			=> is_numeric(str_replace(',','',$data[5])) == true ? (float) str_replace(',','',$data[5]):0,
-					'reorder_level'			=> is_numeric(str_replace(',','',$data[10])) == true ? (float) str_replace(',','',$data[10]):0,
-					'supplier_id'			=> $this->Supplier->exists($data[3]) ? $data[3] : NULL,
-					'allow_alt_description'	=> $data[12] != null ? $data[12] : '',
-					'is_serialized'			=> $data[13] != null ? '1' : '0',
-					'custom1'				=> $data[14] != null ? $data[14]:'',
-					'custom2'				=> $data[15] != null ? $data[15]:'',
-					'custom3'				=> $data[16] != null ? $data[16]:'',
-					'custom4'				=> $data[17] != null ? $data[17]:'',
-					'custom5'				=> $data[18] != null ? $data[18]:'',
-					'custom6'				=> $data[19] != null ? $data[19]:'',
-					'custom7'				=> $data[20] != null ? $data[20]:'',
-					'custom8'				=> $data[21] != null ? $data[21]:'',
-					'custom9'				=> $data[22] != null ? $data[22]:'',
-					'custom10'				=> $data[23] != null ? $data[23]:'',
-					'code'=>$data[24] != null ? $data[24] : '',
-					'normal_name'=>$data[25] != null ? $data[25] : '',
-					'short_name'=>$data[26] != null ? $data[26] : '',
-					'dpc_name'=>$data[27] != null ? $data[27] : '',
-					'encode'=>$data[28] != null ? $data[28] : '',
-					'group'=>$data[29] != null ? $data[29] : '',
-					'group_category'=>$data[30] != null ? $data[30] : '',
-					'cas_no'=>$data[31] != null ? $data[31] : '',
-					'kind'=>$data[32] != null ? $data[32] : '',
-					'country'=>$data[33] != null ? $data[33] : '',
-					'brand'=>$data[34] != null ? $data[34] : '',
-					'manufactory'=>$data[35] != null ? $data[35] : '',
-					'ms'=>$data[36] != null ? $data[36] : '',
-					'type'=>$data[37] != null ? $data[37] : '',
-					'item_group'=>$data[38] != null ? $data[38] : '',
-					'catalogue_no'=>$data[39] != null ? $data[39] : '',
-					'purchase_uom_name'=>$data[40] != null ? $data[40] : '',
-					'purchase_uom_code'=>$data[41] != null ? $data[41] : '',
-					'purchase_item_per_purchase_unit'=>$data[42] != null ? $data[42] : '',
-					'purchase_packing_uom_name'=>$data[43] != null ? $data[43] : '',
-					'purchase_quality_per_packge'=>$data[44] != null ? $data[44] : '',
-					'purchase_packing_length'=>$data[45] != null ? $data[45] : '0',
-					'purchase_packing_height'=>$data[46] != null ? $data[46] : '0',
-					'purchase_packing_width'=>$data[47] != null ? $data[47] : '0',
-					'purchase_packing_volume'=>$data[48] != null ? $data[48] : '0',
-					'purchase_packing_weigth'=>$data[49] != null ? $data[49] : '1000',
-					'sale_uom_name'=>$data[50] != null ? $data[50] : '',
-					'sale_uom_code'=>$data[51] != null ? $data[51] : '',
-					'sale_item_per_sale_unit'=>$data[52] != null ? $data[52] : '1',
-					'inventory_uom_name'=>$data[53] != null ? $data[53] : '',
-					'inventory_uom_code'=>$data[54] != null ? $data[54] : '',
-					'inventory_weigth_per_unit'=>$data[55] != null ? $data[55] : '1',
-					'serial'=>$data[56] != null ? $data[56] : '',
-					'part_no'=>$data[57] != null ? $data[57] : '',
-					'uom_group_id'=>$data[58] != null ? $data[58] : '0',
-					'leadtime' => $data[59] != null ? $data[59] : '0'
-				);
-				$item_number = $data[0] != null ? $data[0]:'';
+
+				$item_data = $this->$_func_get_from_row($data);
+				$item_number = $item_data['item_number'];
+				//var_dump($item_data);die();
 				$invalidated = FALSE;
 				if($item_number != '')
 				{
-					$item_data['item_number'] = $item_number;
 					$invalidated = $this->Item->item_number_exists($item_number);
 				}
 				if($invalidated)
@@ -1564,25 +1619,16 @@ class Items extends Secure_Controller
 					$failCodes[] = $i;
 					
 				} else {
+					//var_dump($failCodes);die();
 				$save_rs = $this->Item->save($item_data);
+				//var_dump($item_data);die();
 				debug_log($item_data,'$item_data');
 				debug_log($invalidated,'$invalidated');
 				debug_log($save_rs,'$save_rs');
 				if($save_rs)
 				{
-					$items_taxes_data = [];
-					//tax 1
-					if(is_numeric($data[7]) && $data[6] != '')
-					{
-						$items_taxes_data[] = array('name' => $data[6], 'percent' => $data[7] );
-					}
-
-					//tax 2
-					if(is_numeric($data[9]) && $data[8] != '')
-					{
-						$items_taxes_data[] = array('name' => $data[8], 'percent' => $data[9] );
-					}
-
+					$items_taxes_data = $this->$_func_get_array_tax_from_row($data);
+				
 					// save tax values
 					if(!empty($items_taxes_data))
 					{
@@ -1599,7 +1645,7 @@ class Items extends Secure_Controller
 					// array to store information if location got a quantity
 					$allowed_locations = $this->Stock_location->get_allowed_locations();
 					debug_log($allowed_locations, '$allowed_locations');
-					for ($col = 60; $col < $cols; $col = $col + 3)
+					for ($col = $_iLocationIndex; $col < $cols; $col = $col + 3)
 					{
 						$location_id = $data[$col] != null ? $data[$col] : 0;
 						$quantity = $data[$col+1] != null ? $data[$col+1] : 0;
@@ -1675,6 +1721,292 @@ class Items extends Secure_Controller
 			}
 		}
 	}
+
+	// trả về thue của một dòng excel nếu có
+	private function get_array_tax_vt($data)
+	{	
+		$items_taxes_data = [];
+		//tax 1
+		if(is_numeric($data[7]) && $data[6] != '')
+		{
+			$items_taxes_data[] = array('name' => $data[6], 'percent' => $data[7] );
+		}
+
+		//tax 2
+		if(is_numeric($data[9]) && $data[8] != '')
+		{
+			$items_taxes_data[] = array('name' => $data[8], 'percent' => $data[9] );
+		}
+		return $items_taxes_data;
+
+	}
+
+	private function get_array_tax_sp($data)
+	{
+		return [
+			['name' => 'Tax 1', 'percent' => 0],
+			['name' => 'Tax 2', 'percent' => 0]
+		];
+	}
+
+	private function get_array_tax_ca($data)
+	{
+		return [
+			['name' => 'Tax 1', 'percent' => 0],
+			['name' => 'Tax 2', 'percent' => 0]
+		];
+	}
+
+	private function get_array_tax_cb($data)
+	{
+		return [
+			['name' => 'Tax 1', 'percent' => 0],
+			['name' => 'Tax 2', 'percent' => 0]
+		];
+	}
+	// trả về một nguyên vật liệu hoạch vật tư từ một dòng của excel ($data)
+	private function get_array_ca($data)
+	{
+		
+	}
+	private function get_array_cb($data)
+	{
+		
+	}
+	private function get_array_sp($data)
+	{
+		$clean_number = function ($value, $default = 0) {
+			return is_numeric(str_replace(',', '', $value)) ? (float) str_replace(',', '', $value) : $default;
+		};
+
+		return [
+			'item_number' => $data[0] ?? '',
+			'category'    => $data[1] ?? '',
+			'code'        => $data[2] ?? '',
+			'name'        => $data[3] ?? '',
+			'part_no'     => $data[4] ?? '',
+			'customer_code'	=> $data[5] ?? '',
+			'machine_code' => $data[6] ?? '',
+			'is_robot'=> $data[7] ?? '',
+			'so_sp_tren_khuan' => $clean_number($data[8]),
+			'unit_name'=> $data[9] ?? '',
+			'unit_code'=> $data[10] ?? '',
+			'tg_cu' => $clean_number($data[11]),
+			'tg_luu_hoa' => $clean_number($data[12]),
+			'tg_thao_tac' => $clean_number($data[13]),
+			'tg_thay_khuan' => $clean_number($data[14]),
+			'tl_tho' => $clean_number($data[15]),
+			'tl_tinh' => $clean_number($data[16]),
+			'nl_ten_thuong_mai' => $data[17],
+			'nl_mac_tieu_chuan'=> $data[18] ?? '',
+			'ms'=> $data[19] ?? '',
+			'do_day_xuat_tam'=> $data[20] ?? '',
+			'nang_suat_gio'=> $clean_number($data[21]),
+			'don_vi_nang_suat'=> $data[22] ?? '',
+			'san_luong_ngay'=> $clean_number($data[23]),
+			'don_vi_san_luong'=> $data[24] ?? '',
+			'kt_tong_the'=> $data[25] ?? 'W*T*H',
+			'kt_tren'=> $data[26] ?? '',
+			'kt_duoi'=> $data[27] ?? '',
+			'hdkt'=> $data[28] ?? '',
+			'hdtt'=> $data[29] ?? '',
+			'tbsxhl'=> $data[30] ?? '',
+			'qct_ky_hieu'=> $data[31] ?? '',
+			'qct_kich_thuoc'=> $data[32] ?? '',
+			'qct_so_luong'=>$clean_number($data[33]),
+			'qct_tl_bich'=> $data[34] ?? '',
+			'qcb_ky_hieu'=> $data[35] ?? '',
+			'qcb_kich_thuoc'=> $data[36] ?? '',
+			'qcb_so_luong'=>$clean_number($data[37]),
+			'qcb_tl_thung'=> $data[38] ?? '',
+			'san_luong_dong_goi'=>$clean_number($data[39]),
+			'description'           => $data[40] ?? '',
+			'allow_alt_description' => $data[41] ?? '',
+			'kind'                  => $data[42] ?? '',
+			'type'                  => $data[43] ?? '',
+			'item_group'            => $data[44] ?? '',
+			'leadtime'              => $clean_number($data[45]),
+
+
+			
+			'cost_price'            => 0,
+			'unit_price'            => 0,
+			'reorder_level'         => 0,
+			'supplier_id'           => 0,
+			
+			'is_serialized'         => '0',
+			'custom1'               => '',
+			'custom2'               => '',
+			'custom3'               => '',
+			'custom4'               => '',
+			'custom5'               => '',
+			'custom6'               => '',
+			'custom7'               => '',
+			'custom8'               => '',
+			'custom9'               => '',
+			'custom10'              => '',
+			
+			'normal_name'           => '',
+			'short_name'            => '',
+			'dpc_name'              => '',
+			'encode'                => '',
+			'group'                 => '',
+			'group_category'        => '',
+			'cas_no'                => '',
+			
+			'country'               => '',
+			'brand'                 => '',
+			'manufactory'           => '',
+			'catalogue_no'          => '',
+			'purchase_uom_name'     => '',
+			'purchase_uom_code'     => '',
+			'purchase_item_per_purchase_unit' => '',
+			'purchase_packing_uom_name'       => '',
+			'purchase_quality_per_packge'     => '',
+			'purchase_packing_length'         => '0',
+			'purchase_packing_height'         => '0',
+			'purchase_packing_width'          => '0',
+			'purchase_packing_volume'         => '0',
+			'purchase_packing_weigth'         =>'0',
+			'sale_uom_name'                   => '',
+			'sale_uom_code'                   => '',
+			'sale_item_per_sale_unit'         => '1',
+			'inventory_uom_name'              => '',
+			'inventory_uom_code'              => '',
+			'inventory_weigth_per_unit'       => '1',
+			'serial'                           => '',
+			'uom_group_id'                     =>'0',
+			
+		];
+	}
+
+	private function get_array_vt($data)
+	{
+		$clean_number = function ($value, $default = 0) {
+			return is_numeric(str_replace(',', '', $value)) ? (float) str_replace(',', '', $value) : $default;
+		};
+
+		return [
+			'name'                  => $data[1] ?? '',
+			'description'           => $data[11] ?? 0,
+			'category'              => $data[2] ?? '',
+			'cost_price'            => $clean_number($data[4]),
+			'unit_price'            => $clean_number($data[5]),
+			'reorder_level'         => $clean_number($data[10]),
+			'supplier_id'           => $this->Supplier->exists($data[3]) ? $data[3] : NULL,
+			'allow_alt_description' => $data[12] ?? '',
+			'is_serialized'         => isset($data[13]) ? '1' : '0',
+			'custom1'               => $data[14] ?? '',
+			'custom2'               => $data[15] ?? '',
+			'custom3'               => $data[16] ?? '',
+			'custom4'               => $data[17] ?? '',
+			'custom5'               => $data[18] ?? '',
+			'custom6'               => $data[19] ?? '',
+			'custom7'               => $data[20] ?? '',
+			'custom8'               => $data[21] ?? '',
+			'custom9'               => $data[22] ?? '',
+			'custom10'              => $data[23] ?? '',
+			'code'                  => $data[24] ?? '',
+			'normal_name'           => $data[25] ?? '',
+			'short_name'            => $data[26] ?? '',
+			'dpc_name'              => $data[27] ?? '',
+			'encode'                => $data[28] ?? '',
+			'group'                 => $data[29] ?? '',
+			'group_category'        => $data[30] ?? '',
+			'cas_no'                => $data[31] ?? '',
+			'kind'                  => $data[32] ?? '',
+			'country'               => $data[33] ?? '',
+			'brand'                 => $data[34] ?? '',
+			'manufactory'           => $data[35] ?? '',
+			'ms'                    => $data[36] ?? '',
+			'type'                  => $data[37] ?? '',
+			'item_group'            => $data[38] ?? '',
+			'catalogue_no'          => $data[39] ?? '',
+			'purchase_uom_name'     => $data[40] ?? '',
+			'purchase_uom_code'     => $data[41] ?? '',
+			'purchase_item_per_purchase_unit' => $data[42] ?? '',
+			'purchase_packing_uom_name'       => $data[43] ?? '',
+			'purchase_quality_per_packge'     => $data[44] ?? '',
+			'purchase_packing_length'         => $data[45] ?? '0',
+			'purchase_packing_height'         => $data[46] ?? '0',
+			'purchase_packing_width'          => $data[47] ?? '0',
+			'purchase_packing_volume'         => $data[48] ?? '0',
+			'purchase_packing_weigth'         => $data[49] ?? '1000',
+			'sale_uom_name'                   => $data[50] ?? '',
+			'sale_uom_code'                   => $data[51] ?? '',
+			'sale_item_per_sale_unit'         => $data[52] ?? '1',
+			'inventory_uom_name'              => $data[53] ?? '',
+			'inventory_uom_code'              => $data[54] ?? '',
+			'inventory_weigth_per_unit'       => $data[55] ?? '1',
+			'serial'                           => $data[56] ?? '',
+			'part_no'                          => $data[57] ?? '',
+			'uom_group_id'                     => $data[58] ?? '0',
+			'leadtime'                         => $data[59] ?? '0'
+		];
+	}
+
+	private function get_array_vt_kk($data)
+	{ 
+			return [
+				'name'					=> $data[1] != null ? $data[1]:'',
+				'description'			=> $data[11] != null ? $data[11]:0,
+				'category'				=> $data[2] != null ? $data[2]:'',
+				'cost_price'			=> is_numeric(str_replace(',','',$data[4])) == true ? (float) str_replace(',','',$data[4]):0,
+				'unit_price'			=> is_numeric(str_replace(',','',$data[5])) == true ? (float) str_replace(',','',$data[5]):0,
+				'reorder_level'			=> is_numeric(str_replace(',','',$data[10])) == true ? (float) str_replace(',','',$data[10]):0,
+				'supplier_id'			=> $this->Supplier->exists($data[3]) ? $data[3] : NULL,
+				'allow_alt_description'	=> $data[12] != null ? $data[12] : '',
+				'is_serialized'			=> $data[13] != null ? '1' : '0',
+				'custom1'				=> $data[14] != null ? $data[14]:'',
+				'custom2'				=> $data[15] != null ? $data[15]:'',
+				'custom3'				=> $data[16] != null ? $data[16]:'',
+				'custom4'				=> $data[17] != null ? $data[17]:'',
+				'custom5'				=> $data[18] != null ? $data[18]:'',
+				'custom6'				=> $data[19] != null ? $data[19]:'',
+				'custom7'				=> $data[20] != null ? $data[20]:'',
+				'custom8'				=> $data[21] != null ? $data[21]:'',
+				'custom9'				=> $data[22] != null ? $data[22]:'',
+				'custom10'				=> $data[23] != null ? $data[23]:'',
+				'code'=>$data[24] != null ? $data[24] : '',
+				'normal_name'=>$data[25] != null ? $data[25] : '',
+				'short_name'=>$data[26] != null ? $data[26] : '',
+				'dpc_name'=>$data[27] != null ? $data[27] : '',
+				'encode'=>$data[28] != null ? $data[28] : '',
+				'group'=>$data[29] != null ? $data[29] : '',
+				'group_category'=>$data[30] != null ? $data[30] : '',
+				'cas_no'=>$data[31] != null ? $data[31] : '',
+				'kind'=>$data[32] != null ? $data[32] : '',
+				'country'=>$data[33] != null ? $data[33] : '',
+				'brand'=>$data[34] != null ? $data[34] : '',
+				'manufactory'=>$data[35] != null ? $data[35] : '',
+				'ms'=>$data[36] != null ? $data[36] : '',
+				'type'=>$data[37] != null ? $data[37] : '',
+				'item_group'=>$data[38] != null ? $data[38] : '',
+				'catalogue_no'=>$data[39] != null ? $data[39] : '',
+				'purchase_uom_name'=>$data[40] != null ? $data[40] : '',
+				'purchase_uom_code'=>$data[41] != null ? $data[41] : '',
+				'purchase_item_per_purchase_unit'=>$data[42] != null ? $data[42] : '',
+				'purchase_packing_uom_name'=>$data[43] != null ? $data[43] : '',
+				'purchase_quality_per_packge'=>$data[44] != null ? $data[44] : '',
+				'purchase_packing_length'=>$data[45] != null ? $data[45] : '0',
+				'purchase_packing_height'=>$data[46] != null ? $data[46] : '0',
+				'purchase_packing_width'=>$data[47] != null ? $data[47] : '0',
+				'purchase_packing_volume'=>$data[48] != null ? $data[48] : '0',
+				'purchase_packing_weigth'=>$data[49] != null ? $data[49] : '1000',
+				'sale_uom_name'=>$data[50] != null ? $data[50] : '',
+				'sale_uom_code'=>$data[51] != null ? $data[51] : '',
+				'sale_item_per_sale_unit'=>$data[52] != null ? $data[52] : '1',
+				'inventory_uom_name'=>$data[53] != null ? $data[53] : '',
+				'inventory_uom_code'=>$data[54] != null ? $data[54] : '',
+				'inventory_weigth_per_unit'=>$data[55] != null ? $data[55] : '1',
+				'serial'=>$data[56] != null ? $data[56] : '',
+				'part_no'=>$data[57] != null ? $data[57] : '',
+				'uom_group_id'=>$data[58] != null ? $data[58] : '0',
+				'leadtime' => $data[59] != null ? $data[59] : '0'
+			];
+	}
+
+	
 
 	// Added by ManhVT to support field permissions
 	public function unitprice_hide()

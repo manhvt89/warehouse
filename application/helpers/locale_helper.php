@@ -1414,4 +1414,317 @@ function get_nvlc($aItemAs,$field='group',$c=['1.*','2.*']){
     }
     return filter_elements($aItemAs,$field,$c);
 }
+/**
+ * form_input_item: 
+ */
+
+if (!function_exists('form_input_item')) {
+    function form_input_item($name, $value = '',$lang=true, $extra = [])
+    {
+        $CI = &get_instance();
+        $_html = '';
+
+        $extra['class'] = isset($extra['class']) ? 'control-label col-xs-3 ' . $extra['class'] : 'control-label col-xs-3';
+        $attributes = $extra;
+        $extra['hidden'] ??= '';
+
+        // Nếu $name là mảng, lặp qua từng phần tử để tạo nhiều input
+        if (is_array($name)) {
+            foreach ($name as $key => $val) {
+                $_html .= form_input_item($key, $val);
+            }
+            return $_html;
+        }
+
+        if (!$name) // Nếu không có name thì không tạo input
+        {
+            return '';
+        }
+
+        // Nếu $name là chuỗi, xử lý như bình thường
+        if($lang == true)
+        {
+            $label_text = $CI->lang->line('items_' . $name);
+        } else {
+            $label_text = $name;
+        }
+
+        $_html .= "<div class='form-group form-group-sm {$extra['hidden']}'>";
+        $_html .= form_label($label_text, $name, $attributes);
+        $_html .= '<div class="col-xs-4">';
+        $_html .= form_input([
+            'name'  => $name,
+            'id'    => $name,
+            'class' => 'form-control input-sm',
+            'value' => $value
+        ]);
+        $_html .= '</div>';
+        $_html .= '</div>';
+
+        return $_html;
+    }
+}
+/**
+ * form_dropdown_item
+ */
+if (!function_exists('form_dropdown_item')) {
+    function form_dropdown_item($name, $options, $selected = '', $label = '', $extra = [])
+    {
+        
+        $extra['class'] = isset($extra['class']) ? 'control-label col-xs-3 ' . $extra['class'] : 'control-label col-xs-3';
+        $attributes = $extra;
+        $extra['hidden'] ??= '';
+
+        return "<div class='form-group form-group-sm {$extra['hidden']}'>"
+            . form_label($label, $name, ['class' => 'control-label col-xs-3'])
+            . '<div class="col-xs-8">'
+            . form_dropdown($name, $options, $selected, $attributes)
+            . '</div></div>';
+    }
+}
+if (!function_exists('form_checkbox_item')) {
+    function form_checkbox_item($data, $label = '',  $extra = [])
+    {
+        // Kiểm tra và đảm bảo dữ liệu đầu vào hợp lệ
+        if (!is_array($data) || empty($data['name']) || empty($data['id'])) {
+            return '';
+        }
+
+        $extra['class'] = isset($extra['class']) ? 'control-label col-xs-3 ' . $extra['class'] : 'control-label col-xs-3';
+        $attributes = $extra;
+        $extra['hidden'] ??= '';
+
+         // Xây dựng HTML bằng mảng để tối ưu nối chuỗi
+         return implode('', [
+                "<div class='form-group form-group-sm {$extra['hidden']}'>",
+                form_label($label, $data['id'], $attributes),
+                '<div class="col-xs-1">',
+                form_checkbox([
+                        'name'    => 'is_deleted',
+                        'id'      => 'is_deleted',
+                        'value'   => $data['value'] ?? '',
+                        'checked' => !empty($data['checked']) ? 1 : 0
+                    ]),
+                '</div>',
+                '</div>'
+        ]);
+    }
+}
+if (!function_exists('form_textarea_item')) {
+    function form_textarea_item($data, $label = '',  $extra = [])
+    {
+        if (!is_array($data) || empty($data['name']) || empty($data['id'])) {
+            return '';
+        }
+
+        $extra['class'] = isset($extra['class']) ? 'control-label col-xs-3 ' . $extra['class'] : 'control-label col-xs-3';
+        $attributes = $extra;
+        $extra['hidden'] ??= '';
+
+        return implode('', [
+            "<div class='form-group form-group-sm {$extra['hidden']}'>",
+			form_label($label, $data['id'], $attributes),
+			"<div class='col-xs-8'>",
+			form_textarea([
+						'name'=>$data['name'],
+						'id'=>$data['id'],
+						'class'=>'form-control input-sm',
+						'value'=>$data['value'] ?? ''
+                        ]
+            ),
+			"</div>",
+		    "</div>"
+                    ]);
+    }
+}
+
+
+if (!function_exists('form_input_item_tax')) {
+    function form_input_item_tax($data, $index = 0,  $extra = [])
+    {
+        $CI =& get_instance();
+        $extra['class'] = isset($extra['class']) ? 'control-label col-xs-3 ' . $extra['class'] : 'control-label col-xs-3';
+        $attributes['class'] = $extra['class'];
+        $extra['hidden'] ??= '';
+        
+        if (!is_array($data)) {
+            return '';
+        }
+        
+        $_index = $index +1;
+        $_data = $data[$index] ?? null;
+
+        if (!is_array($_data) || empty($_data['name']) || empty($_data['percent'])) {
+            return '';
+        }
+
+        return implode('', [
+            "<div class='form-group form-group-sm {$extra['hidden']}'>",
+                form_label($CI->lang->line("items_tax_{$_index}"), "tax_name_{$_index}", $attributes),
+                "<div class='col-xs-4'>",
+                        form_input([
+                            'name'=>'tax_names[]',
+                            'id'=>"tax_name_{$_index}",
+                            'class'=>'form-control input-sm',
+                            'value'=> $_data['name'] ?? $CI->config->item('default_tax_2_name')
+                        ]),
+                "</div>",
+                "<div class='col-xs-4'>",
+                    "<div class='input-group input-group-sm'>",
+                        form_input([
+                                'name'=>'tax_percents[]',
+                                'class'=>'form-control input-sm',
+                                'id'=>'tax_percent_name_2',
+                                'value'=>isset($_data['percent']) ? to_tax_decimals($_data['percent']) : to_tax_decimals($default_tax_2_rate)
+                            ]),
+                        "<span class='input-group-addon input-sm'><b>%</b></span>",
+                    "</div>",
+                "</div>",
+            "</div>"
+        ]);
+    }
+}
+
+
+if (!function_exists('form_input_item_price')) {
+    function form_input_item_price($name, $value=0, $extra = [])
+    {
+        $CI =& get_instance();
+        $_before_side = '';
+        $_after_side = '';
+        if (currency_side()){
+            $_after_side = "<span class='input-group-addon input-sm'><b>{$CI->config->item('currency_symbol')}</b></span>";
+        } else {
+            $_before_side = "<span class='input-group-addon input-sm'><b>{$CI->config->item('currency_symbol')}</b></span>";
+        }
+
+        $extra['class'] = isset($extra['class']) ? 'control-label col-xs-3 ' . $extra['class'] : 'control-label col-xs-3';
+        $attributes = $extra;
+        $extra['hidden'] = $extra['hidden'] ?? '';
+        
+        
+        return implode('', [
+            "<div class='form-group form-group-sm {$extra['hidden']}'>",
+                form_label($CI->lang->line("items_{$name}"), $name, $attributes),
+                "<div class='col-xs-4'>",
+                    "<div class='input-group input-group-sm'>",
+                    $_before_side,
+                        
+                    form_input([
+                                'name'=>$name,
+                                'id'=>$name,
+                                'class'=>'form-control input-sm',
+                                'value'=>number_format($value,0,',','.')
+                                ]),
+                        $_after_side,
+                    "</div>",
+                "</div>",
+            "</div>"
+        ]);
+    }
+}
+
+if (!function_exists('form_input_item_before')) {
+    function form_input_item_before($name, $value='', $before_class ='glyphicon glyphicon-tag',$extra = [])
+    {
+        $CI =& get_instance();
+
+        $extra['hidden'] ??= '';
+
+        $extra['class'] = isset($extra['class']) ? 'control-label col-xs-3 ' . $extra['class'] : 'control-label col-xs-3';
+        $attributes['class'] = $extra['class']; 
+
+        $_before_class = $before_class;
+
+        return implode('', [
+                "<div class='form-group form-group-sm {$extra['hidden']}'>",
+                    form_label($CI->lang->line("items_{$name}"), $name, $attributes),
+                    "<div class='col-xs-8'>",
+                        "<div class='input-group'>",
+                            "<span class='input-group-addon input-sm'><span class='{$_before_class}'></span></span>",
+                            form_input([
+                                    'name'=>$name,
+                                    'id'=>$name,
+                                    'class'=>'form-control input-sm',
+                                    'value'=>$value
+                                ]),
+                        "</div>",
+                    "</div>",
+                "</div>"
+            ]);
+    }
+}
+
+if (!function_exists('form_input_locations')) {
+    function form_input_locations($data, $extra = [])
+    {
+        $stock_locations = $data ?? NULL;
+        //$html = '';
+        $_aHTML = [];
+
+        $CI =& get_instance();
+        
+        
+
+        $extra['class'] = isset($extra['class']) ? 'control-label col-xs-3 ' . $extra['class'] : 'control-label col-xs-3';
+        $extra['hidden'] = $extra['hidden'] ?? '';
+        $attributes = $extra;
+        foreach($stock_locations as $key=>$location_detail)
+		{
+            $_aHTML[] = implode('', [
+			    "<div class='form-group form-group-sm {$extra['hidden']}'>",
+                    form_label(
+                        $CI->lang->line('items_quantity').' '.$location_detail['location_name'], 
+                        'quantity_' . $key, 
+                        $attributes),
+				    "<div class='col-xs-4'>",
+					form_input([
+							'name'=>"quantity_{$key}",
+							'id'=>"quantity_{$key}",
+							'class'=>"quantity form-control {$extra['class']}",
+							'value'=>isset($location_detail['quantity']) ? to_quantity_decimals($location_detail['quantity']) : to_quantity_decimals(0)
+                            ]),
+					"</div>",
+                "</div>"
+            ]);
+
+		
+		}
+
+        return implode('',$_aHTML);
+		
+    }
+}
+
+if (!function_exists('get_data_from_item_form')) {
+    function get_data_from_item_form($data)
+    {
+        $return = filter_update_data('ospos_items',$data);
+        return $return;
+    }
+}
+
+if (!function_exists('get_table_fields')) {
+    function get_table_fields($table)
+    {
+        $CI =& get_instance();
+        $CI->load->database();
+        return $CI->db->list_fields($table);
+    }
+}
+
+if (!function_exists('filter_update_data')) {
+    function filter_update_data($table, $input_data)
+    {
+        $allowed_fields = get_table_fields($table);
+        $filtered_data = [];
+        
+        foreach ($allowed_fields as $field) {
+            if (array_key_exists($field, $input_data)) { // Kiểm tra input có tồn tại hay không
+                $filtered_data[$field] = $input_data[$field]; // Lấy giá trị, kể cả chuỗi blank
+            }
+        }
+        return $filtered_data;
+    }
+}
 ?>

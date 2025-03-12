@@ -7,11 +7,12 @@ class Item extends CI_Model
 	*/
 	public function exists($item_id, $location_id ,$ignore_deleted = FALSE, $deleted = FALSE)
 	{
-		if (ctype_digit($item_id) && ctype_digit($location_id))
+		//if (ctype_digit($item_id) && ctype_digit($location_id))
+		if (ctype_digit($item_id))
 		{
 			$this->db->from('items');
 			$this->db->where('item_id', (int) $item_id);
-			$this->db->where('location_id', (int) $location_id);
+			//$this->db->where('location_id', (int) $location_id);
 			if ($ignore_deleted == FALSE)
 			{
 				$this->db->where('deleted', $deleted);
@@ -333,9 +334,11 @@ class Item extends CI_Model
 	*/
 	public function save(&$item_data, $item_id = FALSE, $location_id=FALSE)
 	{
+		
 		$time = time();
 		if(!$item_id || !$this->exists($item_id, $location_id, TRUE))
 		{
+			
 			$item_data['updated_time'] = $time;
 			$item_data['created_time'] = $time;
 			if($this->db->insert('items', $item_data))
@@ -347,6 +350,7 @@ class Item extends CI_Model
 			
 			return FALSE;
 		}
+		//die();
 		$item_data['updated_time'] = $time;
 		$this->db->where('item_id', $item_id);
 		
@@ -636,8 +640,9 @@ class Item extends CI_Model
 
 	/*
 	Gets information about a particular item bay mác nguyên liệu/ Chỉ dành cho COmpound A và B.
+	Mác Nguyên liệu chính là compound A với mác MS
 	*/
-	public function get_info_by_ms($ms='')
+	public function get_info_by_ms($ms='',$type='CA')
 	{
 		if($ms == '')
 		{
@@ -651,6 +656,7 @@ class Item extends CI_Model
 		$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
 		
 		$this->db->where('items.ms', $ms);
+		$this->db->where('items.type', $type);
 		$query = $this->db->get();
 
 		if($query->num_rows() == 1)

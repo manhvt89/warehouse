@@ -24,6 +24,8 @@ class Compoundas extends Secure_Controller
 		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
 		$data['is_worker'] = $this->Employee->has_grant($this->module_id.'_is_worker');
 		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
+		$data['is_checker'] = $this->Employee->has_grant($this->module_id.'_is_checker');
+		$data['is_monitor'] = $this->Employee->has_grant($this->module_id.'_is_monitor');
 
 		$search = $this->input->get('search');
 
@@ -58,7 +60,7 @@ class Compoundas extends Secure_Controller
 			//$this->load->view('recipes/detail', $data);
 
 		} 
-		else if($data['is_worker']){ // Tiếp theo Worker
+		else if($data['is_worker']){ // Tiếp theo Worker// Nhận VT
 			if($search == '')
 			{
 				$data['item_info'] = null;
@@ -257,9 +259,7 @@ class Compoundas extends Secure_Controller
 		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
 		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
 
-		$data['item_tax_info'] = '';
-		$data['default_tax_1_rate'] = '';
-		$data['default_tax_2_rate'] = '';
+		
 
 		$item_info = $this->Compounda->get_info($item_id);
 		foreach(get_object_vars($item_info) as $property => $value)
@@ -709,7 +709,7 @@ class Compoundas extends Secure_Controller
 
 
 	
-	// Import sản phẩm của hệ thống mới
+	// Import kế hoạch cán luyện Compound A từ file excel
 	public function do_excel_import()
 	{
 		$this->load->helper('file');
@@ -732,21 +732,21 @@ class Compoundas extends Secure_Controller
 		}
 		else
 		{
-			$array_file = explode('.', $_FILES['file_path']['name']);
+			//$array_file = explode('.', $_FILES['file_path']['name']);
             //$extension  = end($array_file);
            
             $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
             
 			try {
 				$spreadsheet = $reader->load($_FILES['file_path']['tmp_name']);
-			} catch(Exception $e) {
+			} catch(Exception $e) { // File upload không đúng định dạng
 				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_nodata_wrongformat')));
                 //$reader = new Csv();
 				exit();
 			}
-            $sheet_data  = $spreadsheet->getActiveSheet(0)->toArray();
-			$worksheet = $spreadsheet->getActiveSheet(0);
-			//var_dump($worksheet);
+            $sheet_data  = $spreadsheet->getActiveSheet(0)->toArray(); // Lây sheet đầu tiên và chuyển thành mảng; rangeToArray('A1:T100');
+			//$worksheet = $spreadsheet->getActiveSheet(0); // Lấy sheet đầu tiên
+			//var_dump($sheet_data);
             
 			$highestColumn = 5;
 			
@@ -765,8 +765,8 @@ class Compoundas extends Secure_Controller
 			$failCodes = [];
 			// Bỏ qua dòng đầu tiên, start với i=1
 			debug_log(count($sheet_data),'count($sheet_data)');
-			$i = 7;
-			$data = $sheet_data[$i];
+			$i = 7; // Bắt đầu với dòng thư 8; kể từ 0 --> 7;
+			$data = $sheet_data[$i]; 
 			//var_dump($data);
 
 			debug_log(count($data),'data['.$i.']');
@@ -776,7 +776,7 @@ class Compoundas extends Secure_Controller
 
 			$compounda_order_no = trim($data['9']); //J
 
-			$i = $i+1;
+			$i = $i+1; // Next row
 			$data = $sheet_data[$i];
 			$_str_use_date = trim($data['2']); //C
 			$_str_use_date = str_replace('/', '-', $_str_use_date);
@@ -788,10 +788,12 @@ class Compoundas extends Secure_Controller
 			$creator_account = trim($data['2']); //C
 			$suppervisor_account=trim($data['9']); //J
 
-			//Get creator by account
+			// Begin Thông tin người lập kế hoạch
+			//Get creator by account// sử dụng account upload file excel;
+			// Sau này cần thay thế bằng tài khoản đăng nhập;
 			$_oCreator = $this->Employee->get_info_by_account($creator_account);
-			$creator_id = 0; //C
-			$creator_name = ''; //C
+			$creator_id = 0; 
+			$creator_name = '';
 			if(empty($_oCreator))
 			{
 				$failCodes[] = 'TK người lập chưa tồn tại';
@@ -800,9 +802,11 @@ class Compoundas extends Secure_Controller
 				$creator_name = $_oCreator->last_name . ' '. $_oCreator->first_name; //C
 			} 
 
+			// End thông tin người lập kế hoạch
 
 
-
+			//Begin Thông tin người giám sát 
+			// Mặc định khi được phân quyền giám sát (kiểm tra) is_check (có quyền kiểm tra)
 			//Get Suppervisor by account
 			$_oSuppervisor = $this->Employee->get_info_by_account($suppervisor_account);
 			$suppervisor_id = 0; //C
@@ -812,8 +816,10 @@ class Compoundas extends Secure_Controller
 				$failCodes[] = 'TK người phụ trách chưa tồn tại';
 			} else {
 				$suppervisor_id = $_oSuppervisor->person_id;//C
-				$suppervisor_name = $_oSuppervisor->last_name . ' '. $_oSuppervisor->first_name; //C; //C
+				$suppervisor_name = $_oSuppervisor->last_name . ' '. $_oSuppervisor->first_name; //C;
 			}
+			// Thông tin người giám sát sẽ được cập nhật vào khi click "Đạt", chuyển sang trạng thái "Đã xem xét"
+			// End thông tin người giám sát;
 
 			if($use_date === false)
 			{
@@ -825,7 +831,7 @@ class Compoundas extends Secure_Controller
 				$order_date = strtotime('17-09-2022'); //dèault
 			}
 
-
+			// Thông tin về kế hoạch
 			$compounda_data = [
 				'order_date' => $order_date,
 				'compounda_order_no'=>$compounda_order_no,
@@ -843,9 +849,8 @@ class Compoundas extends Secure_Controller
 			debug_log($compounda_data,'$compounda_data');
 			//var_dump($compounda_data);
 
-			$_istart_index = 13; // Bắt đầu đọc từ dòng thứ 14,
+			$_istart_index = 13; // Bắt đầu đọc từ dòng thứ 14, // Lấy chi tiết về kế hoạch
 			$item_orders = [];
-			$export_data = [];
 			for($i = $_istart_index; $i < count($sheet_data); $i++) {
 				//echo $i;
 				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
@@ -857,7 +862,7 @@ class Compoundas extends Secure_Controller
 				if(trim($data[0]) == "Tổng cộng:")
 				{
 					//echo $i;
-					break;
+					break; // đến dòng này thì dừng
 				}
 				debug_log($sheet_data[$i],'$sheet_data[$i]');
 				$ms = trim($data[12]) != null ? trim($data[12]):'';
@@ -871,29 +876,28 @@ class Compoundas extends Secure_Controller
 				
 				$_oItem = $this->Item->get_info_by_ms($ms);
 
-				$_aItemAs = $this->Recipe->get_item_by_ms($ms,'A')->result_array();
+				$_aItemAs = $this->Recipe->get_item_by_ms($ms,'A')->result_array(); // Nguyên liệu và Vật tư để cán luyện ra compound A này;
 
 				//var_dump($_aItemAs);
 				//var_dump($_oItem);
 				
 				if(empty($_aItemAs))
 				{
-					$failCodes[] = $i . 'Chưa tồn tại công thức với MAC nguyên liệu này: '.$ms;
+					$failCodes[] = $i . 'Chưa tồn tại công thức với MÁC nguyên liệu này: '.$ms;
 					continue;
 				}
-				if($_oItem->item_id == 0) // Nếu không tìm thấy item với mác nguyên liệu
+				if($_oItem->item_id == 0) // Nếu không tìm thấy item với mác nguyên liệu // Version tiếp theo có thể tự tạo Compound A;
 				{
-					$failCodes[] = $i . 'Chưa tồn tại sản phẩm với mác nguyên liệu này: '. $ms;
+					$failCodes[] = $i . 'Chưa tồn tại Nguyên Liệu (Compound A) với mác nguyên liệu này: '. $ms;
 					continue;
 				} else {
 					$item_data['item_id'] = $_oItem->item_id;
 					$item_data['item_name'] = $_oItem->name;
 					$item_data['uom_code'] = $_oItem->inventory_uom_code;
 					$item_data['uom_name'] = $_oItem->inventory_uom_name;
-					$item_data['quantity_schedule'] = 75 * $item_data['quantity_batch'];
+					$item_data['quantity_schedule'] = 75 * $item_data['quantity_batch']; // Đang sử dụng 75kg/Mẻ
 					$item_data['created_at'] = time();
-
-					$item_orders[$i]['item_order'] = $item_data;
+					$item_orders[$i]['item_order'] = $item_data; // Nguyên vật liệu COmpound A
 				}
 
 				$_aNvlItems = get_nvlc($_aItemAs,'item_group',['1.*','2.*']);
@@ -972,7 +976,7 @@ class Compoundas extends Secure_Controller
 	public function is_approved()
 	{
 		/**
-		 * Phân quyền cho người xét duyện lệnh sx
+		 * Phân quyền cho người xét duyệt lệnh sx
 		 * xem được đầy đủ, tên các chất
 		 */
 		return true;
@@ -1015,6 +1019,23 @@ class Compoundas extends Secure_Controller
 	}
 
 	public function is_inventory()
+	{
+		/**
+		 * Xem được đã được mã hóa
+		 * Phân quyền cho thủ kho; với vai trò thủ kho; scan barcode  lệnh sx sẽ view chi tiết lệnh sx, để xuất kho theo từng mục; (mác nguyên liệu --> ra nguyên liệu)
+		 **/
+		return true;
+	}
+
+	public function is_checker()
+	{
+		/**
+		 * Xem được đã được mã hóa
+		 * Phân quyền cho thủ kho; với vai trò thủ kho; scan barcode  lệnh sx sẽ view chi tiết lệnh sx, để xuất kho theo từng mục; (mác nguyên liệu --> ra nguyên liệu)
+		 **/
+		return true;
+	}
+	public function is_monitor()
 	{
 		/**
 		 * Xem được đã được mã hóa

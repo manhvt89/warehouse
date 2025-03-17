@@ -1548,7 +1548,7 @@ class Cans extends Secure_Controller
 		//var_dump($item_info);die();
 		
 		
-		
+		$data['item_info'] = $item_info;
 
 		//var_dump($data);
 		$this->load->view('cans/detail_khcl', $data);

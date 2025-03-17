@@ -1352,7 +1352,7 @@ function get_recipe_manage_table_headers()
 	return transform_headers($headers,TRUE,FALSE);
 }
 
-function get_recipe_data_row($item, $index=1)
+function get_recipe_data_row($item, $index=1,$grand = 3)
 {
 	$CI =& get_instance();
 	
@@ -1383,9 +1383,9 @@ function get_recipe_data_row($item, $index=1)
 	$_arr_status = [
 		0 => 'NA',
 		1 => $CI->lang->line('recipes_status_new'),
-		2 => $CI->lang->line('recipes_status_sent'),
+		4 => $CI->lang->line('recipes_status_sent'),
 		3 => $CI->lang->line('recipes_status_reject'),
-		4 => $CI->lang->line('recipes_status_resent'),
+		3 => $CI->lang->line('recipes_status_resent'),
 		5 => $CI->lang->line('recipes_status_approved')
 	];
 	$status = $_arr_status[0];
@@ -1396,6 +1396,7 @@ function get_recipe_data_row($item, $index=1)
 	
 	
 	$return = [
+		'recipes.uniqueId'=>$item->recipe_uuid,
 		'recipes.recipe_uuid' => $index,
 		'name' => $item->name,
 		'master_batch' => $item->master_batch,
@@ -1421,12 +1422,11 @@ function get_compoundas_manage_table_headers()
 	$headers = array(
 			array('compounda_orders.compounda_orders_id' => $CI->lang->line('common_id')),
 			array('compounda_order_no' => $CI->lang->line('compounda_order_no')),
+			array('updated_date' => $CI->lang->line('compounda_order_updated_at')),
 			array('creator_name' => $CI->lang->line('compounda_order_creator_name')),
-			array('order_date' => $CI->lang->line('compounda_order_order_date')),
-			array('use_date' => $CI->lang->line('compounda_order_use_date')),
-			array('suppervisor_name' => $CI->lang->line('compounda_order_suppervisor_name')),
+			array('approver_name' => $CI->lang->line('compounda_order_approver_name')),
+			array('executor_name' => $CI->lang->line('compounda_order_executor_name')),
 			array('area_make_order' => $CI->lang->line('compounda_order_area_make_order')),
-			array('start_at' => $CI->lang->line('compounda_order_start_at')),
 			array('status' => $CI->lang->line('compounda_order_status')),
 			
 		);
@@ -1463,6 +1463,7 @@ function get_compounda_data_row($item, $index)
 		2 => $CI->lang->line('compounda_order_status_reject'),
 		3 => $CI->lang->line('compounda_order_status_resent'),
 		4 => $CI->lang->line('compounda_order_status_approved'),
+
 		5 => $CI->lang->line('compounda_order_status_receiving_material'),
 		6 => $CI->lang->line('compounda_order_status_receiving_material_comfirm'),
 		7 => $CI->lang->line('compounda_order_status_doing'),
@@ -1475,25 +1476,79 @@ function get_compounda_data_row($item, $index)
 	{ 
 		$status = $_arr_status[$item->status];
 	}
-	$start_at = 'NA';
-	if($start_at != 0)
-	{
-		$start_at = date('d/m/Y',$item->use_date);
-	}
+	
+	$link_detail = base_url("{$controller_name}/detail_khcl/{$item->compounda_order_uuid}");
 	
 	$return = [
 		'compounda_orders.compounda_orders_id' => $index,
-		'compounda_order_no' => $item->compounda_order_no,
+		'compounda_order_no' => "<a href='{$link_detail}'>$item->compounda_order_no</a>",
 		'creator_name' => $item->creator_name,
 
-		'order_date'=>date('d/m/Y',$item->order_date),
-		'use_date'=>date('d/m/Y',$item->use_date),
-		'suppervisor_name'=> $item->suppervisor_name,
+		'updated_date'=>date('d/m/Y',$item->updated_date),
+		
+		'approver_name'=> $item->approver_name,
+		'executor_name'=> $item->executor_name,
 		'area_make_order'=>$item->area_make_order,
-		'start_at'=>$start_at,
 		'status'=>$status,
 		'view'=>$controller_name."/view/".$item->compounda_order_uuid,
 		'detail'=>$controller_name."/detail/".$item->compounda_order_uuid,
 		];
 	return $return;
-}?>
+}
+function get_can_data_row($item, $index)
+{
+	//var_dump($item);
+	$CI =& get_instance();
+	$controller_name = strtolower(get_class($CI));
+
+	if ($CI->Employee->has_grant($controller_name.'_view')) {
+		$edit = anchor(
+			$controller_name."/view/$item->compounda_order_uuid",
+			'<span class="glyphicon glyphicon-edit"></span>',
+			array('class' => 'modal-dlg', 'data-btn-submit' => $CI->lang->line('common_submit'), 'title' => $CI->lang->line($controller_name.'_update'))
+		);
+	} else {
+		$edit = '';
+	}
+
+	$_arr_status = [
+		0 => $CI->lang->line('compounda_order_status_new'),
+		1 => $CI->lang->line('compounda_order_status_sent'),
+		2 => $CI->lang->line('compounda_order_status_reject'),
+		3 => $CI->lang->line('compounda_order_status_resent'),
+		4 => $CI->lang->line('compounda_order_status_approved'),
+
+		5 => $CI->lang->line('compounda_order_status_receiving_material'),
+		6 => $CI->lang->line('compounda_order_status_receiving_material_comfirm'),
+		7 => $CI->lang->line('compounda_order_status_doing'),
+		8 => $CI->lang->line('compounda_order_status_done'),
+		9 => $CI->lang->line('compounda_order_status_checking'),
+		10 => $CI->lang->line('compounda_order_status_waiting_approve'),
+	];
+	$status = $_arr_status[0];
+	if(isset($_arr_status[$item->status]))
+	{ 
+		$status = $_arr_status[$item->status];
+	}
+	
+	$link_detail = base_url("{$controller_name}/detail_khcl/{$item->compounda_order_uuid}");
+	
+	$return = [
+		'compounda_orders.compounda_orders_id' => $index,
+		'compounda_order_no' => "<a href='{$link_detail}'>$item->compounda_order_no</a>",
+		'creator_name' => $item->creator_name,
+
+		'updated_date'=>date('d/m/Y',$item->updated_date),
+		
+		'approver_name'=> $item->approver_name,
+		'executor_name'=> $item->executor_name,
+		'area_make_order'=>$item->area_make_order,
+		'status'=>$status,
+		'view'=>$controller_name."/view/".$item->compounda_order_uuid,
+		'detail'=>$controller_name."/detail/".$item->compounda_order_uuid,
+		];
+	return $return;
+}
+
+
+?>

@@ -160,6 +160,10 @@ $lang['export_document_doing_status'] = 'Đang cán';
 $lang['export_document_completed_status'] = 'Đã cán xong';
 $lang['export_document_ready_to_do_btn'] = "Bắt đầu cán";
 $lang['export_document_completed_btn'] = 'Hoàn thành cán';
+$lang['compounda_order_approver_name'] = "Người duyệt";
+$lang['compounda_order_executor_name'] = "Người thực hiện";
+$lang['compounda_order_updated_at'] = "Ngày cập nhật";
+
 
 
 

@@ -7,7 +7,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 //use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-class Compoundas extends Secure_Controller
+class Qccans extends Secure_Controller
 {
 	public function __construct()
 	{
@@ -1249,7 +1249,7 @@ class Compoundas extends Secure_Controller
 					'compounda_order_item_id' => 0,
 					'created_at' => $time,
 					'ms' => $ms,
-					'code'=>"BAT{$time}{$j}{$i}",
+					'code'=>"BAT{$time}",
 					'item_name' => '',
 					'uom_code' => '',
 					'uom_name' => '',

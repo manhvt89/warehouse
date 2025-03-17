@@ -1,5 +1,6 @@
 
-
+<?php $this->load->view("partial/header"); ?>
+<script src="/dist/jquery.number.min.js"></script>
 <style type="text/css">
 	.number{
 		text-align: right;
@@ -206,19 +207,7 @@
 	*/
 </style>
 <div id="recipe_basic_info" width="100%">
-	<table id="recipe-header">
-		<tr>
-			<td><div class="recipe-header-company-name"><?=$this->config->item('company')?></div></td>
-			<td>
-			<div class="recipe-header-company-info">
-				<p><?=$this->config->item('address')?></p>
-				<p>Tel : (251) 352 5199 / 352 5200  _ Fax:(251) 352 5222</p>
-			</div>
-			</td>
-		</tr>
-
-	</table>
-	<!-- #endregion recipe-header -->
+	
 	<!-- #region recipe-title-->
 	<table id="compounda-order-title">
 		<tr>
@@ -230,58 +219,21 @@
 		</tr>
 
 	</table>
-	<!-- #endregion -->
-	<!-- #region recipe-info-->
-	<?php  if($item_info->compounda_order_id > 0): ?>
-	<table id="compounda-order-info">
-	
+	<table id="recipe-header">
 		<tr>
-		<td rowspan="2">
-				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->compounda_order_no); ?>
-				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
-			</td>
-			<td>
-				Ngày cập nhật
-			</td>
-			<td>
-				Tháng/ Năm
-			</td>
-			<td>
-				Người lập
-			</td>
-			<td>
-				Người phê duyệt
-			</td>
-			<td>
-				Người thực hiện
-			</td>
-			<td>
-				Trạng thái
-			</td>
-		</tr>
-		<tr>
-			
-			<td>
-				<b><?php echo date('d/m/Y',$item_info->updated_date) ?></b>
-			</td>
-			<td>
-				
-			</td>
-			<td>
-			<?php echo $item_info->creator_name ?>
-			</td>
-			<td>
-			<?php echo $item_info->approver_name ?>
-			</td>
-			<td>
-			<?php echo $item_info->executor_name ?>
-			</td>
-			<td>
-			<?php echo $item_info->status ?>
-			</td>
+			<td><div class="recipe-header-company-name">
+			<?php echo form_open($controller_name."/searchlenh", array('id'=>'seachlenh', 'class'=>'form-horizontal panel panel-default')); ?>
+				<input type="text" name="compounda_order_uuid_text" value="" id="compounda_order_uuid_text" class="form-control input-sm ui-autocomplete-input" size="50" tabindex="1" autocomplete="off">
+				<?php echo form_hidden('compounda_order_uuid',$item_info->compounda_order_uuid) ?>
+			<?php echo form_close(); ?>
+			</div></td>
 		</tr>
 
 	</table>
+	<!-- #endregion recipe-header -->
+	<!-- #endregion -->
+	<!-- #region recipe-info-->
+	<?php if($item_info->compounda_order_id > 0):?>
 	<?php $_oList_lenh_can = $item_info->list_compound_a;?>
 	<!-- #endregion -->
 	<!-- #region recipe-body-kneader-a-->
@@ -456,7 +408,7 @@ Used
 								
 							</td>
 							<td>
-								
+								<?php echo "<a href='/cans/can/{$lenh->compounda_order_item_uuid}'>Bắt đầu cân</a>"; ?>
 							</td>
 							<td>
 								
@@ -487,6 +439,29 @@ Used
 	
 </div>
 <script type="text/javascript">
+
+	/*$("#compounda_order_uuid_text").autocomplete(
+	{
+		source: '<?php echo site_url($controller_name."/item_search"); ?>',
+    	minChars: 0,
+    	autoFocus: false,
+       	delay: 600,
+		select: function (a, ui) {
+			$(this).val(ui.item.value);
+			$("#add_item_form").submit();
+			return false;
+		}
+    });
+	*/
+
+	$('#compounda_order_uuid_text').keypress(function (e) {
+		if (e.which == 13) {
+			$('#seachlenh').submit();
+			return false;
+		}
+	});
+
+   
 	//validation and submit handling
 	//(function($) {
         // You pass-in jQuery and then alias it with the $-sign
@@ -503,3 +478,5 @@ Used
 	
 	})(jQuery);
 </script>
+
+<?php $this->load->view("partial/footer"); ?>

@@ -30,17 +30,7 @@ class Compounda extends CI_Model
 		return ($this->db->get()->num_rows() == 1);
 	}
 
-	/*
-	get item in cart to check
-	*/
-	public function get_items_in_cart($_aItemNUmber)
-	{
-		$this->db->from('items');
-		$this->db->where_in('item_number', $_aItemNUmber);
-		return $this->db->get()->result();
-
-	}
-
+	
 	/*
 	Gets total of rows
 	*/
@@ -122,7 +112,7 @@ class Compounda extends CI_Model
 	/*
 	Gets information about a particular item
 	*/
-	public function get_info($item_id)
+	public function get_info($item_id,$order_number='')
 	{
 		$this->db->select('compounda_orders.*');
 		$this->db->from('compounda_orders');
@@ -139,7 +129,7 @@ class Compounda extends CI_Model
 		{
 			$item_obj = $query->row();
 
-			$_list_compound_as = $this->get_list_items_in_order($item_obj->compounda_order_id);
+			$_list_compound_as = $this->get_list_items_in_order($item_obj->compounda_order_id,$order_number);
 
 			if(empty($_list_compound_as))
 			{
@@ -216,8 +206,7 @@ class Compounda extends CI_Model
 		}
 		if(!$this->exists($compounda_data))
 		{
-			$compounda_data['created_at'] = $time;
-
+			
 			$this->db->trans_start();
 			$this->db->insert('compounda_orders', $compounda_data);
 			
@@ -229,50 +218,51 @@ class Compounda extends CI_Model
 				foreach($item_orders as $key=>$value)
 				{
 				
-					$item = $value['item_order'];
+					$item = $value['item_data'];
 					if(empty($item))
 					{
 						$this->db->trans_rollback();
 						$this->db->trans_complete();
 						return FALSE;
 					}
-					$item['created_at'] = $time;
+
 					$item['compounda_order_id'] = $compounda_data['compounda_order_id'];
 					$this->db->insert('compounda_order_item', $item);
 					$compounda_order_item_id = $this->db->insert_id();
 
-					$export_data = $value['export_data'];
-					if(empty($export_data))
+					$batch_data =  $value['detail_batch'];
+
+					if(empty($batch_data))
 					{
 						$this->db->trans_rollback();
 						$this->db->trans_complete();
 						return FALSE;
 					}
-					
-					foreach($export_data as $k=>$v)
+					foreach($batch_data as $batch_item)
 					{
-						$_aListItems = $v['list_items'];
-						if(empty($_aListItems))
-						{
-							$this->db->trans_rollback();
-							$this->db->trans_complete();
-							return FALSE;
-						}
-						unset($v['list_items']);
-						$v['created_at'] = $time;
-						$v['compounda_order_id'] = $compounda_data['compounda_order_id'];
-						$v['compounda_order_item_id'] = $compounda_order_item_id;
-						
-						$this->db->insert('export_documents', $v);
-						$_iExportDocumentId =  $this->db->insert_id();
-						foreach($_aListItems as $_k=>$_item)
-						{
-							$_item['export_document_id'] = $_iExportDocumentId;
-							$_aListItems[$_k] = $_item;
-						}
-						$this->db->insert_batch('export_document_items', $_aListItems);
+						$batch_item['compounda_order_item_id'] = $compounda_order_item_id;
+						$this->db->insert('ospos_compounda_order_item_completed', $batch_item);
+						$batch_id = $this->db->insert_id();
+
+						//Insert QC document record
+						$qc_item = [
+							'qc_cpa_code'=>"QCCA {$batch_item['code']}",
+							'compounda_order_item_completed_id'=> $batch_id,
+							'compounda_order_id' =>$compounda_data['compounda_order_id'],
+							'compounda_order_item_id'=>$compounda_order_item_id,
+							'created_at'=>time(),
+							'ms'=>$batch_item['ms'],
+							'qc_id'=>1,
+							'qc_name'=>'AD',
+							'completed_at'=>0,
+							'started_at'=>0,
+							'status'=>1,
+							'tieu_chi'=>$value['result_qc'],
+							'results'=>''
+						];
+						$this->db->insert('ospos_qc_cpa_documents', $qc_item);
+						$qc_pa_id = $this->db->insert_id();
 					}
-					
 				}	
 			}
 
@@ -581,19 +571,27 @@ class Compounda extends CI_Model
 	/**
 	 * Lấy danh sách item của lệnh sản xuất Compound A.
 	 */
-	public function get_list_items_in_order($order_id)
+	public function get_list_items_in_order($order_id,$order_number = '')
 	{
 		$this->db->select('compounda_order_item.*');
 		$this->db->from('compounda_order_item');
 		$this->db->where('compounda_order_id', $order_id);
+		if($order_number != '')
+		{
+			$this->db->where('order_number', $order_number);
+		}
 		return $this->db->get()->result();
 	}
 
-	public function get_list_tasks_in_order_item($order_item_id)
+	public function get_list_tasks_in_order_item($order_item_id,$code='')
 	{
 		$this->db->select('compounda_order_item_completed.*');
 		$this->db->from('compounda_order_item_completed');
 		$this->db->where('compounda_order_item_id', $order_item_id);
+		if($code != '')
+		{
+			$this->db->where('code', $code);
+		}
 		return $this->db->get()->result();
 	}
 	/**
@@ -763,8 +761,91 @@ class Compounda extends CI_Model
 		return $this->update_export_document($export_document);
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param mixed $item_id
+	 * Lấy thông tin chi tiết một lệnh cán --> các mẻ --> thông tin các mẻ và thông tin QC
+	 */
+	public function get_info_lenh($item_id, $code ='')
+	{
+		$this->db->select('compounda_order_item.*');
+		$this->db->from('compounda_order_item');
+		if(strlen($item_id)> 20) // Nêu chuỗi lớn hơn 20 sẽ sử dụng item_uuid
+		{
+			$this->db->where('compounda_order_item_uuid', $item_id);
+		} else{
+			$this->db->where('compounda_order_item_id', $item_id); // support version cũ
+		}
 
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			$item_obj = $query->row();
+
+			$item_obj->list_batchs = $this->get_list_tasks_in_order_item($item_obj->compounda_order_item_id,$code);
+			//var_dump($item_obj->list_batchs);die();
+			
+			return $item_obj;
+		}
+		else
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			$item_obj = new stdClass();
+
+			//Get all the fields from items table
+			foreach($this->db->list_fields('items') as $field)
+			{
+				$item_obj->$field = '';
+			}
+			
+			$item_obj->compounda_order_item_uuid = '';
+			$item_obj->compounda_order_item_id = 0;
+			$item_obj->list_batchs = [];
+			return $item_obj;
+		}
+	}
+	
+	public function get_info_task_by_order_number($order_number)
+	{
+		$this->db->select('compounda_order_item.*');
+		$this->db->from('compounda_order_item');
+		$this->db->where('order_number', $order_number);
+		return $this->db->get()->row();
+	}	
+
+
+	
+
+	public function search_lenh($search, $filters, $rows = 0, $limit_from = 0, $sort = 'compounda_orders.created_at', $order = 'asc')
+	{
+		$this->db->select('compounda_orders.*');
+		$this->db->from('compounda_orders');
+		$this->db->where('FROM_UNIXTIME(created_at) BETWEEN ' . $this->db->escape($filters['start_date']) . ' AND ' . $this->db->escape($filters['end_date'].' 23:59:59'));
+
+		if(!empty($search))
+		{
+			
+			$this->db->group_start();
+				$this->db->like('compounda_order_no', $this->db->escape_like_str($search));
+			$this->db->group_end();
+				
+		}
 		
+		// avoid duplicated entries with same name because of inventory reporting multiple changes on the same item in the same date range
+		//$this->db->group_by('items.item_id');
+		
+		// order by name of item
+		$this->db->order_by($sort, $order);
+
+		if($rows > 0) 
+		{	
+			$this->db->limit($rows, $limit_from);
+		}
+
+		return $this->db->get();
+	}
 	
 }
 ?>

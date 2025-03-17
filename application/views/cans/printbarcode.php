@@ -1,5 +1,6 @@
 
-
+<?php $this->load->view("partial/header"); ?>
+<script src="/dist/jquery.number.min.js"></script>
 <style type="text/css">
 	.number{
 		text-align: right;
@@ -206,260 +207,34 @@
 	*/
 </style>
 <div id="recipe_basic_info" width="100%">
-	<table id="recipe-header">
-		<tr>
-			<td><div class="recipe-header-company-name"><?=$this->config->item('company')?></div></td>
-			<td>
-			<div class="recipe-header-company-info">
-				<p><?=$this->config->item('address')?></p>
-				<p>Tel : (251) 352 5199 / 352 5200  _ Fax:(251) 352 5222</p>
-			</div>
-			</td>
-		</tr>
 
-	</table>
-	<!-- #endregion recipe-header -->
-	<!-- #region recipe-title-->
-	<table id="compounda-order-title">
-		<tr>
-			<td>
-				<div class="compounda-order-title">
-						<?=$this->lang->line('compounda-order_title')?>
-					</div>
-			</td>
-		</tr>
-
-	</table>
-	<!-- #endregion -->
 	<!-- #region recipe-info-->
-	<?php  if($item_info->compounda_order_id > 0): ?>
+	<?php if($item_info->compounda_order_item_id > 0):?>
 	<table id="compounda-order-info">
 	
 		<tr>
-		<td rowspan="2">
-				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->compounda_order_no); ?>
+			<td class="code">
+				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->order_number); ?>
 				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
 			</td>
-			<td>
-				Ngày cập nhật
-			</td>
-			<td>
-				Tháng/ Năm
-			</td>
-			<td>
-				Người lập
-			</td>
-			<td>
-				Người phê duyệt
-			</td>
-			<td>
-				Người thực hiện
-			</td>
-			<td>
-				Trạng thái
-			</td>
 		</tr>
-		<tr>
-			
-			<td>
-				<b><?php echo date('d/m/Y',$item_info->updated_date) ?></b>
-			</td>
-			<td>
-				
-			</td>
-			<td>
-			<?php echo $item_info->creator_name ?>
-			</td>
-			<td>
-			<?php echo $item_info->approver_name ?>
-			</td>
-			<td>
-			<?php echo $item_info->executor_name ?>
-			</td>
-			<td>
-			<?php echo $item_info->status ?>
-			</td>
-		</tr>
-
+	
 	</table>
-	<?php $_oList_lenh_can = $item_info->list_compound_a;?>
+	<?php $_oList_batchs = $item_info->list_batchs;?>
 	<!-- #endregion -->
 	<!-- #region recipe-body-kneader-a-->
 	<table id="compounda-order-body-kneader-a">
-				<tr class="compounda-order-header-body-kneader-a">
-					<td rowspan="2">
-						Lệnh sản xuất
-					</td>
-					<td rowspan="2">
-						Mã định danh
-					<td rowspan="2">
-						Số lượng sản xuất
-					</td>
-					<td rowspan="2">
-						Vật liệu
-					</td>
-					<td colspan="5">
-					Khối lượng nguyên liệu (Kg)
-Raw material volumes
-					</td>
-					<td colspan="3">
-					Thời gian thực
-Real time
-					</td>
-					<td colspan="1">
-					Man
-					</td>
-					<td rowspan="2">
-					Trạng thái
-					</td>
-					<td rowspan="2">
-					<?=$this->lang->line('compounda_order_note')?>
-					</td>
-				</tr>
-				<tr class="compounda-order-header-body-kneader-a">
-					<td>
-					Phôi 
-					GW(g)
-						</td>
-						<td>
-						Sử dụng
-Used 
-
-						</td>
-						<td>
-						TLg' mẽ Batch
-
-						</td>
-						<td>
-						Thực tế Actual	
-						</td>
-						<td>
-						Tồn cuối Balance
-					</td>
-					<td>
-					Bắt đầu Begin 	 			
-
-						</td>
-						<td>
-						Kết thúc Deadline 
-						</td>
-						<td>
-						Giờ Cán Work time
-						</td>
-						<td>
-						Ca Worker
-					</td>
-					
-					
-				</tr>
+				
 				<?php
-					if(!empty($_oList_lenh_can))
+					if(!empty($_oList_batchs))
 					{
-						foreach($_oList_lenh_can as $lenh)
+						foreach($_oList_batchs as $batch)
 						{ 
 				?>
-
-						<tr class="one">
-							<td>
-								<?=$lenh->order_number ?>
-							</td>
-							<td class="code">
-								<?=$lenh->item_code ?>
-							</td>
-							<td class="number">
-								<?=number_format($lenh->quantity) ?>
-							</td>
-							<td>
-								<?=$lenh->ms ?>
-							</td>
-							<td class="number">
-								<?=number_format($lenh->kl_phoi,0) ?>
-							</td>
-							<td class="number">
-								<?=number_format($lenh->kl_su_dung,0) ?>
-							</td>
-							<td class="number">
-								<?=number_format($lenh->kl_batch,0) ?>
-							</td>
-							<td class="number">
-								<?=number_format($lenh->quantity_schedule) ?>
-							</td>
-							<td class="number">
-								<?=number_format($lenh->kl_cuoi_ky) ?>
-							</td>
-							<td>
-								<?=$lenh->start_at == 0 ? '': $lenh->start_at?>
-							</td>
-							<td>
-								<?=$lenh->end_at == 0 ? '': $lenh->end_at?>
-							</td>
-							<td>
-								<?=($lenh->end_at -  $lenh->start_at) == 0 ? '': ($lenh->end_at -  $lenh->start_at)?>
-							</td>
-							<td>
-								<?=$lenh->phan_cong ?>
-							</td>
-							<td>
-								<?php 
-								$status = '';
-								if($lenh->status == 4)
-								{
-									$status = ($lenh->running == 1) ? 'Đang cán' : 'Chờ cán';
-								} else {
-									$status = 'Chờ phê duyệt';
-								}
-								echo $status;
-								?>
-							</td>
-							<td>
-								<?=$lenh->note ?>
-							</td>
-						</tr>
 						<tr class="two">
-							<td>
-							<?php $barcode = $this->barcode_lib->generate_receipt_barcode($lenh->order_number); ?>
-									<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
-							</td>
-							<td>
-								
-							</td>
-							<td>
-								
-							</td>
 							<td class="code">
-								<?=" 0/{$lenh->so_luong_batch} Mẻ" ?>
-							</td>
-							<td>
-								
-							</td>
-							<td>
-								
-							</td>
-							<td class="number">
-								<?="$lenh->so_luong_batch" ?>
-							</td>
-							<td>
-								
-							</td>
-							<td>
-								
-							</td>
-							<td>
-								
-							</td>
-							<td>
-								
-							</td>
-							<td>
-													</td>
-							<td>
-								
-							</td>
-							<td>
-								
-							</td>
-							<td>
-								
+							<?php $barcode_code = $this->barcode_lib->generate_receipt_barcode($batch->code); ?>
+									<img src='data:image/png;base64,<?php echo $barcode_code; ?>' /><br/>
 							</td>
 						</tr>
 				<?php
@@ -478,7 +253,7 @@ Used
 		<table id="compounda-order-info">
 			<tr>
 				<td class="code">
-					Kế hoạch cán luyện không tồn tại!
+					Lệnh cán luyện không tồn tại!
 				</td>
 
 			</tr>
@@ -503,3 +278,5 @@ Used
 	
 	})(jQuery);
 </script>
+
+<?php $this->load->view("partial/footer"); ?>

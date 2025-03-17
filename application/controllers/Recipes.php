@@ -66,15 +66,17 @@ class Recipes extends Secure_Controller
         //$search = str_replace(' ','%',$search);
 		$this->item_lib->set_item_location($this->input->get('stock_location'));
 
-		$filters = array('start_date' => $this->input->get('start_date'),
-						'end_date' => $this->input->get('end_date'),
-						'stock_location_id' => $this->item_lib->get_item_location(),
-						'empty_upc' => FALSE,
-						'low_inventory' => FALSE, 
-						'is_serialized' => FALSE,
-						'no_description' => FALSE,
-						'search_custom' => FALSE,
-						'is_deleted' => FALSE);
+		$filters = [
+			'start_date' => $this->input->get('start_date'),
+			'end_date' => $this->input->get('end_date'),
+			'stock_location_id' => $this->item_lib->get_item_location(),
+			'empty_upc' => FALSE,
+			'low_inventory' => FALSE,
+			'is_serialized' => FALSE,
+			'no_description' => FALSE,
+			'search_custom' => FALSE,
+			'is_deleted' => FALSE
+		];
 		
 		// check if any filter is set in the multiselect dropdown
 		$filledup = array_fill_keys($this->input->get('filters'), TRUE);
@@ -89,7 +91,15 @@ class Recipes extends Secure_Controller
 		{
 			debug_log($item,'$item');
 			$_index++;
-			$data_rows[] = $this->xss_clean(get_recipe_data_row($item, $_index));
+			if($this->grant_id == 5)
+			{
+				if($item->status > 3)
+				{
+					$data_rows[] = $this->xss_clean(get_recipe_data_row($item, $_index,$this->grant_id));
+				}
+			} else {
+				$data_rows[] = $this->xss_clean(get_recipe_data_row($item, $_index,$this->grant_id));
+			}
 		}
 
 		echo json_encode(array('total' => $total_rows, 'rows' => $data_rows));
@@ -537,7 +547,7 @@ class Recipes extends Secure_Controller
 		$this->load->helper('file');
 
         /* Allowed MIME(s) File */
-        $file_mimes = array(
+        $file_mimes = [
             'application/octet-stream', 
             'application/vnd.ms-excel', 
             'application/x-csv', 
@@ -548,7 +558,7 @@ class Recipes extends Secure_Controller
             'application/vnd.msexcel', 
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        );
+        ];
 		if($_FILES['file_path']['error'] != UPLOAD_ERR_OK)
 		{
 			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_failed')));
@@ -631,7 +641,7 @@ class Recipes extends Secure_Controller
 				'grade_of_standard'=>$grade_of_standard,
 				'date_issued'=>$_int_date_issued,
 				'certificate_no'=>$certificate_no,
-				'status'=>5
+				'status'=>1
 
 			];
 			$item_as = [];
@@ -725,9 +735,92 @@ class Recipes extends Secure_Controller
 			debug_log($recipe_data,'$recipe_data');
 			debug_log($item_bs,'$item_bs');
 			debug_log($item_as,'$item_as');
-			$save_rs = $this->Recipe->save($recipe_data,$item_as,$item_bs);
 			
+			$allowed_locations = $this->Stock_location->get_allowed_locations();
+			
+			if(!$this->Item->exists_by_code($master_batch,'CA'))
+			{
+				$_item_data = [
+					'name' => "CA - {$master_batch}",
+					'item_number'=>"CA$master_batch",
+					'type'=>'CA',
+					'normal_name' => "CA - {$master_batch}",
+					'code'=>$master_batch
+				];
+				if($this->Item->save($_item_data))
+				{
+					$items_taxes_data = [
+						['name' => 'Tax 1', 'percent' => 0],
+						['name' => 'Tax 2', 'percent' => 0]
+					];
+					$this->Item_taxes->save($items_taxes_data, $_item_data['item_id']);
+					foreach($allowed_locations as $key=>$value)
+					{
+						$item_quantity_data = [
+							'item_id' => $_item_data['item_id'],
+							'location_id' => $key,
+							'quantity' => 0,
+							'inventory_uom_name'=>'Kg',
+							'inventory_uom_code'=>'Kg',
+							'item_location'=>'CB',
+						];
+						$this->Item_quantity->save($item_quantity_data, $_item_data['item_id'], $key);
 
+						$excel_data = [
+							'trans_items' => $_item_data['item_id'],
+							'trans_user' => 1,
+							'trans_comment' => 'Hệ thống tự động',
+							'trans_location' => $value,
+							'trans_inventory' => $key
+						];
+
+						$this->Inventory->insert($excel_data);
+					}
+				}
+			}
+
+			if(!$this->Item->exists_by_code($master_batch,'CB'))
+			{
+				$_item_data = [
+					'name' => "CB - {$master_batch}",
+					'item_number'=>"CB{$master_batch}",
+					'type'=>'CB',
+					'normal_name' => "CB - {$master_batch}",
+					'code'=>$master_batch
+				];
+				if($this->Item->save($_item_data))
+				{
+					$items_taxes_data = [
+						['name' => 'Tax 1', 'percent' => 0],
+						['name' => 'Tax 2', 'percent' => 0]
+					];
+					$this->Item_taxes->save($items_taxes_data, $_item_data['item_id']);
+					foreach($allowed_locations as $key=>$value)
+					{
+						$item_quantity_data = [
+							'item_id' => $_item_data['item_id'],
+							'location_id' => $key,
+							'quantity' => 0,
+							'inventory_uom_name'=>'Kg',
+							'inventory_uom_code'=>'Kg',
+							'item_location'=>'CB',
+						];
+						$this->Item_quantity->save($item_quantity_data, $_item_data['item_id'], $key);
+
+						$excel_data = [
+							'trans_items' => $_item_data['item_id'],
+							'trans_user' => 1,
+							'trans_comment' => 'Hệ thống tự động',
+							'trans_location' => $value,
+							'trans_inventory' => $key
+						];
+
+						$this->Inventory->insert($excel_data);
+					}
+				}
+			}
+
+			$save_rs = $this->Recipe->save($recipe_data,$item_as,$item_bs);
 			if($save_rs)
 			{
 				
@@ -812,6 +905,46 @@ class Recipes extends Secure_Controller
 		$data['arrItem_bs'] = $arrItem_bs;
 		//var_dump($data);
 		$this->load->view('recipes/detail', $data);
+	}
+
+	public function approve()
+	{
+		//if($this->Employee->has_grant('reipces_is_approved'))
+		//{
+
+			$uuid = $this->input->post('uuid');
+
+			$rs = $this->Recipe->approved($uuid);
+			if($rs)
+			{
+				echo json_encode(['success' => TRUE, 'message' => $this->lang->line('items_excel_import_success')]);
+			} else {
+				echo json_encode(['success' => FALSE, 'message' => $this->lang->line('items_excel_import_false')]);
+			}
+		//} else {
+		//	echo json_encode(['success' => FALSE, 'message' => $this->lang->line('items_excel_import_false')]);
+		//}
+			
+	}
+	public function sent()
+	{
+		//echo $this->grant_id;
+		//if($this->Employee->has_grant('reipces_is_editor'))
+		//{
+			$uuid = $this->input->post('uuid');
+			//var_dump($uuid = $this->input->post('uuid'));
+
+			$rs = $this->Recipe->sent($uuid);
+			if($rs)
+			{
+				echo json_encode(['success' => TRUE, 'message' => $this->lang->line('items_excel_import_success')]);
+			} else {
+				echo json_encode(['success' => FALSE, 'message' => $this->lang->line('items_excel_import_false')]);
+			}
+		//}else {
+		//	echo json_encode(['success' => FALSE, 'message' => 'Không được cấp quyền']);
+		//}
+			
 	}
 
 }

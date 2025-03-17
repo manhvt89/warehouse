@@ -471,7 +471,7 @@ CREATE TABLE `ospos_compounda_orders` (
   `approver_id` int(11) NOT NULL DEFAULT 0,
   `approver_name` varchar(150) NOT NULL DEFAULT '',
   `approver_account` varchar(50) NOT NULL DEFAULT '',
-  
+  `code` varchar(50) NOT NULL DEFAULT '',
   `area_make_order` varchar(50) DEFAULT NULL, 
   `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`compounda_order_id`)
@@ -493,7 +493,7 @@ CREATE TABLE `ospos_compounda_order_item` (
   `ms` varchar(50) DEFAULT '', 
   `order_number` varchar(50) DEFAULT '', 
   `item_code` varchar(50) DEFAULT '', 
-
+  `code` varchar(50) NOT NULL DEFAULT '',
   `quantity` decimal(15,3) NOT NULL DEFAULT 0.00,
   `kl_phoi` decimal(15,3) NOT NULL DEFAULT 0.00,
   `kl_batch` decimal(15,3) NOT NULL DEFAULT 0.00,
@@ -506,10 +506,10 @@ CREATE TABLE `ospos_compounda_order_item` (
   `so_luong_batch` int(5) NOT NULL DEFAULT 1,
 
   `quantity_schedule` decimal(15,3) NOT NULL DEFAULT 0.00,
-  
+  `running` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` int(11) NOT NULL DEFAULT 0,
   `note` varchar(255) DEFAULT '',
-
+  `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`compounda_order_item_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -522,6 +522,7 @@ CREATE TABLE `ospos_compounda_order_item_completed` (
   `compounda_order_item_id` int(11) NOT NULL DEFAULT 0,
   `created_at` int(11) NOT NULL DEFAULT 0,
   `ms` varchar(50) NOT NULL DEFAULT '',
+  `code` varchar(50) NOT NULL DEFAULT '',
   `item_name` varchar(150) NOT NULL DEFAULT '',
   `uom_code` varchar(10) NOT NULL DEFAULT '',
   `uom_name` varchar(10) NOT NULL DEFAULT '',
@@ -556,6 +557,8 @@ CREATE TABLE `ospos_qc_cpa_documents` (
   `started_at` int(11) NOT NULL DEFAULT 0,
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `results` text NOT NULL DEFAULT '',
+  `tieu_chi` text NOT NULL DEFAULT '',
+  
   
   PRIMARY KEY (`qc_cpa_document_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

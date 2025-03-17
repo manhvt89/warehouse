@@ -7,11 +7,11 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 //use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-class Compoundas extends Secure_Controller
+class Cans extends Secure_Controller
 {
 	public function __construct()
 	{
-		parent::__construct('compoundas');
+		parent::__construct('cans');
 		$this->load->library('item_lib');
 		$this->load->library('barcode_lib');
 	}
@@ -56,7 +56,7 @@ class Compoundas extends Secure_Controller
 			}
 
 			//var_dump($data);
-			$this->load->view('compoundas/detail', $data);
+			$this->load->view('cans/detail', $data);
 			//$this->load->view('recipes/detail', $data);
 
 		} 
@@ -85,7 +85,7 @@ class Compoundas extends Secure_Controller
 			}
 
 			//var_dump($data);
-			$this->load->view('compoundas/detail', $data);
+			$this->load->view('cans/detail', $data);
 		}
 		else {
 
@@ -103,7 +103,7 @@ class Compoundas extends Secure_Controller
 				'is_deleted' => $this->lang->line('items_is_deleted'));
 
 			$data['grant_id'] = $this->grant_id; //Phân quyền module 
-			$this->load->view('compoundas/manage', $data);
+			$this->load->view('cans/manage', $data);
 		}
 	}
 
@@ -1249,7 +1249,7 @@ class Compoundas extends Secure_Controller
 					'compounda_order_item_id' => 0,
 					'created_at' => $time,
 					'ms' => $ms,
-					'code'=>"BAT{$time}{$j}{$i}",
+					'code'=>"BAT{$time}",
 					'item_name' => '',
 					'uom_code' => '',
 					'uom_name' => '',
@@ -1502,10 +1502,10 @@ class Compoundas extends Secure_Controller
 		$data['item_info'] = $item_info;
 
 		//var_dump($data);
-		$this->load->view('compoundas/detail_khcl', $data);
+		$this->load->view('cans/detail_khcl', $data);
 	}
 
-	public function printBarcode($lenh_uuid)
+	public function can($lenh_uuid)
 	{
 		//$person_id = $this->person_id;
 		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
@@ -1516,13 +1516,76 @@ class Compoundas extends Secure_Controller
 
 		
 
-		$item_info = $this->Compounda->get_info_lenh($lenh_uuid);
+		$item_info = $this->Compounda->get_info_lenh($lenh_uuid,'');
+		//var_dump($item_info->ms);die();
+		$recipe_info = $this->Recipe->get_info_by_ms($item_info->ms);
+		$recipe_ItemA = $this->Recipe->get_item_by_ms($item_info->ms,'A')->result();
+		$recipe_ItemB = $this->Recipe->get_item_by_ms($item_info->ms,'B')->result();
 		
 		$data['item_info'] = $item_info;
+		$data['recipe_info'] = $recipe_info;
+		$data['arrItem_as'] = $recipe_ItemA;
+		$data['arrItem_bs'] = $recipe_ItemB;
+		$data['isApproved'] = 1;
+		$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
+
+		//var_dump($recipe_ItemA);die();
+		$this->load->view('cans/listme', $data);
+	}
+
+	public function searchlenh()
+	{
+		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
+		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
+		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
+		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
+		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
+
+		$number_order = $this->input->post('compounda_order_uuid_text');
+		$uuid = $this->input->post('compounda_order_uuid');
+
+		$item_info = $this->Compounda->get_info($uuid,$number_order);
+		//var_dump($item_info);die();
+		
+		
+		
 
 		//var_dump($data);
-		$this->load->view('compoundas/printbarcode', $data);
+		$this->load->view('cans/detail_khcl', $data);
 	}
+
+	public function seachcan()
+	{
+		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
+		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
+		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
+		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
+		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
+
+		$code = $this->input->post('code');
+		$uuid = $this->input->post('compounda_order_item_uuid');
+
+		$item_info = $this->Compounda->get_info_lenh($uuid,$code);
+		//var_dump($item_info);die();
+		$recipe_info = $this->Recipe->get_info_by_ms($item_info->ms);
+		$recipe_ItemA = $this->Recipe->get_item_by_ms($item_info->ms,'A')->result();
+		$recipe_ItemB = $this->Recipe->get_item_by_ms($item_info->ms,'B')->result();
+		
+		$data['item_info'] = $item_info;
+		$data['recipe_info'] = $recipe_info;
+		$data['arrItem_as'] = $recipe_ItemA;
+		$data['arrItem_bs'] = $recipe_ItemB;
+		$data['isApproved'] = 1;
+		$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
+		
+		$data['item_info'] = $item_info;
+		
+
+		//var_dump($data);
+		$this->load->view('cans/listme', $data);
+	}
+
+	
 	
 
 }

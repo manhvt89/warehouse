@@ -1614,6 +1614,11 @@ class Items extends Secure_Controller
 				{
 					$invalidated = $this->Item->item_number_exists($item_number);
 				}
+				if($_sType == 'SP'){
+					if($item_data['code']){
+						$invalidated = $this->Item->exists_by_code($item_data['code']);
+					}
+				}
 				if($invalidated)
 				{
 					$failCodes[] = $i;
@@ -1652,23 +1657,23 @@ class Items extends Secure_Controller
 						$item_location = $data[$col+2] != null ? $data[$col+2] : '';
 						if(array_key_exists($location_id, $allowed_locations))
 						{
-							$item_quantity_data = array(
-								'item_id' => $item_data['item_id'],
-								'location_id' => $location_id,
-								'quantity' => $quantity,
-								'inventory_uom_name'=>$item_data['inventory_uom_name'],
-								'inventory_uom_code'=>$item_data['inventory_uom_code'],
-								'item_location'=>$item_location,
-							);
+							$item_quantity_data = [
+									'item_id' => $item_data['item_id'],
+									'location_id' => $location_id,
+									'quantity' => $quantity,
+									'inventory_uom_name' => $item_data['inventory_uom_name'],
+									'inventory_uom_code' => $item_data['inventory_uom_code'],
+									'item_location' => $item_location,
+								];
 							$this->Item_quantity->save($item_quantity_data, $item_data['item_id'], $location_id);
 
-							$excel_data = array(
-								'trans_items' => $item_data['item_id'],
-								'trans_user' => $employee_id,
-								'trans_comment' => $comment,
-								'trans_location' => $data[$col],
-								'trans_inventory' => $data[$col + 1]
-							);
+							$excel_data = [
+									'trans_items' => $item_data['item_id'],
+									'trans_user' => $employee_id,
+									'trans_comment' => $comment,
+									'trans_location' => $data[$col],
+									'trans_inventory' => $data[$col + 1]
+								];
 
 							$this->Inventory->insert($excel_data);
 							unset($allowed_locations[$location_id]);

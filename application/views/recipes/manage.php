@@ -77,7 +77,7 @@ $(document).ready(function()
         resource: '<?php echo site_url($controller_name);?>',
         headers: _headers,
         pageSize: <?php echo $this->config->item('lines_per_page'); ?>,
-        uniqueId: 'recipes.recipe_uuid',
+        uniqueId: 'recipes.uniqueId',
         showExport: true,
         queryParams: function() {
             return $.extend(arguments[0], {
@@ -95,12 +95,84 @@ $(document).ready(function()
         }
     });
 
+    $(document).on('click', '#PrintBtn', function() {
+        
+        window.print();
+    });
+
+    $(document).on('click', '#approveButton', function() {
+        //alert('Nút phê duyệt đã được click!');
+        var uuid = $(this).data('uuid');
+        var csrf_ospos_v3 = csrf_token();
+        var rowIndex = $(this).data('index'); // Lấy index hàng
+        console.log('Row Index:', rowIndex);
+        //console.log(uuid);
+        $.ajax({
+            url: '<?=base_url('recipes/approve')?>',
+            type: 'POST',
+            data: { uuid: uuid, csrf_ospos_v3:csrf_ospos_v3 },
+            dataType: 'json',
+            success: function (rs) {
+                if(rs.success == true)
+                {
+                    $('#DetailRecipeView').modal('hide');
+                    // Cập nhật dòng tương ứng
+                    $('#table').bootstrapTable('updateRow', {
+                        index: rowIndex,
+                        row: {
+                            status: 'Đã phê duyệt' // Thay đổi giá trị cột "Trạng thái"
+                        }
+                    });
+                    var $row = $('#table tbody tr[data-index="' + rowIndex + '"]');
+                    $row.css('background-color', '#d4edda').animate({ backgroundColor: "#fff" }, 2000);
+                }
+                
+            },
+            error: function () {
+                alert('Có lỗi xảy ra, vui lòng thử lại!');
+            }
+        });
+    });
+
+    $(document).on('click', '#sentButton', function() {
+        //alert('Nút phê duyệt đã được click!');
+        var uuid = $(this).data('uuid');
+        var csrf_ospos_v3 = csrf_token();
+        var rowIndex = $(this).data('index'); // Lấy index hàng
+        console.log('Row Index:', rowIndex);
+        console.log(uuid);
+        $.ajax({
+            url: '<?=base_url('recipes/sent')?>',
+            type: 'POST',
+            data: { uuid: uuid, csrf_ospos_v3:csrf_ospos_v3 },
+            dataType: 'json',
+            success: function (rs) {
+                if(rs.success == true)
+                {
+                    $('#DetailRecipeView').modal('hide');
+                    // Cập nhật dòng tương ứng
+                    $('#table').bootstrapTable('updateRow', {
+                        index: rowIndex,
+                        row: {
+                            status: 'Đã gửi phê duyệt' // Thay đổi giá trị cột "Trạng thái"
+                        }
+                    });
+                    var $row = $('#table tbody tr[data-index="' + rowIndex + '"]');
+                    $row.css('background-color', '#d4edda').animate({ backgroundColor: "#fff" }, 2000);
+                }
+                
+            },
+            error: function () {
+                alert('Có lỗi xảy ra, vui lòng thử lại!');
+            }
+        });
+    });
     
 });
 function paymentFormatter(value, row, index) {
-        console.log(row);
-        console.log(value);
-        if(row.istatus != "5") {
+        //console.log(row);
+        //console.log(value);
+        if(row.istatus > "5") {
             return '...';
         }
         return '<button class="btn btn-info view-recipe-btn btn-sm">Xem</button>';
@@ -111,15 +183,90 @@ function openPaymentPopup(e, value, row, index) {
     // ...
     console.log(index);
     console.log(row);
-    console.log(e);
-    console.log(value);
+    //console.log(e);
+   // console.log(value);
     var node = $('#body-recipe-view-modal');
+    
     $.get(row.view, function(data) {
         node.html(data);
+        
     });
+        // Kiểm tra trạng thái bản ghi và thêm các nút phù hợp
+    var modalFooter = $('#DetailRecipeView .modal-footer');
+    modalFooter.empty(); // Xóa các nút cũ tránh trùng lặp
+    modalFooter.append('<button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>');
+    modalFooter.append('<button type="button" class="btn btn-primary" id="PrintBtn">Print</button>');
+    if (row.istatus == '4') {
+        modalFooter.append('<button class="btn btn-success" id="approveButton" data-index="'+index+'" data-uuid="'+row.recipe_uuid+'">Phê duyệt</button>');
+    } 
+    if (row.istatus < 4) {
+        modalFooter.append('<button class="btn btn-danger" id="sentButton" data-index="'+index+'" data-uuid="'+row.recipe_uuid+'">Gửi phê duyệt</button>');
+    }
+
     // Ví dụ sử dụng Bootstrap Modal
     $('#DetailRecipeView').modal('show');
 }
+
+function rowStyle(row, index) {
+    var classes = [
+      'bg-blue',
+      'bg-green',
+      'bg-orange',
+      'bg-yellow',
+      'bg-red'
+    ]
+	console.log(row);
+	switch (row.istatus) {
+		case '1':
+			return {
+				css: {
+					color: '#000000',
+					'background-color':'#FF851B'
+				}
+			}
+			break;
+		case '2':
+			return {
+				css: {
+					color: '#000000',
+					'background-color':'#FFDC00'
+				}
+			}
+			break;	
+		case '3':
+			return {
+				css: {
+					color: '#000000',
+					'background-color':'#FFDC00'
+				}
+			}
+			break;
+		case '4':
+			return {
+				css: {
+					color: '#000000',
+					'background-color':'#2ECC40'
+				}
+			}
+			break;
+		case '5':
+			return {
+				css: {
+					color: '#000000',
+					'background-color':'#fff'
+				}
+			}
+			break;
+		default:
+			return {
+				css: {
+					color: 'red',
+					'background-color':'#0074D9'
+				}
+			}
+			break;
+	}
+  }
 </script>
 
 <div id="title_bar" class="btn-toolbar print_hide">
@@ -158,7 +305,8 @@ function openPaymentPopup(e, value, row, index) {
         data-sort-order="desc" 
         data-sort-name="recipe_id" 
         data-search="true" 
-        data-export-types="['excel']">
+        data-export-types="['excel']"
+        data-row-style="rowStyle">
     </table>
 </div>
 
@@ -176,8 +324,7 @@ function openPaymentPopup(e, value, row, index) {
         <!-- Form để nhập số tiền và chọn phương thức thanh toán -->
       </div>
       <div class="modal-footer print_hide">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
-        <button type="button" class="btn btn-primary" id="PrintBtn">Print</button>
+        
       </div>
     </div>
   </div>

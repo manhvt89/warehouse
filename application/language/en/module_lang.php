@@ -37,3 +37,4 @@ $lang['module_purchases'] = "Đơn đặt hàng";
 $lang['module_ctvs'] = "Cộng tác viên";
 $lang["module_ctvs_desc"] = "Quản lý cộng tác viên";
 $lang["module_compoundas"] = "Kế hoạch Compound";
+$lang['khcl_excel_import_partially_failed']  = 'Kế hoạch cán luyện đã tồn tại';

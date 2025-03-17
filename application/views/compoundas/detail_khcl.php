@@ -1,5 +1,6 @@
 
-
+<?php $this->load->view("partial/header"); ?>
+<script src="/dist/jquery.number.min.js"></script>
 <style type="text/css">
 	.number{
 		text-align: right;
@@ -232,7 +233,7 @@
 	</table>
 	<!-- #endregion -->
 	<!-- #region recipe-info-->
-	<?php  if($item_info->compounda_order_id > 0): ?>
+	<?php if($item_info->compounda_order_id > 0):?>
 	<table id="compounda-order-info">
 	
 		<tr>
@@ -456,7 +457,7 @@ Used
 								
 							</td>
 							<td>
-								
+								<?php echo "<a href='/compoundas/printBarcode/{$lenh->compounda_order_item_uuid}'>In Barcode</a>"; ?>
 							</td>
 							<td>
 								
@@ -503,3 +504,5 @@ Used
 	
 	})(jQuery);
 </script>
+
+<?php $this->load->view("partial/footer"); ?>

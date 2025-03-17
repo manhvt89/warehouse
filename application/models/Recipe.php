@@ -238,6 +238,8 @@ class Recipe extends CI_Model
 		$master_batch = $recipe_data['master_batch'];
 		//echo $master_batch;
 		//$exist = $this->exists($master_batch, TRUE);
+		
+
 		if(!$this->exists($master_batch, TRUE))
 		{
 			//echo '1';
@@ -605,5 +607,21 @@ class Recipe extends CI_Model
 			return $item_obj;
 		}
 	}
+
+	private function change_status($uuid,$status = 1)
+	{
+		$this->db->where('recipe_uuid', $uuid);
+		return $this->db->update('recipes', ['status'=>$status]);
+	}
+
+	public function approved($uuid)
+	{
+		return $this->change_status($uuid,5);
+	}
+
+	public function sent($uuid)
+	{
+		return $this->change_status($uuid,4);
+	} 
 }
 ?>

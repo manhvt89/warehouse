@@ -14,6 +14,7 @@ class Compoundas extends Secure_Controller
 		parent::__construct('compoundas');
 		$this->load->library('item_lib');
 		$this->load->library('barcode_lib');
+		$this->load->model('Batch');
 	}
 	
 	public function index($search='')
@@ -1491,6 +1492,10 @@ class Compoundas extends Secure_Controller
 		
 
 		$item_info = $this->Compounda->get_info($item_id);
+		$itemIds = array_column((array) $item_info->list_compound_a, 'compounda_order_item_id');
+		//var_dump($itemIds);die();
+		$completed_batches = $this->Batch->get_completed_batches($itemIds);
+		//var_dump($completed_batches);die();
 		foreach(get_object_vars($item_info) as $property => $value)
 		{
 			if(!is_object($value) && !is_array($value))
@@ -1500,6 +1505,7 @@ class Compoundas extends Secure_Controller
 		}
 
 		$data['item_info'] = $item_info;
+		$data['completed_batches'] = $completed_batches;
 
 		//var_dump($data);
 		$this->load->view('compoundas/detail_khcl', $data);

@@ -1,41 +1,40 @@
 <?php
-class Recipe extends CI_Model
+class Batch extends CI_Model
 {
 	/*
 	Kiểm tra xem đã tồn tại đơn pha chế với mã $master_batch
 	
 	*/
-	public function exists($master_batch,$ignore_deleted = FALSE, $deleted = FALSE)
+	private $table;
+	private $id;
+	private $uuid;
+	public function __construct()
+	{
+		$this->table = 'compounda_order_item_completed';
+		$this->id = "{$this->table}_id";
+		$this->uuid = "{$this->table}_uuid";
+	}
+	public function exists($code,$ignore_deleted = FALSE, $deleted = FALSE)
 	{
 		
-		$this->db->from('recipes');
-		$this->db->where('master_batch', $master_batch);
+		$this->db->from($this->table);
+		$this->db->where('code', $code);
 		if ($ignore_deleted == FALSE)
 		{
 			$this->db->where('deleted', $deleted);
 		}
 
-		return ($this->db->get()->num_rows() == 1);
+		return $this->db->get()->num_rows() == 1;
 	}
 
 
-	/*
-	get item in cart to check
-	*/
-	public function get_items_in_cart($_aItemNUmber)
-	{
-		$this->db->from('items');
-		$this->db->where_in('item_number', $_aItemNUmber);
-		return $this->db->get()->result();
-
-	}
 
 	/*
 	Gets total of rows
 	*/
 	public function get_total_rows()
 	{
-		$this->db->from('recipes');
+		$this->db->from($this->table);
 		$this->db->where('deleted', 0);
 
 		return $this->db->count_all_results();
@@ -54,8 +53,8 @@ class Recipe extends CI_Model
 	*/
 	public function search($search, $filters, $rows = 0, $limit_from = 0, $sort = 'recipes.name', $order = 'asc')
 	{
-		$this->db->select('recipes.*');
-		$this->db->from('recipes');
+		$this->db->select('*');
+		$this->db->from($this->table);
 		//$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
 		//$this->db->join('inventory', 'inventory.trans_items = items.item_id');
 
@@ -70,7 +69,7 @@ class Recipe extends CI_Model
 			$this->db->group_end();
 				
 		}
-		$this->db->where('recipes.deleted', $filters['is_deleted']);
+		$this->db->where("{$this->table}.deleted", $filters['is_deleted']);
 
 		// avoid duplicated entries with same name because of inventory reporting multiple changes on the same item in the same date range
 		//$this->db->group_by('items.item_id');
@@ -118,21 +117,24 @@ class Recipe extends CI_Model
 	*/
 	public function get_info($item_id)
 	{
-		$this->db->select('recipes.*');
+		$this->db->select('*');
 		//$this->db->select('suppliers.company_name');
-		$this->db->from('recipes');
+		$this->db->from($this->table);
 		//$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
 		if(strlen($item_id)> 20) // Nêu chuỗi lớn hơn 20 sẽ sử dụng item_uuid
 		{
-			$this->db->where('recipe_uuid', $item_id);
+			$this->db->where("{$this->table}_uuid", $item_id);
 		} else{
-			$this->db->where('recipe_id', $item_id); // support version cũ
+			$this->db->where("{$this->table}_id", $item_id); // support version cũ
 		}
 		$query = $this->db->get();
 
 		if($query->num_rows() == 1)
 		{
-			return $query->row();
+			$item_obj = $query->row();
+			$item_obj->qc_cpa_document = $this->Compounda->get_qc_cpa_info_by_batch_id($item_obj->{$this->id});
+			$item_obj->recipe = $this->Recipe->get_info_by_ms($item_obj->ms);
+			return $item_obj;
 		}
 		else
 		{
@@ -140,17 +142,13 @@ class Recipe extends CI_Model
 			$item_obj = new stdClass();
 
 			//Get all the fields from items table
-			foreach($this->db->list_fields('recipes') as $field)
+			foreach($this->db->list_fields($this->table) as $field)
 			{
 				$item_obj->$field = '';
 			}
-			$item_obj->date_issued = 0;
-			$item_obj->processing_time_a =0;
-			$item_obj->weight_a = 75.00;
-			$item_obj->processing_time_b =0;
-			$item_obj->weight_b = 25.50;
-			$item_obj->status = 0;
-			$item_obj->deleted = 0;
+			$_sFieldID = "{$this->table}_id"; 
+			$item_obj->$_sFieldID = 0;
+			
 			return $item_obj;
 		}
 	}
@@ -316,35 +314,7 @@ class Recipe extends CI_Model
 		return $success;
 	}
 	
-	/*
-	Undeletes one item
-	*/
-	public function undelete($item_id)
-	{
-		$this->db->where('item_id', $item_id);
-
-		return $this->db->update('items', array('deleted'=>0));
-	}
-
-	/*
-	Deletes a list of items
-	*/
-	public function delete_list($item_ids)
-	{
-		//Run these queries as a transaction, we want to make sure we do all or nothing
-		$this->db->trans_start();
-
-		// set to 0 quantities
-		$this->Item_quantity->reset_quantity_list($item_ids);
-		$this->db->where_in('item_id', $item_ids);
-		$success = $this->db->update('items', array('deleted'=>1));
-		
-		$this->db->trans_complete();
-		
-		$success &= $this->db->trans_status();
-
-		return $success;
- 	}
+	
 
 	public function get_search_suggestions($search, $filters = array('is_deleted' => FALSE, 'search_custom' => FALSE), $unique = FALSE, $limit = 25)
 	{
@@ -465,22 +435,6 @@ class Recipe extends CI_Model
 		return $suggestions;
 	}
 	
-	public function get_location_suggestions($search)
-	{
-		$suggestions = array();
-		$this->db->distinct();
-		$this->db->select('location');
-		$this->db->from('items');
-		$this->db->like('location', $search);
-		$this->db->where('deleted', 0);
-		$this->db->order_by('location', 'asc');
-		foreach($this->db->get()->result() as $row)
-		{
-			$suggestions[] = array('label' => $row->location);
-		}
-	
-		return $suggestions;
-	}
 
 	public function get_custom_suggestions($search, $field_no)
 	{
@@ -500,51 +454,7 @@ class Recipe extends CI_Model
 		return $suggestions;
 	}
 
-	public function get_categories()
-	{
-		$this->db->select('category');
-		$this->db->from('items');
-		$this->db->where('deleted', 0);
-		$this->db->distinct();
-		$this->db->order_by('category', 'asc');
-
-		return $this->db->get();
-	}
-
-	/*
-	 * changes the cost price of a given item
-	 * calculates the average price between received items and items on stock
-	 * $item_id : the item which price should be changed
-	 * $items_received : the amount of new items received
-	 * $new_price : the cost-price for the newly received items
-	 * $old_price (optional) : the current-cost-price
-	 *
-	 * used in receiving-process to update cost-price if changed
-	 * caution: must be used before item_quantities gets updated, otherwise the average price is wrong!
-	 *
-	 */
-	public function change_cost_price($item_id, $items_received, $new_price, $old_price = null)
-	{
-		if($old_price === null)
-		{
-			$item_info = $this->get_info($item_id);
-			$old_price = $item_info->cost_price;
-		}
-
-		$this->db->from('item_quantities');
-		$this->db->select_sum('quantity');
-		$this->db->where('item_id', $item_id);
-		$this->db->join('stock_locations', 'stock_locations.location_id=item_quantities.location_id');
-		$this->db->where('stock_locations.deleted', 0);
-		$old_total_quantity = $this->db->get()->row()->quantity;
-
-		$total_quantity = $old_total_quantity + $items_received;
-		$average_price = bcdiv(bcadd(bcmul($items_received, $new_price), bcmul($old_total_quantity, $old_price)), $total_quantity);
-
-		$data = array('cost_price' => $average_price);
-
-		return $this->save($data, $item_id);
-	}
+	
 
 	/**
 	 * Lấy các item trong đơn pha chế
@@ -613,20 +523,170 @@ class Recipe extends CI_Model
 		}
 	}
 
-	private function change_status($uuid,$status = 1)
+	public function completed($batch, $qc_cpa_document)
 	{
-		$this->db->where('recipe_uuid', $uuid);
-		return $this->db->update('recipes', ['status'=>$status]);
+		$this->db->trans_start();
+
+		// Cập nhật bảng compounda_order_item_completed
+		$this->db->where('compounda_order_item_completed_id', $batch['batch_id'])
+				->update('compounda_order_item_completed', [
+					'updated_at' => $batch['updated_at'],
+					'status' => $batch['status']
+				]);
+
+		// Cập nhật bảng qc_cpa_document
+		$this->db->where('qc_cpa_document_id', $qc_cpa_document['qc_cpa_document_id'])
+				->update('qc_cpa_documents', [
+					'completed_at' => $qc_cpa_document['completed_at'],
+					'status' => $qc_cpa_document['status'],
+					'results' => $qc_cpa_document['results']
+				]);
+
+		$this->db->trans_complete();
+
+		return $this->db->trans_status();
 	}
 
-	public function approved($uuid)
+	public function make_doing_qc($batch)
 	{
-		return $this->change_status($uuid,5);
+		$_oQC_cpa_document = $batch->qc_cpa_document;
+		$time = time();
+		if($_oQC_cpa_document->status != 4)
+		{
+			
+			$this->db->trans_start();
+
+			$this->db->where('compounda_order_item_completed_id', $batch->compounda_order_item_completed_id)
+				->update('compounda_order_item_completed', [
+					'updated_at' => $time,
+					'status' => 4
+				]);
+
+
+			$this->db->where('qc_cpa_document_id', $_oQC_cpa_document->qc_cpa_document_id)
+					->update('qc_cpa_documents', [
+						'started_at' => $time,
+						'status' => 4
+					]);
+			$this->db->trans_complete();
+			return $this->db->trans_status();
+		} else {
+			return 0; // Không thực hiện gì nếu khác 3
+		}
 	}
 
-	public function sent($uuid)
+	/**
+	 * Đếm số lượng các batch trong một kế hoạch sx với uuid
+	 * @return array
+	 */
+	public function count_by_status($khsx_id) {
+        $this->db->select('status, COUNT(*) as count');
+		$this->db->where('compounda_order_item_id',$khsx_id);
+        $this->db->group_by('status');
+        $query = $this->db->get('compounda_order_item_completed'); // Thay 'production_table' bằng tên bảng thực tế
+
+        // Định nghĩa các trạng thái
+        $status_map = [
+            1 => "choLam",
+            2 => "dangLam",
+            3 => "choQC",
+            4 => "dangQC",
+            5 => "qcNotOK",
+            6 => "daQCOK",
+            7 => "batDauCan",
+            8 => "daLam"
+        ];
+
+        // Mặc định tất cả trạng thái có số lượng 0
+        $result = array_fill_keys(array_values($status_map), 0);
+
+        // Gán số lượng từ dữ liệu truy vấn
+        foreach ($query->result() as $row) {
+            if (isset($status_map[$row->status])) {
+                $result[$status_map[$row->status]] = $row->count;
+            }
+        }
+
+        return $result;
+    }
+	/**
+	 * Đếm cố mẻ hoàn thành trong lệnh sx
+	 * @param mixed $lenh_sx_ids
+	 */
+	public function get_completed_batches($lenh_sx_ids) {
+        if (empty($lenh_sx_ids)) {
+            return [];
+        }
+
+        if (empty($lenh_sx_ids)) {
+            return [];
+        }
+
+        $this->db->select([
+            'coi.compounda_order_item_id',
+            'IFNULL(COUNT(coic.compounda_order_item_completed_id), 0) AS so_me_hoan_thanh'
+        ]);
+        $this->db->from('compounda_order_item AS coi');
+        $this->db->join('compounda_order_item_completed AS coic', 
+                        'coic.compounda_order_item_id = coi.compounda_order_item_id 
+                         AND coic.status = 8', 
+                        'LEFT');
+        $this->db->where_in('coi.compounda_order_item_id', $lenh_sx_ids);
+        $this->db->group_by('coi.compounda_order_item_id');
+
+        $query = $this->db->get();
+		foreach ($query->result() as $row) {
+            
+                $result[$row->compounda_order_item_id] = $row->so_me_hoan_thanh;
+            
+        }
+        return $result;
+    }
+
+	public function make_doing_cpas($batch)
 	{
-		return $this->change_status($uuid,4);
-	} 
+		
+		$time = time();
+		if($batch['status'] == 6)
+		{
+			$this->db->trans_start();
+
+			$this->db->where('compounda_order_item_completed_id', $batch['batch_id'])
+				->update('compounda_order_item_completed', [
+					'updated_at' => $time,
+					'started_at' => $time,
+					'status' => 7
+				]);
+
+			$this->db->trans_complete();
+			return $this->db->trans_status();
+		} else {
+			return 0; // không thực hiện gì nếu khác 6
+		}
+	}
+
+	public function make_completed_cpas($batch)
+	{
+		
+		$time = time();
+		if($batch['status'] == 7)
+		{
+			$this->db->trans_start();
+
+			$this->db->where('compounda_order_item_completed_id', $batch['batch_id'])
+				->update('compounda_order_item_completed', [
+					'updated_at' => $time,
+					'completed_at' => $time,
+					'status' => 8
+				]);
+
+			$this->db->trans_complete();
+			return $this->db->trans_status();
+		} else {
+			return 0; // không thực hiện gì nếu khác 6
+		}
+	}
+
+	
 }
 ?>

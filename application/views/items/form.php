@@ -21,7 +21,7 @@
 			$input_data = [];
 			switch ($item_info->type) {
 				case 'VT':
-					echo form_input_item_before('item_number',$item_info->category, 'glyphicon glyphicon-barcode',['class'=>'required']);
+					echo form_input_item_before('item_number',$item_info->item_number, 'glyphicon glyphicon-barcode',['class'=>'required']);
 
 					echo form_input_item('name',$item_info->name,true,['class'=>'required']); 
 

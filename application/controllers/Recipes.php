@@ -14,6 +14,7 @@ class Recipes extends Secure_Controller
 		parent::__construct('recipes');
 		$this->load->library('barcode_lib');
 		$this->load->library('item_lib');
+		$this->load->helper('recipe');
 
 		$this->grant_id = 0;
 		if($this->Employee->has_grant('recipes_is_action'))
@@ -190,14 +191,20 @@ class Recipes extends Secure_Controller
 			$item_info->$property = $this->xss_clean($value);
 		}
 
-		$data['item_info'] = $item_info;
-
 		$arrItem_as = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'A')->result();
 		$arrItem_bs = $this->Recipe->get_items_by_recipe_id($item_info->recipe_id,'B')->result();
-		$data['arrItem_as'] = $arrItem_as;
-		$data['arrItem_bs'] = $arrItem_bs;
-		$data['isApproved'] = 1;
-		$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
+		//$data['arrItem_as'] = $arrItem_as;
+		//$data['arrItem_bs'] = $arrItem_bs;
+		//$data['isApproved'] = 1;
+		$item_info->status == 5 ? $_sApproved = 'approved': $_sApproved = '';
+
+		$data['recipe_header'] = recipe_header();
+		$data['recipe_title'] = recipe_title($_sApproved);
+		$data['recipe_info'] = recipe_info($item_info);
+	
+		$data['recipe_body_A'] =  recipe_body_A($item_info,$arrItem_as,5); 
+		$data['recipe_body_B'] =  recipe_body_B($item_info,$arrItem_bs,5);
+
 		//var_dump($data);
 		$this->load->view('recipes/form', $data);
 	}

@@ -14,6 +14,8 @@ class Cans extends Secure_Controller
 		parent::__construct('cans');
 		$this->load->library('item_lib');
 		$this->load->library('barcode_lib');
+		$this->load->helper('recipe');
+		$this->load->model('Batch');
 	}
 	
 	public function index($search='')
@@ -1521,12 +1523,41 @@ class Cans extends Secure_Controller
 		$recipe_info = $this->Recipe->get_info_by_ms($item_info->ms);
 		$recipe_ItemA = $this->Recipe->get_item_by_ms($item_info->ms,'A')->result();
 		$recipe_ItemB = $this->Recipe->get_item_by_ms($item_info->ms,'B')->result();
+
+		$statusClass = [
+			1 => "choLam",
+			2 => "dangLam",
+            3 => "choQC",
+            4 => "dangQC",
+            5 => "qcNotOK",
+            6 => "daQCOK",
+            7 => "batDauCan",
+            8 => "daLam"
+        ];
 		
+		$statusText = [
+			1 => "Chờ cân",
+			2 => "Đang cân",
+            3 => "Cân xong",
+            4 => "Đang QC",
+            5 => "QC chưa đạt",
+            6 => "QC đạt",
+            7 => "Bắt đầu cán",
+            8 => "Hoàn thành cán luyện"
+        ];
+
+		$_aCount_by_status = $this->Batch->count_by_status($item_info->compounda_order_item_id);
+		$data['aCount_by_status'] = $_aCount_by_status;
+		$data['statusText'] = $statusText;
+		$data['statusClass'] = $statusClass;
 		$data['item_info'] = $item_info;
 		$data['recipe_info'] = $recipe_info;
 		$data['arrItem_as'] = $recipe_ItemA;
 		$data['arrItem_bs'] = $recipe_ItemB;
 		$data['isApproved'] = 1;
+		$data['recipe_body_A'] = recipe_body_A($recipe_info,$recipe_ItemA,5);
+		$data['recipe_body_B'] = recipe_body_B($recipe_info,$recipe_ItemB,5);
+		$data['recipe_info_'] = recipe_info($recipe_info);
 		$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
 
 		//var_dump($recipe_ItemA);die();
@@ -1570,6 +1601,33 @@ class Cans extends Secure_Controller
 		$recipe_info = $this->Recipe->get_info_by_ms($item_info->ms);
 		$recipe_ItemA = $this->Recipe->get_item_by_ms($item_info->ms,'A')->result();
 		$recipe_ItemB = $this->Recipe->get_item_by_ms($item_info->ms,'B')->result();
+
+		$statusClass = [
+			1 => "choLam",
+			2 => "dangLam",
+            3 => "choQC",
+            4 => "dangQC",
+            5 => "qcNotOK",
+            6 => "daQCOK",
+            7 => "batDauCan",
+            8 => "daLam"
+        ];
+		
+		$statusText = [
+			1 => "Chờ cân",
+			2 => "Đang cân",
+            3 => "Cân xong",
+            4 => "Đang QC",
+            5 => "QC chưa đạt",
+            6 => "QC đạt",
+            7 => "Bắt đầu cán",
+            8 => "Hoàn thành cán luyện"
+        ];
+
+		$_aCount_by_status = $this->Batch->count_by_status($item_info->compounda_order_item_id);
+		$data['aCount_by_status'] = $_aCount_by_status;
+		$data['statusText'] = $statusText;
+		$data['statusClass'] = $statusClass;
 		
 		$data['item_info'] = $item_info;
 		$data['recipe_info'] = $recipe_info;
@@ -1577,10 +1635,11 @@ class Cans extends Secure_Controller
 		$data['arrItem_bs'] = $recipe_ItemB;
 		$data['isApproved'] = 1;
 		$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
+		$data['recipe_body_A'] = recipe_body_A($recipe_info,$recipe_ItemA,5);
+		$data['recipe_body_B'] = recipe_body_B($recipe_info,$recipe_ItemB,5);
+		$data['recipe_info_'] = recipe_info($recipe_info);
 		
 		$data['item_info'] = $item_info;
-		
-
 		//var_dump($data);
 		$this->load->view('cans/listme', $data);
 	}

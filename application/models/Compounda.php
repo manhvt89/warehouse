@@ -569,7 +569,7 @@ class Compounda extends CI_Model
 		return 0;
 	}
 	/**
-	 * Lấy danh sách item của lệnh sản xuất Compound A.
+	 * Lấy danh sách lệnh cán của lệnh sản xuất Compound A.
 	 */
 	public function get_list_items_in_order($order_id,$order_number = '')
 	{
@@ -583,6 +583,11 @@ class Compounda extends CI_Model
 		return $this->db->get()->result();
 	}
 
+	/**
+	 * Lấy các mẻ theo lệnh cán, một lệnh cán có nhiều mẻ.
+	 * @param mixed $order_item_id
+	 * @param mixed $code
+	 */
 	public function get_list_tasks_in_order_item($order_item_id,$code='')
 	{
 		$this->db->select('compounda_order_item_completed.*');
@@ -845,6 +850,177 @@ class Compounda extends CI_Model
 		}
 
 		return $this->db->get();
+	}
+	/**
+	 * Lấy danh sách các mẻ theo trạng thái
+	 * 
+	 * @param mixed $status: là mảng các status
+	 */
+	public function get_list_tasks_by_status_1($status)
+	{
+		$this->db->select('compounda_order_item_completed.*');
+		$this->db->from('compounda_order_item_completed');
+		$this->db->where_in('compounda_order_item_completed.status', $status);
+		
+		$query = $this->db->get();
+
+		if($query->num_rows() > 0)
+		{
+			$_aItemObj = $query->result();
+			$_aReturnObj = [];
+			foreach($_aItemObj as $item_obj)
+			{
+				$item_obj->qc_cpa_document = $this->get_qc_cpa_info_by_batch_id($item_obj->compounda_order_item_completed_id);
+				$item_obj->recipe = $this->Recipe->get_info_by_ms($item_obj->ms);
+				$_aReturnObj[] = $item_obj;
+			}
+			return $_aReturnObj;
+		} else {
+
+			return [];
+		}
+
+	}
+
+	public function get_list_tasks_by_status($status)
+	{
+		$this->db->select('*');
+		$this->db->from('compounda_order_item_completed');
+		$this->db->where_in('status', $status);
+		
+		$query = $this->db->get();
+
+		if ($query->num_rows() > 0) {
+			foreach ($query->result() as $item_obj) {
+				$item_obj->qc_cpa_document = $this->get_qc_cpa_info_by_batch_id($item_obj->compounda_order_item_completed_id);
+				$item_obj->recipe = $this->Recipe->get_info_by_ms($item_obj->ms);
+			}
+			return $query->result();
+		}
+		
+		return [];
+	}
+
+	public function get_qc_cpa_info($item_id)
+	{
+		$this->db->select('qc_cpa_document.*');
+		$this->db->from('qc_cpa_document');
+		if(strlen($item_id)> 20) // Nêu chuỗi lớn hơn 20 sẽ sử dụng item_uuid
+		{
+			$this->db->where('qc_cpa_document_uuid', $item_id);
+		} else{
+			$this->db->where('qc_cpa_document_id', $item_id); // support version cũ
+		}
+
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			$item_obj = $query->row();
+			return $item_obj;
+		}
+		else
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			$item_obj = new stdClass();
+
+			//Get all the fields from items table
+			foreach($this->db->list_fields('qc_cpa_document') as $field)
+			{
+				$item_obj->$field = '';
+			}
+			$item_obj->qc_cpa_document_id = 0;
+			
+			return $item_obj;
+		}
+	}
+	/**
+	 * Lây thông tin bản ghi qc thông qua mã bản ghi
+	 * @param mixed $code
+	 */
+	public function get_qc_cpa_info_by_code($code)
+	{
+		$this->db->select('qc_cpa_document.*');
+		$this->db->from('qc_cpa_document');
+		
+		$this->db->where('qc_cpa_code', $code);
+		
+
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			$item_obj = $query->row();
+			return $item_obj;
+		}
+		else
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			$item_obj = new stdClass();
+
+			//Get all the fields from items table
+			foreach($this->db->list_fields('items') as $field)
+			{
+				$item_obj->$field = '';
+			}
+			$item_obj->qc_cpa_document_id = 0;
+			
+			return $item_obj;
+		}
+	}
+	/**
+	 * Lấy bản ghi qc qua id của mẻ
+	 * @param mixed $code
+	 */
+	public function get_qc_cpa_info_by_batch_id($batch_id)
+	{
+		$this->db->select('qc_cpa_documents.*');
+		$this->db->from('qc_cpa_documents');
+		
+		$this->db->where('compounda_order_item_completed_id', $batch_id);
+		
+
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			$item_obj = $query->row();
+			return $item_obj;
+		}
+		else
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			$item_obj = new stdClass();
+
+			//Get all the fields from items table
+			foreach($this->db->list_fields('items') as $field)
+			{
+				$item_obj->$field = '';
+			}
+			$item_obj->qc_cpa_document_id = 0;
+			
+			return $item_obj;
+		}
+	}
+	
+
+	public function get_list_tasks_by_code($code)
+	{
+		$this->db->select('*');
+		$this->db->from('compounda_order_item_completed');
+		$this->db->where_in('code', $code);
+		
+		$query = $this->db->get();
+
+		if ($query->num_rows() > 0) {
+			foreach ($query->result() as $item_obj) {
+				$item_obj->qc_cpa_document = $this->get_qc_cpa_info_by_batch_id($item_obj->compounda_order_item_completed_id);
+				$item_obj->recipe = $this->Recipe->get_info_by_ms($item_obj->ms);
+			}
+			return $query->result();
+		}
+		
+		return [];
 	}
 	
 }

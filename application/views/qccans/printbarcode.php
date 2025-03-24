@@ -2,15 +2,6 @@
 <?php $this->load->view("partial/header"); ?>
 <script src="/dist/jquery.number.min.js"></script>
 <style type="text/css">
-	.choLam { background-color: #FF9800 !important; color: white; } /* Cam - Chờ làm */
-.dangLam { background-color: #2196F3 !important; color: white; } /* Xanh dương - Đang làm */
-.choQC { background-color: #FFC107 !important; color: black; } /* Vàng - Chờ QC */
-.dangQC { background-color: #9C27B0 !important; color: white; } /* Tím - Đang QC */
-.qcNotOK { background-color: #F44336 !important; color: white; } /* Đỏ - QC không đạt */
-.daQCOK { background-color: #4CAF50 !important; color: white; } /* Xanh lá - Đã QC OK */
-.batDauCan { background-color: #795548 !important; color: white; } /* Nâu - Bắt đầu cân */
-.daLam { background-color: #616161 !important; color: white; } /* Xám - Đã hoàn thành */
-	
 	.number{
 		text-align: right;
 	}
@@ -216,119 +207,36 @@
 	*/
 </style>
 <div id="recipe_basic_info" width="100%">
+
+	<!-- #region recipe-info-->
+	<?php if($item_info->compounda_order_item_id > 0):?>
+	<table id="compounda-order-info">
 	
-	<!-- #region recipe-title-->
-	<table id="compounda-order-title">
 		<tr>
-			<td>
-				<div class="compounda-order-title">
-						Danh sách các mẻ
-					</div>
+			<td class="code">
+				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->order_number); ?>
+				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
 			</td>
 		</tr>
-
+	
 	</table>
-	<table id="recipe-header">
-		<tr>
-			<td><div class="recipe-header-company-name">
-			<?php echo form_open($controller_name."/seachcan", array('id'=>'seachcan', 'class'=>'form-horizontal panel panel-default')); ?>
-				<input type="text" name="code" value="" id="code" class="form-control input-sm ui-autocomplete-input" size="50" tabindex="1" autocomplete="off">
-				<?php echo form_hidden('compounda_order_item_uuid',$item_info->compounda_order_item_uuid) ?>
-			<?php echo form_close(); ?>
-			</div></td>
-		</tr>
-
-	</table>
-	<!-- #endregion recipe-header -->
-	<!-- #endregion -->
-	<!-- #region recipe-info-->
-	<?php //var_dump($item_info); die(); 
-	if($item_info->compounda_order_id > 0):?>
 	<?php $_oList_batchs = $item_info->list_batchs;?>
-	<?php //$_oList_lenh_can = $item_info->list_compound_a;?>
 	<!-- #endregion -->
 	<!-- #region recipe-body-kneader-a-->
-	<table id="compounda-order-body-kneader-ab">
-		<thead>
-		<tr class="compounda-order-header-body-kneader-a">
-			<td >
+	<table id="compounda-order-body-kneader-a">
 				
-			</td>
-					
-			<td >
-				Thông tin đơn pha chế
-			</td>
-			<td >
-				
-			</td>
-		</tr>
-
-		<tr class="code">
-			<td>
-				Tổng số mẻ: <?=$item_info->so_luong_batch?><br>
-				Tông số đã cán: <?=$aCount_by_status['daLam']?><br>
-				Tổng số đã QC đạt: <?=$aCount_by_status['daQCOK']?><br>
-				Tổng số QC chưa đạt: <?=$aCount_by_status['qcNotOK']?><br>
-				Tổng số chờ QC: <?=$aCount_by_status['choQC']?><br>
-
-				Chờ làm	🟠 Cam (#FF9800) - Đang đợi sản xuất<br>
-				Đang làm	🔵 Xanh dương (#2196F3) - Đang xử lý<br>
-				Chờ QC	🟡 Vàng (#FFC107) - Cần kiểm tra<br>
-				Đang QC	🟣 Tím (#9C27B0) - Đang kiểm tra chất lượng<br>
-				QC không OK	🔴 Đỏ (#F44336) - Lỗi, cần kiểm tra lại<br>
-				Đã QC OK	🟢 Xanh lá (#4CAF50) - Đạt tiêu chuẩn<br>
-				Bắt đầu cán	🟤 Nâu (#795548) - Giai đoạn cân đo<br>
-				Đã làm	⚫ Xám đậm (#616161) - Hoàn thành<br>
-			</td>
-			<td class="code">
-			<?php // Hiển thị thông tin recipe với mác nguyên liệu
-								echo $recipe_info_;
-								echo $recipe_body_A;
-								echo $recipe_body_B;
-							?>
-			</td>
-			<td>
-			</td>
-		</tr>
-		</thead>
-		
-		<tr class="compounda-order-header-body-kneader-a">
-			<td >
-				Mẻ
-			</td>
-					
-			<td >
-				Trạng thái
-			</td>
-			<td >
-				<?=$this->lang->line('compounda_order_note')?>
-			</td>
-		</tr>
-		</table>
-		<table id="compounda-order-body-kneader-a">
-		<tbody>
-			<?php
+				<?php
 					if(!empty($_oList_batchs))
 					{
 						foreach($_oList_batchs as $batch)
-						{ //var_dump($batch);die();
+						{ 
 				?>
-
-						<tr class="one <?=$statusClass[$batch->status]?>" data-status="<?=$statusClass[$batch->status]?>">
+						<tr class="two">
 							<td class="code">
 							<?php $barcode_code = $this->barcode_lib->generate_receipt_barcode($batch->code); ?>
 									<img src='data:image/png;base64,<?php echo $barcode_code; ?>' /><br/>
-									<?=$batch->code ?>
-							</td>
-							
-							<td rowspan="1">
-								<?=$statusText[$batch->status]?>
-							</td>
-							<td rowspan="1">
-								<?//=$lenh->note ?>
 							</td>
 						</tr>
-					
 				<?php
 						}
 						
@@ -336,7 +244,6 @@
 					}
 				
 				?>
-		</tbody>		
 				<!-- #region Tổng cộng-->
 				
 				<!-- #endregion -->
@@ -346,7 +253,7 @@
 		<table id="compounda-order-info">
 			<tr>
 				<td class="code">
-					Kế hoạch cán luyện không tồn tại!
+					Lệnh cán luyện không tồn tại!
 				</td>
 
 			</tr>
@@ -355,29 +262,6 @@
 	
 </div>
 <script type="text/javascript">
-
-	/*$("#compounda_order_uuid_text").autocomplete(
-	{
-		source: '<?php echo site_url($controller_name."/item_search"); ?>',
-    	minChars: 0,
-    	autoFocus: false,
-       	delay: 600,
-		select: function (a, ui) {
-			$(this).val(ui.item.value);
-			$("#add_item_form").submit();
-			return false;
-		}
-    });
-	*/
-
-	$('#order_number').keypress(function (e) {
-		if (e.which == 13) {
-			$('#seachcan').submit();
-			return false;
-		}
-	});
-
-   
 	//validation and submit handling
 	//(function($) {
         // You pass-in jQuery and then alias it with the $-sign
@@ -386,47 +270,12 @@
 	//$(document).ready(function()
 	(function($)
 	{
-		let $tableBody = $("#compounda-order-body-kneader-a tbody");
-
-		// **1. Lấy danh sách tất cả các dòng và sắp xếp**
-		let rows = $tableBody.find("tr.one").get();
-		console.log(rows);
-		rows.forEach(row => {
-    console.log($(row).data("status")); // Kiểm tra giá trị data-status của từng dòng
-});
-
-		rows.sort(function(a, b) {
-			let statusOrder = {
-				"choLam": 1,
-				"dangLam": 2,
-				"choQC": 3,
-				"dangQC": 4,
-				"qcNotOK": 5,
-				"daQCOK": 6,
-				"batDauCan": 7,
-				"daLam": 8,
-
-			};
-
-			let statusA = $(a).data("status");
-			let statusB = $(b).data("status");
-
-			return statusOrder[statusA] - statusOrder[statusB];
-		});
-
-		// **2. Đưa lại các dòng vào bảng theo thứ tự đã sắp xếp**
-		$.each(rows, function(index, row) {
-			$tableBody.append(row);
-		});
-
-		// **3. Thêm màu sắc theo trạng thái**
-		$tableBody.find("tr.one").each(function() {
-			let $row = $(this);
-			let status = $row.data("status");
-
-			$row.addClass(status);
-		});
 		
+
+		$("#submit").click(function() {
+			stay_open = false;
+		});
+	
 	})(jQuery);
 </script>
 

@@ -11,100 +11,64 @@ class Qccans extends Secure_Controller
 {
 	public function __construct()
 	{
-		parent::__construct('compoundas');
+		parent::__construct('qccans');
 		$this->load->library('item_lib');
 		$this->load->library('barcode_lib');
+		$this->load->model('Batch');
+		$this->load->helper('batch');
 	}
 	
-	public function index($search='')
+	public function index()
 	{
-		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
-		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
-		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
-		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
-		$data['is_worker'] = $this->Employee->has_grant($this->module_id.'_is_worker');
-		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
-		$data['is_checker'] = $this->Employee->has_grant($this->module_id.'_is_checker');
-		$data['is_monitor'] = $this->Employee->has_grant($this->module_id.'_is_monitor');
+		//$person_id = $this->person_id;
+		
+		$data['is_qc'] = $this->Employee->has_grant("{$this->module_id}_is_qc");
+	
+		//var_dump($item_info->ms);die();
+		$_aStatus = [
+			3, // Cân xong
+			4, // Bắt đầu QC
+			5, // QC Ko đạt
+			6, // QC đạt
+			7, // bắt đầu cán
+			8 // hoàn thành
+		];
 
-		$search = $this->input->get('search');
+		$statusClass = [
+			1 => "choLam",
+			2 => "dangLam",
+            3 => "choQC",
+            4 => "dangQC",
+            5 => "qcNotOK",
+            6 => "daQCOK",
+            7 => "batDauCan",
+            8 => "daLam"
+        ];
+		
+		$statusText = [
+			1 => "Chờ cân",
+			2 => "Đang cân",
+            3 => "Chờ Q",
+            4 => "Đang QC",
+            5 => "QC chưa đạt",
+            6 => "QC đạt",
+            7 => "Bắt đầu cán",
+            8 => "Hoàn thành cán luyện"
+        ];
 
-		if($data['is_inventory']){ //Ưu tiên quyền quản lý kho
-			//$person_id = $this->person_id;
-			//echo $search; die();
-			if($search == '')
-			{
-				$data['item_info'] = null;
-			} else {
-				$item_info = $this->Compounda->get_info_by_no($search);
-				
-				if($item_info->compounda_order_id != 0 )
-				{
-					foreach(get_object_vars($item_info) as $property => $value)
-					{
-						if(!is_object($value) && !is_array($value))
-						{
-							$item_info->$property = $this->xss_clean($value);
-						}
-					}
+		$data['statusText'] = $statusText;
+		$data['statusClass'] = $statusClass;
+		// Lấy các batch đã hoàn thành cân
+		$_aoListBatchs = $this->Compounda->get_list_tasks_by_status($_aStatus);
+		
+		$data['aoListBatchs'] = transform_data($_aoListBatchs);
+		
+		$data['isApproved'] = 1;
+		
+		//$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
 
-					$data['item_info'] = $item_info;
-				} else {
-					$data['item_info'] = null;
-					$data['message'] = 'Chưa tìm thấy lệnh sx theo số lệnh: <b>' .$search.'</b>, hãy thử với lệnh khác';
-				}
-			}
-
-			//var_dump($data);
-			$this->load->view('compoundas/detail', $data);
-			//$this->load->view('recipes/detail', $data);
-
-		} 
-		else if($data['is_worker']){ // Tiếp theo Worker// Nhận VT
-			if($search == '')
-			{
-				$data['item_info'] = null;
-			} else {
-				$item_info = $this->Compounda->get_info_by_no($search);
-				
-				if($item_info->compounda_order_id != 0 )
-				{
-					foreach(get_object_vars($item_info) as $property => $value)
-					{
-						if(!is_object($value) && !is_array($value))
-						{
-							$item_info->$property = $this->xss_clean($value);
-						}
-					}
-
-					$data['item_info'] = $item_info;
-				} else {
-					$data['item_info'] = null;
-					$data['message'] = 'Chưa tìm thấy lệnh sx theo số lệnh: <b>' .$search.'</b>, hãy thử với lệnh khác';
-				}
-			}
-
-			//var_dump($data);
-			$this->load->view('compoundas/detail', $data);
-		}
-		else {
-
-			$data['table_headers'] = $this->xss_clean(get_compoundas_manage_table_headers());
-
-			//$data['table_headers'] = $this->xss_clean(get_items_manage_table_headers());
-
-			
-			$data['stock_location'] = $this->xss_clean($this->item_lib->get_item_location());
-			$data['stock_locations'] = $this->xss_clean($this->Stock_location->get_allowed_locations());
-
-			// filters that will be loaded in the multiselect dropdown
-			$data['filters'] = array('empty_upc' => $this->lang->line('items_empty_upc_items'),
-				'low_inventory' => $this->lang->line('items_low_inventory_items'),
-				'is_deleted' => $this->lang->line('items_is_deleted'));
-
-			$data['grant_id'] = $this->grant_id; //Phân quyền module 
-			$this->load->view('compoundas/manage', $data);
-		}
+		//var_dump($recipe_ItemA);die();
+		$this->load->view('qccans/listme', $data);
 	}
 
 	/*
@@ -152,39 +116,7 @@ class Qccans extends Secure_Controller
 		echo json_encode(array('total' => $total_rows, 'rows' => $data_rows));
 	}
 	
-	public function pic_thumb($pic_id=null)
-	{
-		if($pic_id == null)
-		{
-			echo 'Invalid Data';
-			exit();
-		}
-		$this->load->helper('file');
-		$this->load->library('image_lib');
-		$base_path = './uploads/item_pics/' . $pic_id;
-		$images = glob($base_path . '.*');
-		if(sizeof($images) > 0)
-		{
-			$image_path = $images[0];
-			$ext = pathinfo($image_path, PATHINFO_EXTENSION);
-			$thumb_path = $base_path . $this->image_lib->thumb_marker . '.' . $ext;
-			if(sizeof($images) < 2)
-			{
-				$config['image_library'] = 'gd2';
-				$config['source_image']  = $image_path;
-				$config['maintain_ratio'] = TRUE;
-				$config['create_thumb'] = TRUE;
-				$config['width'] = 52;
-				$config['height'] = 32;
- 				$this->image_lib->initialize($config);
- 				$image = $this->image_lib->resize();
-				$thumb_path = $this->image_lib->full_dst_path;
-			}
-			$this->output->set_content_type(get_mime_by_extension($thumb_path));
-			$this->output->set_output(file_get_contents($thumb_path));
-		}
-	}
-
+	
 	/*
 	Gives search suggestions based on what is being searched for
 	*/
@@ -214,16 +146,7 @@ class Qccans extends Secure_Controller
 		echo json_encode($suggestions);
 	}
 
-	/*
-	 Gives search suggestions based on what is being searched for
-	*/
-	public function suggest_location()
-	{
-		$suggestions = $this->xss_clean($this->Item->get_location_suggestions($this->input->get('term')));
 
-		echo json_encode($suggestions);
-	}
-	
 	/*
 	 Gives search suggestions based on what is being searched for
 	*/
@@ -278,28 +201,6 @@ class Qccans extends Secure_Controller
 		$this->load->view('compoundas/form', $data);
 	}
     
-	public function inventory($item_id = -1)
-	{
-		$item_info = $this->Item->get_info($item_id);
-		foreach(get_object_vars($item_info) as $property => $value)
-		{
-			$item_info->$property = $this->xss_clean($value);
-		}
-		$data['item_info'] = $item_info;
-
-        $data['stock_locations'] = array();
-        $stock_locations = $this->Stock_location->get_undeleted_all()->result_array();
-        foreach($stock_locations as $location)
-        {
-			$location = $this->xss_clean($location);
-			$quantity = $this->xss_clean($this->Item_quantity->get_item_quantity($item_id, $location['location_id'])->quantity);
-		
-            $data['stock_locations'][$location['location_id']] = $location['location_name'];
-            $data['item_quantities'][$location['location_id']] = $quantity;
-        }
-
-		$this->load->view('items/form_inventory', $data);
-	}
 	
 	public function count_details($item_id = -1)
 	{
@@ -324,119 +225,8 @@ class Qccans extends Secure_Controller
 		$this->load->view('items/form_count_details', $data);
 	}
 
-	public function generate_barcodes($item_ids)
-	{
-		$this->load->library('barcode_lib');
+	
 
-		$item_ids = explode(':', $item_ids);
-		$result = $this->Item->get_multiple_info($item_ids, $this->item_lib->get_item_location())->result_array();
-		$config = $this->barcode_lib->get_barcode_config();
-
-		$data['barcode_config'] = $config;
-
-		// check the list of items to see if any item_number field is empty
-		foreach($result as &$item)
-		{
-			$item = $this->xss_clean($item);
-			
-			// update the UPC/EAN/ISBN field if empty / NULL with the newly generated barcode
-			if(empty($item['item_number']) && $this->config->item('barcode_generate_if_empty'))
-			{
-				// get the newly generated barcode
-				$barcode_instance = Barcode_lib::barcode_instance($item, $config);
-				$item['item_number'] = $barcode_instance->getData();
-				
-				$save_item = array('item_number' => $item['item_number']);
-
-				// update the item in the database in order to save the UPC/EAN/ISBN field
-				$this->Item->save($save_item, $item['item_id']);
-			}
-		}
-		$data['items'] = $result;
-
-		// display barcodes
-		$this->load->view('barcodes/barcode_sheet', $data);
-	}
-
-	public function generate_barcodes_lens($item_ids)
-	{
-		$this->load->library('barcode_lib');
-
-		$item_ids = explode(':', $item_ids);
-		$result = $this->Item->get_multiple_info($item_ids, $this->item_lib->get_item_location())->result_array();
-		$config = $this->barcode_lib->get_barcode_config();
-
-		$data['barcode_config'] = $config;
-
-		// check the list of items to see if any item_number field is empty
-		foreach($result as &$item)
-		{
-			$item = $this->xss_clean($item);
-			
-			// update the UPC/EAN/ISBN field if empty / NULL with the newly generated barcode
-			if(empty($item['item_number']) && $this->config->item('barcode_generate_if_empty'))
-			{
-				// get the newly generated barcode
-				$barcode_instance = Barcode_lib::barcode_instance($item, $config);
-				$item['item_number'] = $barcode_instance->getData();
-				
-				$save_item = array('item_number' => $item['item_number']);
-
-				// update the item in the database in order to save the UPC/EAN/ISBN field
-				$this->Item->save($save_item, $item['item_id']);
-			}
-		}
-		$data['items'] = $result;
-
-		// display barcodes
-		$this->load->view('barcodes/barcode_sheet_lens', $data);
-	}
-
-	public function add_barcodes($item_ids=0)
-	{
-		if($item_ids == 0)
-		{
-			redirect(base_url('items/'));
-		}
-		$this->load->library('printbarcode_lib');
-
-		$item_ids = explode(':', $item_ids);
-		//$result = $this->Item->get_multiple_info($item_ids, $this->item_lib->get_item_location())->result_array();
-		$quantity = 1;
-		// check the list of items to see if any item_number field is empty
-		foreach($item_ids as $item)
-		{
-			$item = $this->xss_clean($item);
-
-			$this->printbarcode_lib->add_item($item, $quantity);
-			
-		}
-		redirect(base_url('items/'));
-	}
-	public function bulk_edit()
-	{
-		$suppliers = array('' => $this->lang->line('items_none'));
-		foreach($this->Supplier->get_all()->result_array() as $row)
-		{
-			$row = $this->xss_clean($row);
-
-			$suppliers[$row['person_id']] = $row['company_name'];
-		}
-		$person_id = $this->session->userdata('person_id');
-		$data['has_grant'] = $this->Employee->has_grant('items_accounting', $person_id);
-		$data['suppliers'] = $suppliers;
-		$data['allow_alt_description_choices'] = array(
-			'' => $this->lang->line('items_do_nothing'), 
-			1  => $this->lang->line('items_change_all_to_allow_alt_desc'),
-			0  => $this->lang->line('items_change_all_to_not_allow_allow_desc'));
-
-		$data['serialization_choices'] = array(
-			'' => $this->lang->line('items_do_nothing'), 
-			1  => $this->lang->line('items_change_all_to_serialized'),
-			0  => $this->lang->line('items_change_all_to_unserialized'));
-
-		$this->load->view('items/form_bulk', $data);
-	}
 
 	public function save($item_id = -1)
 	{
@@ -564,34 +354,6 @@ class Qccans extends Secure_Controller
 		echo !$exists ? 'true' : 'false';
 	}
 	
-	private function _handle_image_upload()
-	{
-		$this->load->helper('directory');
-
-		$map = directory_map('./uploads/item_pics/', 1);
-
-		// load upload library
-		$config = array('upload_path' => './uploads/item_pics/',
-			'allowed_types' => 'gif|jpg|png',
-			'max_size' => '100',
-			'max_width' => '640',
-			'max_height' => '480',
-			'file_name' => sizeof($map) + 1
-		);
-		$this->load->library('upload', $config);
-		$this->upload->do_upload('item_image');           
-		
-		return strlen($this->upload->display_errors()) == 0 || !strcmp($this->upload->display_errors(), '<p>'.$this->lang->line('upload_no_file_selected').'</p>');
-	}
-
-	public function remove_logo($item_id)
-	{
-		$item_data = array('pic_id' => NULL);
-		$result = $this->Item->save($item_data, $item_id);
-
-		echo json_encode(array('success' => $result));
-	}
-
 	public function save_inventory($item_id = -1)
 	{	
 		$employee_id = $this->Employee->get_logged_in_employee_info()->person_id;
@@ -630,54 +392,6 @@ class Qccans extends Secure_Controller
 		}
 	}
 
-	public function bulk_update()
-	{
-		$items_to_update = $this->input->post('item_ids');
-		$item_data = array();
-
-		foreach($_POST as $key => $value)
-		{		
-			//This field is nullable, so treat it differently
-			if($key == 'supplier_id' && $value != '')
-			{	
-				$item_data["$key"] = $value;
-			}
-			elseif($value != '' && !(in_array($key, array('item_ids', 'tax_names', 'tax_percents'))))
-			{
-				$item_data["$key"] = $value;
-			}
-		}
-
-		//Item data could be empty if tax information is being updated
-		if(empty($item_data) || $this->Item->update_multiple($item_data, $items_to_update))
-		{
-			$items_taxes_data = array();
-			$tax_names = $this->input->post('tax_names');
-			$tax_percents = $this->input->post('tax_percents');
-			$tax_updated = FALSE;
-			$count = count($tax_percents);
-			for ($k = 0; $k < $count; ++$k)
-			{		
-				if(!empty($tax_names[$k]) && is_numeric($tax_percents[$k]))
-				{
-					$tax_updated = TRUE;
-					
-					$items_taxes_data[] = array('name' => $tax_names[$k], 'percent' => $tax_percents[$k]);
-				}
-			}
-			
-			if($tax_updated)
-			{
-				$this->Item_taxes->save_multiple($items_taxes_data, $items_to_update);
-			}
-
-			echo json_encode(array('success' => TRUE, 'message' => $this->lang->line('items_successful_bulk_edit'), 'id' => $this->xss_clean($items_to_update)));
-		}
-		else
-		{
-			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_error_updating_multiple')));
-		}
-	}
 
 	public function delete()
 	{
@@ -711,272 +425,6 @@ class Qccans extends Secure_Controller
 
 
 	
-	// Import kế hoạch cán luyện Compound A từ file excel
-	public function do_excel_import_bk()
-	{
-		$this->load->helper('file');
-
-        /* Allowed MIME(s) File */
-        $file_mimes = array(
-            'application/octet-stream', 
-            'application/vnd.ms-excel', 
-            'application/x-csv', 
-            'text/x-csv', 
-            'text/csv', 
-            'application/csv', 
-            'application/excel', 
-            'application/vnd.msexcel', 
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheetapplication/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        );
-		if($_FILES['file_path']['error'] != UPLOAD_ERR_OK)
-		{
-			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_failed')));
-		}
-		else
-		{
-			$finfo = finfo_open(FILEINFO_MIME_TYPE);
-			$file_type = finfo_file($finfo, $_FILES['file_path']['tmp_name']);
-			finfo_close($finfo);
-			$extension = pathinfo($_FILES['file_path']['name'], PATHINFO_EXTENSION);
-		
-			if (!in_array($file_type, $file_mimes) || !in_array($extension, ['csv', 'xlsx', 'xls'])) {
-				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_nodata_wrongformat')));
-				exit();
-			}
-			//$array_file = explode('.', $_FILES['file_path']['name']);
-            //$extension  = end($array_file);
-           
-            $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-            
-			try {
-				$reader->setReadDataOnly(true); // Xử lý tối ưu giảm bộ nhớ
-				$spreadsheet = $reader->load($_FILES['file_path']['tmp_name']);
-			} catch(Exception $e) { // File upload không đúng định dạng
-				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_nodata_wrongformat')));
-                //$reader = new Csv();
-				exit();
-			}
-            $sheet_data  = $spreadsheet->getActiveSheet(0)->toArray(); // Lây sheet đầu tiên và chuyển thành mảng; rangeToArray('A1:T100');
-			//$worksheet = $spreadsheet->getActiveSheet(0); // Lấy sheet đầu tiên
-			//var_dump($sheet_data);
-            
-			$highestColumn = 5;
-			
-			$_iMaxColumn = 0;
-
-			foreach($sheet_data[0] as $item)
-			{
-				if($item != null)
-				{
-					$_iMaxColumn++;
-
-				} else {
-					break;
-				}
-			}
-			$failCodes = [];
-			// Bỏ qua dòng đầu tiên, start với i=1
-			debug_log(count($sheet_data),'count($sheet_data)');
-			$i = 7; // Bắt đầu với dòng thư 8; kể từ 0 --> 7;
-			$data = $sheet_data[$i]; 
-			//var_dump($data);
-
-			debug_log(count($data),'data['.$i.']');
-			$_str_order_date = trim($data['2']); //C
-			$_str_order_date = str_replace('/', '-', $_str_order_date);
-			$order_date = strtotime($_str_order_date);
-
-			$compounda_order_no = trim($data['9']); //J
-
-			$i = $i+1; // Next row
-			$data = $sheet_data[$i];
-			$_str_use_date = trim($data['2']); //C
-			$_str_use_date = str_replace('/', '-', $_str_use_date);
-			$use_date = strtotime($_str_use_date);
-			$area_make_order=$data['9']; //J
-
-			$i = $i+1;
-			$data = $sheet_data[$i];
-			$creator_account = trim($data['2']); //C
-			$suppervisor_account=trim($data['9']); //J
-
-			// Begin Thông tin người lập kế hoạch
-			//Get creator by account// sử dụng account upload file excel;
-			// Sau này cần thay thế bằng tài khoản đăng nhập;
-			$_oCreator = $this->Employee->get_info_by_account($creator_account);
-			$creator_id = 0; 
-			$creator_name = '';
-			if(empty($_oCreator))
-			{
-				$failCodes[] = 'TK người lập chưa tồn tại';
-			} else {
-				$creator_id = $_oCreator->person_id; //C
-				$creator_name = $_oCreator->last_name . ' '. $_oCreator->first_name; //C
-			} 
-
-			// End thông tin người lập kế hoạch
-
-
-			//Begin Thông tin người giám sát 
-			// Mặc định khi được phân quyền giám sát (kiểm tra) is_check (có quyền kiểm tra)
-			//Get Suppervisor by account
-			$_oSuppervisor = $this->Employee->get_info_by_account($suppervisor_account);
-			$suppervisor_id = 0; //C
-			$suppervisor_name = ''; //C
-			if(empty($_oSuppervisor))
-			{
-				$failCodes[] = 'TK người phụ trách chưa tồn tại';
-			} else {
-				$suppervisor_id = $_oSuppervisor->person_id;//C
-				$suppervisor_name = $_oSuppervisor->last_name . ' '. $_oSuppervisor->first_name; //C;
-			}
-			// Thông tin người giám sát sẽ được cập nhật vào khi click "Đạt", chuyển sang trạng thái "Đã xem xét"
-			// End thông tin người giám sát;
-
-			if($use_date === false)
-			{
-				$use_date = strtotime('17-09-2022'); //dèault
-			}
-
-			if($order_date === false)
-			{
-				$order_date = strtotime('17-09-2022'); //dèault
-			}
-
-			// Thông tin về kế hoạch
-			$compounda_data = [
-				'order_date' => $order_date,
-				'compounda_order_no'=>$compounda_order_no,
-				'use_date' => $use_date,
-				'area_make_order'=>$area_make_order,
-				'creator_account'=>$creator_account,
-				'creator_id'=>$creator_id,
-				'creator_name'=>$creator_name,
-				'suppervisor_account'=>$suppervisor_account,
-				'suppervisor_id'=>$suppervisor_id,
-				'suppervisor_name'=>$suppervisor_name,
-				'status'=>4 //Đã chập nhận
-			];
-
-			debug_log($compounda_data,'$compounda_data');
-			//var_dump($compounda_data);
-
-			$_istart_index = 13; // Bắt đầu đọc từ dòng thứ 14, // Lấy chi tiết về kế hoạch
-			$item_orders = [];
-			for($i = $_istart_index; $i < count($sheet_data); $i++) {
-				//echo $i;
-				//$rowData = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,NULL,TRUE,FALSE);
-				//debug_log($sheet_data[$i],'$sheet_data[$i]');
-				if(isEmptyRow($sheet_data[$i],$highestColumn)) { continue; } // skip empty row
-				
-				$data = $sheet_data[$i];
-				//var_dump($data);
-				if(trim($data[0]) == "Tổng cộng:")
-				{
-					//echo $i;
-					break; // đến dòng này thì dừng
-				}
-				debug_log($sheet_data[$i],'$sheet_data[$i]');
-				$ms = trim($data[12]) != null ? trim($data[12]):'';
-				//$_item_orders = [];
-				$item_data = [
-					'ms'					=> trim($data[12]) != null ? trim($data[12]):'',
-					'quantity_batch'			=> is_numeric(str_replace(',','',$data[3])) == true ? (float) str_replace(',','',$data[3]):0,
-					'quantity_use'			=> is_numeric(str_replace(',','',trim($data[6]))) == true ? (float) str_replace(',','',trim($data[6])):0,
-					'note'=>trim($data[10])
-				];
-				
-				$_oItem = $this->Item->get_info_by_ms($ms);
-
-				$_aItemAs = $this->Recipe->get_item_by_ms($ms,'A')->result_array(); // Nguyên liệu và Vật tư để cán luyện ra compound A này;
-
-				//var_dump($_aItemAs);
-				//var_dump($_oItem);
-				
-				if(empty($_aItemAs))
-				{
-					$failCodes[] = $i . 'Chưa tồn tại công thức với MÁC nguyên liệu này: '.$ms;
-					continue;
-				}
-				if($_oItem->item_id == 0) // Nếu không tìm thấy item với mác nguyên liệu // Version tiếp theo có thể tự tạo Compound A;
-				{
-					$failCodes[] = "{$i} Chưa tồn tại Nguyên Liệu (Compound A) với mác nguyên liệu này: $ms";
-					continue;
-				} else {
-					$item_data['item_id'] = $_oItem->item_id;
-					$item_data['item_name'] = $_oItem->name;
-					$item_data['uom_code'] = $_oItem->inventory_uom_code;
-					$item_data['uom_name'] = $_oItem->inventory_uom_name;
-					$item_data['quantity_schedule'] = 75 * $item_data['quantity_batch']; // Đang sử dụng 75kg/Mẻ
-					$item_data['created_at'] = time();
-					$item_orders[$i]['item_order'] = $item_data; // Nguyên vật liệu COmpound A
-				}
-
-				$_aNvlItems = get_nvlc($_aItemAs,'item_group',['1.*','2.*']);
-				//var_dump($_aNvlItems);
-				$_export_data = [];
-
-				if(!empty($_aNvlItems))
-				{
-					$_sCode = time();
-					for($j = 1; $j <= $item_data['quantity_batch']; $j++)
-					{
-						$_export_doc_data = [];
-						$_export_doc_data['ms'] = $ms;
-						$_export_doc_data['compounda_id'] = $_oItem->item_id;
-						$_export_doc_data['compounda_name'] = $_oItem->name;						
-						$_export_doc_data['creator_from_id'] = 0;
-						$_export_doc_data['creator_from_name'] = '';
-						$_export_doc_data['creator_to_id'] = '';
-						$_export_doc_data['creator_to_name'] = '';
-						
-						$_export_doc_data['completed_at'] = 0;
-						$_export_doc_data['status'] = 4;
-						$_export_doc_data['export_code'] = 'EXD'.$_sCode.$j;
-						$_export_doc_data['batch_number'] = $j;
-
-						foreach($_aNvlItems as $key=>$value)
-						{
-							$_export_item_data = [];
-							$_export_item_data['item_name']= $value['name'];
-							$_export_item_data['item_id'] = $value['item_id'];
-							$_export_item_data['uom_code'] = $value['uom_code'];
-							$_export_item_data['uom_name'] = $value['uom_name'];
-							$_export_item_data['encode'] = $value['encode'];
-							$_export_item_data['quantity'] = $value['weight'];
-
-							$_export_doc_data['list_items'][] = $_export_item_data; //mảng các bản ghi export_document_items
-						}
-						//$export_data[] = $_export_data[]
-						$_export_data[] = $_export_doc_data;
-						
-					}
-				}
-				
-				$item_orders[$i]['export_data'] = $_export_data;
-				
-			}
-			//var_dump($failCodes);
-			//var_dump($item_orders); die();
-			if(!empty($failCodes)){ // Nếu xuất hiện lỗi, không làm gì cả, hiển thị thông báo lỗi tại dòng nào;
-				$message = $this->lang->line('items_excel_import_partially_failed') . ' (' . count($failCodes) . '): ' . implode(', ', $failCodes);
-				echo json_encode(array('success' => FALSE, 'message' => $message));
-
-			} else {
-	
-				$save_rs = $this->Compounda->save($compounda_data,$item_orders);
-
-				if($save_rs)
-				{
-					echo json_encode(array('success' => TRUE, 'message' => $this->lang->line('items_excel_import_success')));
-				} else {
-					echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
-				}
-			}
-		}
-	}
-
 	public function do_excel_import()
 	{
 		$this->load->helper('file');
@@ -1348,7 +796,7 @@ class Qccans extends Secure_Controller
 		return true;
 	}
 
-	public function is_inventory()
+	public function is_qc()
 	{
 		/**
 		 * Xem được đã được mã hóa
@@ -1378,17 +826,14 @@ class Qccans extends Secure_Controller
 	public function detail($item_id=-1)
 	{
 		//$person_id = $this->person_id;
-		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
-		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
-		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
-		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
-		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
+		
+		$data['is_qc'] = $this->Employee->has_grant($this->module_id.'_is_qc');
+		
 
-		$data['item_tax_info'] = '';
-		$data['default_tax_1_rate'] = '';
-		$data['default_tax_2_rate'] = '';
-
-		$item_info = $this->Compounda->get_info($item_id);
+		$item_info = $this->Batch->get_info($item_id);
+		$this->Batch->make_doing_qc($item_info); // update thời gian bắt đầu QC và stauts đang làm
+		//var_dump($item_info->qc_cpa_document);die();
+		$item_info = $this->Batch->get_info($item_id);
 		foreach(get_object_vars($item_info) as $property => $value)
 		{
 			if(!is_object($value) && !is_array($value))
@@ -1397,10 +842,32 @@ class Qccans extends Secure_Controller
 			}
 		}
 
-		$data['item_info'] = $item_info;
+		$data['item_info'] = transform_batch_info($item_info);
+		//$_aRecipeItemA = $data['item_info']->qc_cpa_document->tieu_chi['A'];
+		//$_aRecipeItemB = $data['item_info']->qc_cpa_document->tieu_chi['B'];
 
-		//var_dump($data);
-		$this->load->view('compoundas/detail', $data);
+		$started_date = $data['item_info']->qc_cpa_document->started_at;
+		$ended_date = $data['item_info']->qc_cpa_document->completed_at;
+
+		if($ended_date == '' || $ended_date == 0)
+		{
+			$ended_date = 'Đang QC ...';
+		} else {
+			$ended_date = date('d/m/Y H:i',$ended_date);
+		}
+
+		if($started_date == '')
+		{
+			$started_date = 'Chưa bắt đầu ...';
+		} else {
+			$started_date = date('d/m/Y H:i',$started_date);
+		}
+
+		$data['started_date'] = $started_date;
+		$data['completed_date'] = $ended_date;
+		$data['form_qc_cpa'] = form_qc_cpa($data['item_info']->qc_cpa_document->tieu_chi);
+		//var_dump($data['item_info']->qc_cpa_document->tieu_chi['A']);die();
+		$this->load->view('qccans/detail', $data);
 		//$this->load->view('recipes/detail', $data);
 	}
 
@@ -1479,18 +946,10 @@ class Qccans extends Secure_Controller
 	}
 
 
-	public function detail_khcl($item_id = -1)
+	public function detail_rs($item_id = -1)
 	{
 		//$person_id = $this->person_id;
-		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
-		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
-		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
-		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
-		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
-
-		
-
-		$item_info = $this->Compounda->get_info($item_id);
+		$item_info = $this->Batch->get_info($item_id);
 		foreach(get_object_vars($item_info) as $property => $value)
 		{
 			if(!is_object($value) && !is_array($value))
@@ -1499,10 +958,31 @@ class Qccans extends Secure_Controller
 			}
 		}
 
-		$data['item_info'] = $item_info;
+		$data['item_info'] = transform_batch_info($item_info); 
+		//$_aRecipeItemA = $data['item_info']->qc_cpa_document->tieu_chi['A'];
+		//$_aRecipeItemB = $data['item_info']->qc_cpa_document->tieu_chi['B'];
+		$data['form_qc_cpa'] = form_qc_cpa_rs($data['item_info']);
 
+		$started_date = $data['item_info']->qc_cpa_document->started_at;
+		$ended_date = $data['item_info']->qc_cpa_document->completed_at;
+
+		if($ended_date == '' || $ended_date == 0)
+		{
+			$ended_date = 'Đang QC ...';
+		} else {
+			$ended_date = date('d/m/Y H:i',$ended_date);
+		}
+
+		if($started_date == '')
+		{
+			$started_date = 'Chưa bắt đầu ...';
+		} else {
+			$started_date = date('d/m/Y H:i',$started_date);
+		}
+		$data['started_date'] = $started_date;
+		$data['completed_date'] = $ended_date;
 		//var_dump($data);
-		$this->load->view('compoundas/detail_khcl', $data);
+		$this->load->view('qccans/detail_rs', $data);
 	}
 
 	public function printBarcode($lenh_uuid)
@@ -1524,6 +1004,97 @@ class Qccans extends Secure_Controller
 		$this->load->view('compoundas/printbarcode', $data);
 	}
 	
+	public function completed()
+	{
+		$batch_uuid = $this->input->post('batch_uuid');
+		$batch_info = $this->Batch->get_info($batch_uuid);
+		
+		if (!$batch_info || !$batch_info->qc_cpa_document) {
+			show_error('Dữ liệu batch không hợp lệ.', 400);
+			return;
+		}
+
+		$names_a = $this->input->post('name_A[]') ?? [];
+		$names_b = $this->input->post('name_B[]') ?? [];
+		$time = time();
+
+		// Trạng thái QC
+		$status = (empty($names_a) && empty($names_b)) ? 6 : 5;
+
+		$batch = [
+			'batch_id'   => $batch_info->compounda_order_item_completed_id,
+			'updated_at' => $time,
+			'status'     => $status
+		];
+
+		$qc_cpa_document = [
+			'qc_cpa_document_id' => $batch_info->qc_cpa_document->qc_cpa_document_id,
+			'completed_at'       => $time,
+			'status'             => $status,
+			'results'            => ($status === 5) ? result_json($batch_info, $names_a, $names_b) : json_encode([])
+		];
+		//var_dump($names_b);die();
+		// Gọi hàm xử lý cập nhật
+		$this->Batch->completed($batch, $qc_cpa_document);
+		redirect(base_url('qccans/index'));
+	}
+
+	public function back()
+	{
+		redirect(base_url('qccans/index'));
+	}
+
+	public function seachbatch()
+	{
+		$code = $this->input->post('code');
+		$data['is_qc'] = $this->Employee->has_grant("{$this->module_id}_is_qc");
+	
+		//var_dump($item_info->ms);die();
+		$_aStatus = [
+			3, // Cân xong
+			4, // Bắt đầu QC
+			5, // QC Ko đạt
+			6, // QC đạt
+			7, // bắt đầu cán
+			8 // hoàn thành
+		];
+
+		$statusClass = [
+			1 => "choLam",
+			2 => "dangLam",
+            3 => "choQC",
+            4 => "dangQC",
+            5 => "qcNotOK",
+            6 => "daQCOK",
+            7 => "batDauCan",
+            8 => "daLam"
+        ];
+		
+		$statusText = [
+			1 => "Chờ cân",
+			2 => "Đang cân",
+            3 => "Chờ Q",
+            4 => "Đang QC",
+            5 => "QC chưa đạt",
+            6 => "QC đạt",
+            7 => "Bắt đầu cán",
+            8 => "Hoàn thành cán luyện"
+        ];
+
+		$data['statusText'] = $statusText;
+		$data['statusClass'] = $statusClass;
+		// Lấy các batch đã hoàn thành cân
+		$_aoListBatchs = $this->Compounda->get_list_tasks_by_code($code);
+		
+		$data['aoListBatchs'] = transform_data($_aoListBatchs);
+		
+		$data['isApproved'] = 1;
+		
+		//$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
+
+		//var_dump($recipe_ItemA);die();
+		$this->load->view('qccans/listme', $data);
+	}
 
 }
 ?>

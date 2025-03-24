@@ -7,104 +7,64 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 //use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-class Canluyens extends Secure_Controller
+class Cpas extends Secure_Controller
 {
 	public function __construct()
 	{
-		parent::__construct('compoundas');
+		parent::__construct('cpas');
 		$this->load->library('item_lib');
 		$this->load->library('barcode_lib');
+		$this->load->helper('batch');
+		$this->load->model('Batch');
 	}
 	
 	public function index($search='')
 	{
-		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
-		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
-		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
-		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
-		$data['is_worker'] = $this->Employee->has_grant($this->module_id.'_is_worker');
-		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
-		$data['is_checker'] = $this->Employee->has_grant($this->module_id.'_is_checker');
-		$data['is_monitor'] = $this->Employee->has_grant($this->module_id.'_is_monitor');
+		$data['is_cpa'] = $this->Employee->has_grant("{$this->module_id}_is_cpa");
+	
+		//var_dump($item_info->ms);die();
+		$_aStatus = [
+			6, // QC đạt
+			7, // bắt đầu cán
+			8 // hoàn thành
+		];
+		$step = 6;
 
-		$search = $this->input->get('search');
+		$statusClass = [
+			1 => "choLam",
+			2 => "dangLam",
+            6 => "choQC",
+            4 => "dangQC",
+            5 => "qcNotOK",
+            3 => "daQCOK",
+            7 => "batDauCan",
+            8 => "daLam"
+        ];
+		
+		$statusText = [
+			1 => "Chờ cân",
+			2 => "Đang cân",
+            3 => "Chờ QC",
+            4 => "Đang QC",
+            5 => "QC chưa đạt",
+            6 => "QC đạt",
+            7 => "Bắt đầu cán",
+            8 => "Hoàn thành cán luyện"
+        ];
 
-		if($data['is_inventory']){ //Ưu tiên quyền quản lý kho
-			//$person_id = $this->person_id;
-			//echo $search; die();
-			if($search == '')
-			{
-				$data['item_info'] = null;
-			} else {
-				$item_info = $this->Compounda->get_info_by_no($search);
-				
-				if($item_info->compounda_order_id != 0 )
-				{
-					foreach(get_object_vars($item_info) as $property => $value)
-					{
-						if(!is_object($value) && !is_array($value))
-						{
-							$item_info->$property = $this->xss_clean($value);
-						}
-					}
+		$data['statusText'] = $statusText;
+		$data['statusClass'] = $statusClass;
+		// Lấy các batch đã hoàn thành cân
+		$_aoListBatchs = $this->Compounda->get_list_tasks_by_status($_aStatus);
+		
+		$data['aoListBatchs'] = transform_data($_aoListBatchs,$step);
+		
+		$data['isApproved'] = 1;
+		
+		//$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
 
-					$data['item_info'] = $item_info;
-				} else {
-					$data['item_info'] = null;
-					$data['message'] = 'Chưa tìm thấy lệnh sx theo số lệnh: <b>' .$search.'</b>, hãy thử với lệnh khác';
-				}
-			}
-
-			//var_dump($data);
-			$this->load->view('compoundas/detail', $data);
-			//$this->load->view('recipes/detail', $data);
-
-		} 
-		else if($data['is_worker']){ // Tiếp theo Worker// Nhận VT
-			if($search == '')
-			{
-				$data['item_info'] = null;
-			} else {
-				$item_info = $this->Compounda->get_info_by_no($search);
-				
-				if($item_info->compounda_order_id != 0 )
-				{
-					foreach(get_object_vars($item_info) as $property => $value)
-					{
-						if(!is_object($value) && !is_array($value))
-						{
-							$item_info->$property = $this->xss_clean($value);
-						}
-					}
-
-					$data['item_info'] = $item_info;
-				} else {
-					$data['item_info'] = null;
-					$data['message'] = 'Chưa tìm thấy lệnh sx theo số lệnh: <b>' .$search.'</b>, hãy thử với lệnh khác';
-				}
-			}
-
-			//var_dump($data);
-			$this->load->view('compoundas/detail', $data);
-		}
-		else {
-
-			$data['table_headers'] = $this->xss_clean(get_compoundas_manage_table_headers());
-
-			//$data['table_headers'] = $this->xss_clean(get_items_manage_table_headers());
-
-			
-			$data['stock_location'] = $this->xss_clean($this->item_lib->get_item_location());
-			$data['stock_locations'] = $this->xss_clean($this->Stock_location->get_allowed_locations());
-
-			// filters that will be loaded in the multiselect dropdown
-			$data['filters'] = array('empty_upc' => $this->lang->line('items_empty_upc_items'),
-				'low_inventory' => $this->lang->line('items_low_inventory_items'),
-				'is_deleted' => $this->lang->line('items_is_deleted'));
-
-			$data['grant_id'] = $this->grant_id; //Phân quyền module 
-			$this->load->view('compoundas/manage', $data);
-		}
+		//var_dump($recipe_ItemA);die();
+		$this->load->view('cpas/listme', $data);
 	}
 
 	/*
@@ -1375,35 +1335,6 @@ class Canluyens extends Secure_Controller
 		return true;
 	}
 
-	public function detail($item_id=-1)
-	{
-		//$person_id = $this->person_id;
-		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
-		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
-		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
-		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
-		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
-
-		$data['item_tax_info'] = '';
-		$data['default_tax_1_rate'] = '';
-		$data['default_tax_2_rate'] = '';
-
-		$item_info = $this->Compounda->get_info($item_id);
-		foreach(get_object_vars($item_info) as $property => $value)
-		{
-			if(!is_object($value) && !is_array($value))
-			{
-				$item_info->$property = $this->xss_clean($value);
-			}
-		}
-
-		$data['item_info'] = $item_info;
-
-		//var_dump($data);
-		$this->load->view('compoundas/detail', $data);
-		//$this->load->view('recipes/detail', $data);
-	}
-
 	public function ajax_export_document()
 	{
 		$uuid = $this->input->post('uuid');
@@ -1505,25 +1436,178 @@ class Canluyens extends Secure_Controller
 		$this->load->view('compoundas/detail_khcl', $data);
 	}
 
-	public function printBarcode($lenh_uuid)
+	public function detail_rs($item_id = -1)
 	{
 		//$person_id = $this->person_id;
-		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
-		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
-		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
-		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
-		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
+		$item_info = $this->Batch->get_info($item_id);
+		foreach(get_object_vars($item_info) as $property => $value)
+		{
+			if(!is_object($value) && !is_array($value))
+			{
+				$item_info->$property = $this->xss_clean($value);
+			}
+		}
 
-		
+		$data['item_info'] = transform_batch_info($item_info); 
+		//$_aRecipeItemA = $data['item_info']->qc_cpa_document->tieu_chi['A'];
+		//$_aRecipeItemB = $data['item_info']->qc_cpa_document->tieu_chi['B'];
+		$data['form_qc_cpa'] = form_qc_cpa_rs($data['item_info']);
 
-		$item_info = $this->Compounda->get_info_lenh($lenh_uuid);
-		
-		$data['item_info'] = $item_info;
+		$started_date = $data['item_info']->started_at;
+		$ended_date = $data['item_info']->completed_at;
 
+		if($ended_date == '' || $ended_date == 0)
+		{
+			$ended_date = 'Đang cán ...';
+		} else {
+			$ended_date = date('d/m/Y H:i',$ended_date);
+		}
+
+		if($started_date == '')
+		{
+			$started_date = 'Chưa bắt đầu ...';
+		} else {
+			$started_date = date('d/m/Y H:i',$started_date);
+		}
+		$data['started_date'] = $started_date;
+		$data['completed_date'] = $ended_date;
 		//var_dump($data);
-		$this->load->view('compoundas/printbarcode', $data);
+		$this->load->view('cpas/detail_rs', $data);
+	}
+	public function detail_next($item_id = -1)
+	{
+		//$person_id = $this->person_id;
+		$item_info = $this->Batch->get_info($item_id);
+		foreach(get_object_vars($item_info) as $property => $value)
+		{
+			if(!is_object($value) && !is_array($value))
+			{
+				$item_info->$property = $this->xss_clean($value);
+			}
+		}
+
+		$data['item_info'] = transform_batch_info($item_info); 
+		//$_aRecipeItemA = $data['item_info']->qc_cpa_document->tieu_chi['A'];
+		//$_aRecipeItemB = $data['item_info']->qc_cpa_document->tieu_chi['B'];
+		$data['form_qc_cpa'] = form_qc_cpa_rs($data['item_info']);
+
+		$started_date = $data['item_info']->started_at;
+		$ended_date = $data['item_info']->completed_at;
+
+		if($ended_date == '' || $ended_date == 0)
+		{
+			$ended_date = 'Đang Cán ...';
+		} else {
+			$ended_date = date('d/m/Y H:i',$ended_date);
+		}
+
+		if($started_date == '' || $started_date = 0)
+		{
+			$started_date = 'Chưa bắt đầu ...';
+		} else {
+			$started_date = date('d/m/Y H:i',$started_date);
+		}
+		$data['started_date'] = $started_date;
+		$data['completed_date'] = $ended_date;
+		//var_dump($data);
+		$this->load->view('cpas/detail_next', $data);
 	}
 	
+	public function detail($item_id=-1)
+	{
+		//$person_id = $this->person_id;
+		
+		$data['is_qc'] = $this->Employee->has_grant($this->module_id.'_is_qc');
+		
+
+		$item_info = $this->Batch->get_info($item_id);
+
+		// Kiểm tra chỉ có 1 bản ghi trạng thái 7.
+		// Tìm xem hệ thống có bản ghi nào 7 chưa?
+		$_aStatus = [
+						7 // trạng thai 7
+					];
+		$_aoListBatchs = $this->Compounda->get_list_tasks_by_status($_aStatus);
+
+		if(!empty($_aoListBatchs) && ($_aoListBatchs[0]->compounda_order_item_completed_uuid != $item_id))
+		{
+			$this->load->view('cpas/exist', $data);
+		} else {
+
+			$time = time();
+			$batch = [
+				'batch_id'   => $item_info->compounda_order_item_completed_id,
+				'updated_at' => $time,
+				'status'     => $item_info->status
+			];
+
+			$this->Batch->make_doing_cpas($batch); // update thời gian bắt đầu Cán và status của mẻ đang làm
+			//var_dump($item_info->qc_cpa_document);die();
+			$item_info = $this->Batch->get_info($item_id);
+			foreach(get_object_vars($item_info) as $property => $value)
+			{
+				if(!is_object($value) && !is_array($value))
+				{
+					$item_info->$property = $this->xss_clean($value);
+				}
+			}
+
+			$data['item_info'] = transform_batch_info($item_info);
+			//$_aRecipeItemA = $data['item_info']->qc_cpa_document->tieu_chi['A'];
+			//$_aRecipeItemB = $data['item_info']->qc_cpa_document->tieu_chi['B'];
+
+			$started_date = $data['item_info']->started_at;
+			$ended_date = $data['item_info']->completed_at;
+
+			if($ended_date == '' || $ended_date == 0)
+			{
+				$ended_date = 'Đang cán ...';
+			} else {
+				$ended_date = date('d/m/Y H:i',$ended_date);
+			}
+
+			if($started_date == '')
+			{
+				$started_date = 'Chưa bắt đầu ...';
+			} else {
+				$started_date = date('d/m/Y H:i',$started_date);
+			}
+
+			$data['started_date'] = $started_date;
+			$data['completed_date'] = $ended_date;
+			$data['form_qc_cpa'] = form_qc_cpa($data['item_info']->qc_cpa_document->tieu_chi);
+			
+			$this->load->view('cpas/detail', $data);
+		}
+		
+	}
+
+	public function completed()
+	{
+		$batch_uuid = $this->input->post('batch_uuid');
+		$batch_info = $this->Batch->get_info($batch_uuid);
+		
+		if (!$batch_info) {
+			show_error('Dữ liệu batch không hợp lệ.', 400);
+			return;
+		}
+
+		
+		$time = time();
+		$batch = [
+			'batch_id'   => $batch_info->compounda_order_item_completed_id,
+			'updated_at' => $time,
+			'status'     => $batch_info->status
+		];
+
+		$this->Batch->make_completed_cpas($batch);
+		redirect(base_url('cpas/index'));
+	}
+
+	public function back()
+	{
+		redirect(base_url('cpas/index'));
+	}
 
 }
 ?>

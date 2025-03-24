@@ -465,7 +465,7 @@ class Employee extends Person
 	public function has_subpermissions($permission_id)
 	{
 		$this->db->from('permissions');
-		$this->db->like('permission_id', $permission_id.'_', 'after');
+		$this->db->like('permission_key', $permission_id.'_', 'after');
 
 		return ($this->db->get()->num_rows() == 0);
 	}

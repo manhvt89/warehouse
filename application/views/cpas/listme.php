@@ -11,6 +11,39 @@
 .batDauCan { background-color: #795548 !important; color: white; } /* Nâu - Bắt đầu cân */
 .daLam { background-color: #616161 !important; color: white; } /* Xám - Đã hoàn thành */
 	
+.scan-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Khoảng cách giữa input và icon */
+    width: 100%; /* Đảm bảo full width */
+}
+
+.scan-wrapper input {
+    flex-grow: 1; /* Input mở rộng nhưng không bị tràn */
+    max-width: 300px; /* Giới hạn để không quá dài */
+}
+
+.scan-wrapper button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.scan-wrapper button svg {
+    width: 24px;
+    height: 24px;
+    color: #007bff;
+    transition: transform 0.2s ease-in-out;
+}
+
+.scan-wrapper button:hover svg {
+    transform: scale(1.1);
+    color: #0056b3;
+}
 	.number{
 		text-align: right;
 	}
@@ -232,9 +265,28 @@
 		<tr>
 			<td><div class="recipe-header-company-name">
 			<?php echo form_open($controller_name."/seachbatch", ['id' => 'seachcan', 'class' => 'form-horizontal panel panel-default']); ?>
-				<input type="text" name="code" value="" id="code" class="form-control input-sm ui-autocomplete-input" size="50" tabindex="1" autocomplete="off">
+				<div class="scan-wrapper">
+					<input type="text" name="code" value="" id="code" class="form-control input-sm ui-autocomplete-input" size="50" tabindex="1" autocomplete="off">
+					<button id="start-scan">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M3 3h4v4H3V3z"></path>
+							<path d="M17 3h4v4h-4V3z"></path>
+							<path d="M3 17h4v4H3v-4z"></path>
+							<path d="M17 17h4v4h-4v-4z"></path>
+							<path d="M7 5h10"></path>
+							<path d="M5 7v10"></path>
+							<path d="M19 7v10"></path>
+							<path d="M7 19h10"></path>
+							<path d="M12 8h.01"></path>
+							<path d="M8 12h.01"></path>
+							<path d="M12 12h.01"></path>
+							<path d="M16 12h.01"></path>
+							<path d="M12 16h.01"></path>
+						</svg>
+					</button>
+				</div>
 			<?php echo form_close(); ?>
-				<button id="start-scan">📷 Quét Barcode</button>
+				
     			<video id="scanner" style="display: none; width: 100%;"></video>
 			</div></td>
 		</tr>

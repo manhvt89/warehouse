@@ -329,38 +329,53 @@
     });
 	*/
 	document.addEventListener("DOMContentLoaded", async function () {
-            const videoElement = document.getElementById("scanner");
-            const barcodeInput = document.getElementById("code");
-            const startScanButton = document.getElementById("start-scan");
-            const beepSound = document.getElementById("beep-sound");
-            const codeReader = new ZXing.BrowserMultiFormatReader();
+    const videoElement = document.getElementById("scanner");
+    const barcodeInput = document.getElementById("code");
+    const startScanButton = document.getElementById("start-scan");
+    const beepSound = document.getElementById("beep-sound");
+    const formElement = document.getElementById("seachcan");
+    const codeReader = new ZXing.BrowserMultiFormatReader();
 
-            startScanButton.addEventListener("click", async () => {
-                try {
-                    videoElement.style.display = "block"; // Hiển thị camera
+    let scanning = false; // Biến để kiểm tra trạng thái quét
 
-                    await codeReader.decodeFromVideoDevice(null, videoElement, (result, err) => {
-                        if (result) {
-                            beepSound.play(); // Phát âm thanh beep
-                            barcodeInput.value = result.text; // Điền vào input
-                            document.getElementById("barcode-form").submit(); // Tự động submit form
-                            stopScanning();
-                        }
-                    }, {
-                        video: { facingMode: { exact: "environment" }, width: 1280, height: 720 } // Chỉ định camera sau
-                    });
+    startScanButton.addEventListener("click", async () => {
+        if (scanning) {
+            stopScanning();
+            return;
+        }
 
-                } catch (error) {
-                    console.error("Lỗi khi mở camera:", error);
-                    alert("Không thể mở camera sau. Hãy kiểm tra quyền truy cập camera!");
+        try {
+            scanning = true;
+            videoElement.style.display = "block"; // Hiển thị camera
+
+            await codeReader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+                if (result) {
+                    beepSound.play(); // Phát âm thanh beep
+                    barcodeInput.value = result.text; // Điền vào input
+
+                    // Tự động submit form
+                    formElement.submit();
+
+                    stopScanning();
                 }
+            }, {
+                video: { facingMode: "environment", width: 1280, height: 720 } // Chỉ định camera sau
             });
 
-            function stopScanning() {
-                codeReader.reset();
-                videoElement.style.display = "none";
-            }
-        });
+        } catch (error) {
+            console.error("Lỗi khi mở camera:", error);
+            alert("Không thể mở camera. Kiểm tra quyền truy cập!");
+            scanning = false;
+        }
+    });
+
+    function stopScanning() {
+        scanning = false;
+        codeReader.reset(); // Reset camera
+        videoElement.style.display = "none"; // Ẩn camera
+    }
+});
+
 
 	$('#order_number').keypress(function (e) {
 		if (e.which == 13) {

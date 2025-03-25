@@ -380,6 +380,7 @@
     let scanning = false; // Biến để kiểm tra trạng thái quét
 
     startScanButton.addEventListener("click", async () => {
+		event.preventDefault(); // Chặn form submit ngay
         if (scanning) {
             stopScanning();
             return;

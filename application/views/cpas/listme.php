@@ -14,28 +14,28 @@
 .scan-wrapper {
     display: flex;
     align-items: center;
-    gap: 8px; /* Khoảng cách giữa input và icon */
-    width: 100%; /* Đảm bảo full width */
+    gap: 8px;
+    width: 100%;
 }
 
 .scan-wrapper input {
-    flex-grow: 1; /* Input mở rộng nhưng không bị tràn */
-    max-width: 300px; /* Giới hạn để không quá dài */
+    flex-grow: 1;
+    max-width: 300px;
 }
 
 .scan-wrapper button {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: none;
+    background: transparent;
     border: none;
     cursor: pointer;
     padding: 5px;
 }
 
 .scan-wrapper button svg {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     color: #007bff;
     transition: transform 0.2s ease-in-out;
 }
@@ -44,6 +44,7 @@
     transform: scale(1.1);
     color: #0056b3;
 }
+
 	.number{
 		text-align: right;
 	}
@@ -268,20 +269,8 @@
 				<div class="scan-wrapper">
 					<input type="text" name="code" value="" id="code" class="form-control input-sm ui-autocomplete-input" size="50" tabindex="1" autocomplete="off">
 					<button id="start-scan">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M3 3h4v4H3V3z"></path>
-							<path d="M17 3h4v4h-4V3z"></path>
-							<path d="M3 17h4v4H3v-4z"></path>
-							<path d="M17 17h4v4h-4v-4z"></path>
-							<path d="M7 5h10"></path>
-							<path d="M5 7v10"></path>
-							<path d="M19 7v10"></path>
-							<path d="M7 19h10"></path>
-							<path d="M12 8h.01"></path>
-							<path d="M8 12h.01"></path>
-							<path d="M12 12h.01"></path>
-							<path d="M16 12h.01"></path>
-							<path d="M12 16h.01"></path>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+							<path d="M5 3v2H3v2h2v2H3v2h2v2H3v2h2v2H3v2h2v2h2v-2h2v2h2v-2h2v2h2v-2h2v-2h-2v-2h2v-2h-2v-2h2V9h-2V7h2V5h-2V3h-2v2h-2V3h-2v2h-2V3H9v2H7V3H5zm4 4h2v2H9V7zm4 0h2v2h-2V7zm-4 4h2v2H9v-2zm4 0h2v2h-2v-2zm-4 4h2v2H9v-2zm4 0h2v2h-2v-2zm4-8h2v2h-2V7zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
 						</svg>
 					</button>
 				</div>

@@ -379,6 +379,13 @@
 
     let scanning = false; // Biến để kiểm tra trạng thái quét
 
+	barcodeInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Không cho Enter bấm nút quét QR
+            formElement.submit(); // Nếu muốn cho phép Enter submit form
+        }
+    });
+
     startScanButton.addEventListener("click", async () => {
 		event.preventDefault(); // Chặn form submit ngay
         if (scanning) {

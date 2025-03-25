@@ -309,6 +309,8 @@
 	<?php endif; ?>
 	
 </div>
+<!-- Âm thanh beep -->
+<audio id="beep-sound" src="images/beep.mp3"></audio>
 <script src="https://unpkg.com/@zxing/library@latest"></script>
 
 <script type="text/javascript">
@@ -330,33 +332,34 @@
             const videoElement = document.getElementById("scanner");
             const barcodeInput = document.getElementById("code");
             const startScanButton = document.getElementById("start-scan");
+            const beepSound = document.getElementById("beep-sound");
             const codeReader = new ZXing.BrowserMultiFormatReader();
 
             startScanButton.addEventListener("click", async () => {
                 try {
-                    const devices = await navigator.mediaDevices.enumerateDevices();
-                    const videoDevices = devices.filter(device => device.kind === "videoinput");
-
-                    if (videoDevices.length === 0) {
-                        alert("Không tìm thấy camera!");
-                        return;
-                    }
-
                     videoElement.style.display = "block"; // Hiển thị camera
 
-                    // Chọn camera đầu tiên
-                    await codeReader.decodeFromVideoDevice(videoDevices[0].deviceId, videoElement, (result, err) => {
+                    await codeReader.decodeFromVideoDevice(null, videoElement, (result, err) => {
                         if (result) {
+                            beepSound.play(); // Phát âm thanh beep
                             barcodeInput.value = result.text; // Điền vào input
-                            document.getElementById("seachcan").submit(); // Tự động submit form
-                            codeReader.reset(); // Tắt camera sau khi quét
-                            videoElement.style.display = "none";
+                            document.getElementById("barcode-form").submit(); // Tự động submit form
+                            stopScanning();
                         }
+                    }, {
+                        video: { facingMode: { exact: "environment" }, width: 1280, height: 720 } // Chỉ định camera sau
                     });
+
                 } catch (error) {
                     console.error("Lỗi khi mở camera:", error);
+                    alert("Không thể mở camera sau. Hãy kiểm tra quyền truy cập camera!");
                 }
             });
+
+            function stopScanning() {
+                codeReader.reset();
+                videoElement.style.display = "none";
+            }
         });
 
 	$('#order_number').keypress(function (e) {

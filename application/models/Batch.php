@@ -547,7 +547,7 @@ class Batch extends CI_Model
 		return $this->db->trans_status();
 	}
 
-	public function make_doing_qc($batch)
+	public function make_doing_qc($batch,$user)
 	{
 		$_oQC_cpa_document = $batch->qc_cpa_document;
 		$time = time();
@@ -566,7 +566,9 @@ class Batch extends CI_Model
 			$this->db->where('qc_cpa_document_id', $_oQC_cpa_document->qc_cpa_document_id)
 					->update('qc_cpa_documents', [
 						'started_at' => $time,
-						'status' => 4
+						'status' => 4,
+						'qc_id'=>$user->person_id,
+						'qc_name'=>"{$user->last_name} {$user->first_name}",
 					]);
 			$this->db->trans_complete();
 			return $this->db->trans_status();

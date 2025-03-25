@@ -361,7 +361,9 @@ Used
 				?>
 
 						<tr class="one">
-							<td>
+							<td rowspan="2" class="code">
+								<?php $qrcode = generate_qrcode($lenh->order_number); ?>
+									<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/>
 								<?=$lenh->order_number ?>
 							</td>
 							<td class="code">
@@ -417,10 +419,7 @@ Used
 							</td>
 						</tr>
 						<tr class="two">
-							<td>
-							<?php $qrcode = generate_qrcode($lenh->order_number); ?>
-									<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/>
-							</td>
+							
 							<td>
 								
 							</td>

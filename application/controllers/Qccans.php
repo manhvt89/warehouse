@@ -9,6 +9,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class Qccans extends Secure_Controller
 {
+		
+	private $oTheUser;
 	public function __construct()
 	{
 		parent::__construct('qccans');
@@ -16,6 +18,7 @@ class Qccans extends Secure_Controller
 		$this->load->library('barcode_lib');
 		$this->load->model('Batch');
 		$this->load->helper('batch');
+		$this->oTheUser = $this->Employee->get_info($this->person_id);
 	}
 	
 	public function index()
@@ -328,13 +331,15 @@ class Qccans extends Secure_Controller
 
 	public function detail($item_id=-1)
 	{
-		//$person_id = $this->person_id;
+		$person_id = $this->person_id;
+		
 		
 		$data['is_qc'] = $this->Employee->has_grant($this->module_id.'_is_qc');
 		
 
 		$item_info = $this->Batch->get_info($item_id);
-		$this->Batch->make_doing_qc($item_info); // update thời gian bắt đầu QC và stauts đang làm
+
+		$this->Batch->make_doing_qc($item_info, $this->oTheUser); // update thời gian bắt đầu QC và stauts đang làm
 		//var_dump($item_info->qc_cpa_document);die();
 		$item_info = $this->Batch->get_info($item_id);
 		foreach(get_object_vars($item_info) as $property => $value)
@@ -374,84 +379,13 @@ class Qccans extends Secure_Controller
 		//$this->load->view('recipes/detail', $data);
 	}
 
-	public function ajax_export_document()
-	{
-		$uuid = $this->input->post('uuid');
-		
-		
-		$_oDocument = $this->Compounda->get_info_export_document($uuid);
-		if($_oDocument != null)
-		{
-			$_aDocument = (array) $_oDocument;
-
-			$rs = $this->Compounda->do_export_document($_aDocument);
-			if($rs)
-			{
-				echo json_encode(array('success' => TRUE,'status'=>$this->lang->line('export_document_waiting_confirm_status') ,'message' => $this->lang->line('items_excel_import_success')));
-			} else {
-				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
-			}
-		} else {
-			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
-		}
-	}
-
-	public function ajax_confirm_document()
-	{
-		$uuid = $this->input->post('uuid');
-		
-		
-		$_oDocument = $this->Compounda->get_info_export_document($uuid);
-		if($_oDocument != null)
-		{
-			$_aDocument = (array) $_oDocument;
-
-			$rs = $this->Compounda->do_confirm_document($_aDocument);
-			if($rs)
-			{
-				echo json_encode(
-						array('success' => TRUE,
-								'status'=>$this->lang->line('export_document_do_confirmed_status'),
-								'text'=>$this->lang->line('export_document_ready_to_do_btn'),
-								'message' => $this->lang->line('items_excel_import_success')));
-			} else {
-				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
-			}
-		} else {
-			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
-		}
-	}
-
-	public function ajax_ready_document()
-	{
-		$uuid = $this->input->post('uuid');
-		
-		
-		$_oDocument = $this->Compounda->get_info_export_document($uuid);
-		if($_oDocument != null)
-		{
-			$_aDocument = (array) $_oDocument;
-
-			$rs = $this->Compounda->do_start_document($_aDocument);
-			if($rs)
-			{
-				echo json_encode(
-						array('success' => TRUE,
-								'status'=>$this->lang->line('export_document_doing_status'),
-								'text'=>$this->lang->line('export_document_completed_btn'),
-								'message' => $this->lang->line('items_excel_import_success')));
-			} else {
-				echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
-			}
-		} else {
-			echo json_encode(array('success' => FALSE, 'message' => $this->lang->line('items_excel_import_partially_failed')));
-		}
-	}
-
-
 	public function detail_rs($item_id = -1)
 	{
-		//$person_id = $this->person_id;
+		$person_id = $this->person_id;
+		
+		//$_oTheUser = $this->Employee->get_info($person_id);
+		//var_dump($_oTheUser);die();
+		
 		$item_info = $this->Batch->get_info($item_id);
 		foreach(get_object_vars($item_info) as $property => $value)
 		{
@@ -488,25 +422,6 @@ class Qccans extends Secure_Controller
 		$this->load->view('qccans/detail_rs', $data);
 	}
 
-	public function printBarcode($lenh_uuid)
-	{
-		//$person_id = $this->person_id;
-		$data['is_approved'] = $this->Employee->has_grant($this->module_id.'_is_approved');
-		$data['is_inventory'] = $this->Employee->has_grant($this->module_id.'_is_inventory');
-		$data['is_editor'] = $this->Employee->has_grant($this->module_id.'_is_editor');
-		$data['is_action'] = $this->Employee->has_grant($this->module_id.'_is_action');
-		$data['is_production_order'] = $this->Employee->has_grant($this->module_id.'_is_production_order');
-
-		
-
-		$item_info = $this->Compounda->get_info_lenh($lenh_uuid);
-		
-		$data['item_info'] = $item_info;
-
-		//var_dump($data);
-		$this->load->view('compoundas/printbarcode', $data);
-	}
-	
 	public function completed()
 	{
 		$batch_uuid = $this->input->post('batch_uuid');

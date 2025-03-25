@@ -38,3 +38,6 @@ $lang['module_ctvs'] = "Cộng tác viên";
 $lang["module_ctvs_desc"] = "Quản lý cộng tác viên";
 $lang["module_compoundas"] = "Kế hoạch Compound";
 $lang['khcl_excel_import_partially_failed']  = 'Kế hoạch cán luyện đã tồn tại';
+$lang["module_cpas"] = "Cán luyện";
+$lang["module_cans"] = "Cân Hóa chất";
+$lang["module_qccans"] = "QC Cân";

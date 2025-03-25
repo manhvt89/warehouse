@@ -457,7 +457,7 @@ Used
 								
 							</td>
 							<td>
-								<?php echo "<a href='/compoundas/printBarcode/{$lenh->compounda_order_item_uuid}'>In Barcode</a>"; ?>
+								<?php echo "<a href='/compoundas/printBarcode/{$lenh->compounda_order_item_uuid}'>In Thẻ</a>"; ?>
 							</td>
 							<td>
 								

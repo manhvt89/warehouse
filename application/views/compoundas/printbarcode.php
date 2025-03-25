@@ -357,12 +357,7 @@
 	
 </div>
 <script type="text/javascript">
-	//validation and submit handling
-	//(function($) {
-        // You pass-in jQuery and then alias it with the $-sign
-        // So your internal code doesn't change
-    //})(jQuery);
-	//$(document).ready(function()
+
 	function printContent() {
 			
 			window.print();

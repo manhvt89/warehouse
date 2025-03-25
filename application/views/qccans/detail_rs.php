@@ -213,7 +213,7 @@
 		<tr>
 			<td>
 				<div class="compounda-order-title">
-						QC công đoạn cân hóa chất
+						Công đoạn QC hóa chất
 					</div>
 			</td>
 		</tr>
@@ -224,8 +224,8 @@
 	<table id="compounda-order-info">
 		<tr>
 			<td class="code">
-				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->code); ?>
-				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/><?=$item_info->code?>
+				<?php $qrcode = generate_qrcode($item_info->code); ?>
+				<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/><?=$item_info->code?>
 			</td>
 			
 			<td>Bắt đầu: <b><?=$started_date?></b></td>

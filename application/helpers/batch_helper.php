@@ -285,8 +285,8 @@ if (!function_exists('transform_data')) {
 					4 => fn($uuid) => "<a href='{$baseLink}{$uuid}'>Hoàn thành QC</a>",
 					5 => fn($uuid) => "<a href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>",
 					6 => fn($uuid) => "<a href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>",
-					7 => fn($uuid) => "",
-					8 => fn($uuid) => ""
+					7 => fn($uuid) => "<a href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>",
+					8 => fn($uuid) => "<a href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>"
 				];
 				
 				break;

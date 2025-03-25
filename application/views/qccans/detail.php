@@ -184,30 +184,6 @@
     }
 	*/
 </style>
-<div id="search_tool">
-	<div class="panel-info">
-		Hãy nhập thông tin mẻ 
-	</div>
-	<form method="get" action="compoundas/index">
-		<div class="form-group">
-			<label class="col-md-2 control-label" for="search">Mã mẻ</label>
-			<div class="col-md-4">
-				<input id="search" name="search" class="form-control input-md" type="text">
-				
-			</div>
-			<div class="col-md-4">
-				<button id="button1id" name="button1id" class="btn btn-success">Tìm</button>
-			</div>
-		</div>
-		<?php if(!empty($message))
-		{
-			?>
-			<div class="warning col-md-12" style="color: red;"><?php echo $message; ?></div>
-			<?php
-		}
-		?>
-	</form>
-</div>
 <?php if(!empty($item_info)): ?>
 <div id="recipe_basic_info" width="100%">
 	
@@ -217,7 +193,7 @@
 		<tr>
 			<td>
 				<div class="compounda-order-title">
-						QC công đoạn cân hóa chất
+						Công đoạn QC cân hóa chất
 					</div>
 			</td>
 		</tr>
@@ -228,8 +204,8 @@
 	<table id="compounda-order-info">
 		<tr>
 			<td rowspan="3">
-				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->code); ?>
-				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
+				<?php $qrcode = generate_qrcode($item_info->code); ?>
+				<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/>
 			</td>
 			
 			<td>Bắt đầu: <b><?=$started_date?></b></td>

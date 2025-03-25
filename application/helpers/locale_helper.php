@@ -1727,4 +1727,43 @@ if (!function_exists('filter_update_data')) {
         return $filtered_data;
     }
 }
+if (!function_exists('generate_qrcode')) {
+    function generate_qrcode($code)
+    {
+        $CI =& get_instance();
+
+        $CI->load->library('ciqrcode'); // Load QR Code library
+		$CI->config->load('qrcode'); // Load QR code config file;
+
+        $qr_url_data = $code;
+        $hex_data   = bin2hex($qr_url_data);
+        $save_name  = $hex_data.'.png';
+
+        /* QR Code File Directory Initialize */
+        $dir = 'assets/media/qrcode/';
+        if (!file_exists($dir)) {
+            mkdir($dir, 0775, true);
+        }
+
+        /* QR Configuration  */
+        $config['cacheable']    = true;
+        $config['imagedir']     = $dir;
+        $config['quality']      = true;
+        $config['size']         = '1024';
+        $config['black']        = [255,255,255];
+        $config['white']        = [255,255,255];
+        $CI->ciqrcode->initialize($config);
+
+        /* QR Data  */
+        $params['data']     = $qr_url_data;
+        $params['level']    = 'L';
+        $params['size']     = 10;
+        $params['savename'] = FCPATH.$config['imagedir']. $save_name;
+
+        //$this->ciqrcode->generate($params);
+
+        return $CI->ciqrcode->generate($params);
+       
+    }
+}
 ?>

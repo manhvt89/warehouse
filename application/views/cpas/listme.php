@@ -270,8 +270,8 @@
 
 						<tr class="one <?=$statusClass[$batch->status]?>" data-status="<?=$statusClass[$batch->status]?>">
 							<td class="code">
-							<?php $barcode_code = $this->barcode_lib->generate_receipt_barcode($batch->code); ?>
-									<img src='data:image/png;base64,<?php echo $barcode_code; ?>' /><br/>
+							<?php $qr_code = generate_qrcode($batch->code); ?>
+									<img src='data:image/png;base64,<?php echo $qr_code; ?>' /><br/>
 									<?=$batch->code ?>
 							</td>
 							

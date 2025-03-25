@@ -205,8 +205,8 @@
 	<table id="compounda-order-info">
 		<tr>
 			<td rowspan="3">
-				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->code); ?>
-				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
+				<?php $qrcode = generate_qrcode($item_info->code); ?>
+				<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/>
 			</td>
 			
 			<td>Bắt đầu: <b><?=$started_date?></b></td>

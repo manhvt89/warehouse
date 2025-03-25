@@ -1609,5 +1609,47 @@ class Cpas extends Secure_Controller
 		redirect(base_url('cpas/index'));
 	}
 
+	public function seachbatch()
+	{
+		$code = $this->input->post('code');
+		$step = 6;
+
+		$statusClass = [
+			1 => "choLam",
+			2 => "dangLam",
+            6 => "choQC",
+            4 => "dangQC",
+            5 => "qcNotOK",
+            3 => "daQCOK",
+            7 => "batDauCan",
+            8 => "daLam"
+        ];
+		
+		$statusText = [
+			1 => "Chờ cân",
+			2 => "Đang cân",
+            3 => "Chờ QC",
+            4 => "Đang QC",
+            5 => "QC chưa đạt",
+            6 => "QC đạt",
+            7 => "Bắt đầu cán",
+            8 => "Hoàn thành cán luyện"
+        ];
+
+		$data['statusText'] = $statusText;
+		$data['statusClass'] = $statusClass;
+		// Lấy các batch đã hoàn thành cân
+		$_aoListBatchs = $this->Compounda->get_list_tasks_by_code($code);
+		
+		$data['aoListBatchs'] = transform_data($_aoListBatchs,$step);
+		
+		$data['isApproved'] = 1;
+		
+		//$item_info->status == 5 ? $data['isApproved'] = 1: $data['isApproved']=0;
+
+		//var_dump($recipe_ItemA);die();
+		$this->load->view('cpas/listme', $data);
+	}
+
 }
 ?>

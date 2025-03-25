@@ -356,19 +356,7 @@
 
 <script type="text/javascript">
 
-	/*$("#compounda_order_uuid_text").autocomplete(
-	{
-		source: '<?php echo site_url($controller_name."/item_search"); ?>',
-    	minChars: 0,
-    	autoFocus: false,
-       	delay: 600,
-		select: function (a, ui) {
-			$(this).val(ui.item.value);
-			$("#add_item_form").submit();
-			return false;
-		}
-    });
-	*/
+	
 	document.addEventListener("DOMContentLoaded", async function () {
     const videoElement = document.getElementById("scanner");
     const barcodeInput = document.getElementById("code");

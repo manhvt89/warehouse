@@ -10,7 +10,42 @@
 .daQCOK { background-color: #4CAF50 !important; color: white; } /* Xanh lá - Đã QC OK */
 .batDauCan { background-color: #795548 !important; color: white; } /* Nâu - Bắt đầu cân */
 .daLam { background-color: #616161 !important; color: white; } /* Xám - Đã hoàn thành */
-	
+
+.scan-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.scan-wrapper input {
+    flex-grow: 1;
+    max-width: 300px;
+}
+
+.scan-wrapper button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.scan-wrapper button svg {
+    width: 28px;
+    height: 28px;
+    color: #007bff;
+    transition: transform 0.2s ease-in-out;
+}
+
+.scan-wrapper button:hover svg {
+    transform: scale(1.1);
+    color: #0056b3;
+}
+
+
 	.number{
 		text-align: right;
 	}
@@ -232,9 +267,17 @@
 		<tr>
 			<td><div class="recipe-header-company-name">
 			<?php echo form_open($controller_name."/seachcan", array('id'=>'seachcan', 'class'=>'form-horizontal panel panel-default')); ?>
-				<input type="text" name="code" value="" id="code" class="form-control input-sm ui-autocomplete-input" size="50" tabindex="1" autocomplete="off">
+				<div class="scan-wrapper">
+					<input type="text" name="code" value="" id="code" class="form-control input-sm ui-autocomplete-input" size="50" tabindex="1" autocomplete="off">
+					<button id="start-scan">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+							<path d="M5 3v2H3v2h2v2H3v2h2v2H3v2h2v2H3v2h2v2h2v-2h2v2h2v-2h2v2h2v-2h2v-2h-2v-2h2v-2h-2v-2h2V9h-2V7h2V5h-2V3h-2v2h-2V3h-2v2h-2V3H9v2H7V3H5zm4 4h2v2H9V7zm4 0h2v2h-2V7zm-4 4h2v2H9v-2zm4 0h2v2h-2v-2zm-4 4h2v2H9v-2zm4 0h2v2h-2v-2zm4-8h2v2h-2V7zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
+						</svg>
+					</button>
+				</div>
 				<?php echo form_hidden('compounda_order_item_uuid',$item_info->compounda_order_item_uuid) ?>
 			<?php echo form_close(); ?>
+			<video id="scanner" style="display: none; width: 100%;"></video>
 			</div></td>
 		</tr>
 
@@ -316,8 +359,8 @@
 
 						<tr class="one <?=$statusClass[$batch->status]?>" data-status="<?=$statusClass[$batch->status]?>">
 							<td class="code">
-							<?php $barcode_code = $this->barcode_lib->generate_receipt_barcode($batch->code); ?>
-									<img src='data:image/png;base64,<?php echo $barcode_code; ?>' /><br/>
+							<?php $qrcode = generate_qrcode($batch->code); ?>
+									<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/>
 									<?=$batch->code ?>
 							</td>
 							
@@ -325,7 +368,6 @@
 								<?=$statusText[$batch->status]?>
 							</td>
 							<td rowspan="1">
-								<?//=$lenh->note ?>
 							</td>
 						</tr>
 					
@@ -354,22 +396,65 @@
 	<?php endif; ?>
 	
 </div>
+<audio id="beep-sound" src="images/beep.mp3"></audio>
+<script src="https://unpkg.com/@zxing/library@latest"></script>
 <script type="text/javascript">
 
-	/*$("#compounda_order_uuid_text").autocomplete(
-	{
-		source: '<?php echo site_url($controller_name."/item_search"); ?>',
-    	minChars: 0,
-    	autoFocus: false,
-       	delay: 600,
-		select: function (a, ui) {
-			$(this).val(ui.item.value);
-			$("#add_item_form").submit();
-			return false;
-		}
-    });
-	*/
+document.addEventListener("DOMContentLoaded", async function () {
+    const videoElement = document.getElementById("scanner");
+    const barcodeInput = document.getElementById("code");
+    const startScanButton = document.getElementById("start-scan");
+    const beepSound = document.getElementById("beep-sound");
+    const formElement = document.getElementById("seachcan");
+    const codeReader = new ZXing.BrowserMultiFormatReader();
 
+    let scanning = false; // Biến để kiểm tra trạng thái quét
+
+	barcodeInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Không cho Enter bấm nút quét QR
+            formElement.submit(); // Nếu muốn cho phép Enter submit form
+        }
+    });
+
+    startScanButton.addEventListener("click", async () => {
+		event.preventDefault(); // Chặn form submit ngay
+        if (scanning) {
+            stopScanning();
+            return;
+        }
+
+        try {
+            scanning = true;
+            videoElement.style.display = "block"; // Hiển thị camera
+
+            await codeReader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+                if (result) {
+                    beepSound.play(); // Phát âm thanh beep
+                    barcodeInput.value = result.text; // Điền vào input
+
+                    // Tự động submit form
+                    formElement.submit();
+
+                    stopScanning();
+                }
+            }, {
+                video: { facingMode: "environment", width: 1280, height: 720 } // Chỉ định camera sau
+            });
+
+        } catch (error) {
+            console.error("Lỗi khi mở camera:", error);
+            alert("Không thể mở camera. Kiểm tra quyền truy cập!");
+            scanning = false;
+        }
+    });
+
+    function stopScanning() {
+        scanning = false;
+        codeReader.reset(); // Reset camera
+        videoElement.style.display = "none"; // Ẩn camera
+    }
+});
 	$('#order_number').keypress(function (e) {
 		if (e.which == 13) {
 			$('#seachcan').submit();

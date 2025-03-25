@@ -259,14 +259,14 @@ function recipe_title($sApproved)
 function recipe_info($item_info)
 {
 	$CI =& get_instance();
-	$barcode = $CI->barcode_lib->generate_receipt_barcode($item_info->name);
+	$qrcode = generate_qrcode($item_info->name);
 	$form_hidden_uuid = form_hidden('uuid',$item_info->recipe_uuid);
 	$date_issued = date('d/m/Y',$item_info->date_issued);
 	$html = "<table id='recipe-info'>
 		<tr>
 			<td rowspan='3'>
 				
-				<img src='data:image/png;base64,{$barcode}' /><br/>{$form_hidden_uuid}
+				<img src='data:image/png;base64,{$qrcode}' /><br/>{$form_hidden_uuid}
 			</td>
 			<td>{$CI->lang->line('recipes_master_batch')}:</td>
 			<td><b>{$item_info->name}</b></td>

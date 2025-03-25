@@ -294,7 +294,7 @@ if (!function_exists('transform_data')) {
 				$_aStatusText = [
 					3 => "",
 					4 => "",
-					5 => "",
+					5 => "QC chưa đạt",
 					6 => "Chờ cán",
 					7 => "Đang cán",
 					8 => "Hoàn thành cán"

@@ -237,9 +237,9 @@
 	<table id="compounda-order-info">
 	
 		<tr>
-		<td rowspan="2">
-				<?php $barcode = $this->barcode_lib->generate_receipt_barcode($item_info->compounda_order_no); ?>
-				<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
+		<td rowspan="2" class="code">
+				<?php $qrcode = generate_qrcode($item_info->compounda_order_no); ?>
+				<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/><?=$item_info->compounda_order_no?>
 			</td>
 			<td>
 				Ngày cập nhật
@@ -418,8 +418,8 @@ Used
 						</tr>
 						<tr class="two">
 							<td>
-							<?php $barcode = $this->barcode_lib->generate_receipt_barcode($lenh->order_number); ?>
-									<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
+							<?php $qrcode = generate_qrcode($lenh->order_number); ?>
+									<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/>
 							</td>
 							<td>
 								

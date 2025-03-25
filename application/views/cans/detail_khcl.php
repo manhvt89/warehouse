@@ -2,6 +2,39 @@
 <?php $this->load->view("partial/header"); ?>
 <script src="/dist/jquery.number.min.js"></script>
 <style type="text/css">
+	.scan-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.scan-wrapper input {
+    flex-grow: 1;
+    max-width: 300px;
+}
+
+.scan-wrapper button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.scan-wrapper button svg {
+    width: 28px;
+    height: 28px;
+    color: #007bff;
+    transition: transform 0.2s ease-in-out;
+}
+
+.scan-wrapper button:hover svg {
+    transform: scale(1.1);
+    color: #0056b3;
+}
 	.number{
 		text-align: right;
 	}
@@ -223,9 +256,18 @@
 		<tr>
 			<td><div class="recipe-header-company-name">
 			<?php echo form_open($controller_name."/searchlenh", array('id'=>'seachlenh', 'class'=>'form-horizontal panel panel-default')); ?>
-				<input type="text" name="compounda_order_uuid_text" value="" id="compounda_order_uuid_text" class="form-control input-sm ui-autocomplete-input" size="50" tabindex="1" autocomplete="off">
+				<div class="scan-wrapper">
+					<input type="text" name="compounda_order_uuid_text" value="" id="compounda_order_uuid_text" class="form-control input-sm ui-autocomplete-input" size="50" tabindex="1" autocomplete="off">
+					<button id="start-scan">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+							<path d="M5 3v2H3v2h2v2H3v2h2v2H3v2h2v2H3v2h2v2h2v-2h2v2h2v-2h2v2h2v-2h2v-2h-2v-2h2v-2h-2v-2h2V9h-2V7h2V5h-2V3h-2v2h-2V3h-2v2h-2V3H9v2H7V3H5zm4 4h2v2H9V7zm4 0h2v2h-2V7zm-4 4h2v2H9v-2zm4 0h2v2h-2v-2zm-4 4h2v2H9v-2zm4 0h2v2h-2v-2zm4-8h2v2h-2V7zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
+						</svg>
+					</button>
+				</div>
+				
 				<?php echo form_hidden('compounda_order_uuid',$item_info->compounda_order_uuid) ?>
 			<?php echo form_close(); ?>
+			<video id="scanner" style="display: none; width: 100%;"></video>
 			</div></td>
 		</tr>
 
@@ -312,7 +354,9 @@ Used
 				?>
 
 						<tr class="one">
-							<td>
+							<td rowspan="2" class="code">
+								<?php $qrcode = generate_qrcode($lenh->order_number); ?>
+									<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/>
 								<?=$lenh->order_number ?>
 							</td>
 							<td class="code">
@@ -368,10 +412,7 @@ Used
 							</td>
 						</tr>
 						<tr class="two">
-							<td>
-							<?php $barcode = $this->barcode_lib->generate_receipt_barcode($lenh->order_number); ?>
-									<img src='data:image/png;base64,<?php echo $barcode; ?>' /><br/>
-							</td>
+							
 							<td>
 								
 							</td>
@@ -438,6 +479,9 @@ Used
 	<?php endif; ?>
 	
 </div>
+<!-- Âm thanh beep -->
+<audio id="beep-sound" src="images/beep.mp3"></audio>
+<script src="https://unpkg.com/@zxing/library@latest"></script>
 <script type="text/javascript">
 
 	/*$("#compounda_order_uuid_text").autocomplete(
@@ -453,6 +497,61 @@ Used
 		}
     });
 	*/
+	document.addEventListener("DOMContentLoaded", async function () {
+    const videoElement = document.getElementById("scanner");
+    const barcodeInput = document.getElementById("compounda_order_uuid_text");
+    const startScanButton = document.getElementById("start-scan");
+    const beepSound = document.getElementById("beep-sound");
+    const formElement = document.getElementById("seachlenh");
+    const codeReader = new ZXing.BrowserMultiFormatReader();
+
+    let scanning = false; // Biến để kiểm tra trạng thái quét
+
+	barcodeInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Không cho Enter bấm nút quét QR
+            formElement.submit(); // Nếu muốn cho phép Enter submit form
+        }
+    });
+
+    startScanButton.addEventListener("click", async () => {
+		event.preventDefault(); // Chặn form submit ngay
+        if (scanning) {
+            stopScanning();
+            return;
+        }
+
+        try {
+            scanning = true;
+            videoElement.style.display = "block"; // Hiển thị camera
+
+            await codeReader.decodeFromVideoDevice(null, videoElement, (result, err) => {
+                if (result) {
+                    beepSound.play(); // Phát âm thanh beep
+                    barcodeInput.value = result.text; // Điền vào input
+
+                    // Tự động submit form
+                    formElement.submit();
+
+                    stopScanning();
+                }
+            }, {
+                video: { facingMode: "environment", width: 1280, height: 720 } // Chỉ định camera sau
+            });
+
+        } catch (error) {
+            console.error("Lỗi khi mở camera:", error);
+            alert("Không thể mở camera. Kiểm tra quyền truy cập!");
+            scanning = false;
+        }
+    });
+
+    function stopScanning() {
+        scanning = false;
+        codeReader.reset(); // Reset camera
+        videoElement.style.display = "none"; // Ẩn camera
+    }
+});
 
 	$('#compounda_order_uuid_text').keypress(function (e) {
 		if (e.which == 13) {

@@ -882,7 +882,7 @@ class Compoundas extends Secure_Controller
 				if(trim($_sTmp[0]) == "KHCL")
 				{
 					//echo $i;
-				$maDinhDanh = $data[0];
+					$thangNam = $data[0];
 					break; // đến dòng này thì dừng
 				}
 				

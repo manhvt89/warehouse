@@ -792,10 +792,10 @@ class Compoundas extends Secure_Controller
 			/*
 			$thangNam = date('mY'); // Lấy tháng và năm hiện tại
 			*/
-			$maDinhDanh = "KHCL {$thangNam}";
+			//$maDinhDanh = "KHCL {$thangNam}";
 			
-			$compounda_order_no = $maDinhDanh;
-			$code = "KHCL{$maDinhDanh}";
+			//$compounda_order_no = $maDinhDanh;
+			//$code = "KHCL{$maDinhDanh}";
 			
 			//$area_make_order=$data['9']; //J
 			$area_make_order = 'KV CÁN LUYỆN';
@@ -1014,9 +1014,9 @@ class Compoundas extends Secure_Controller
 				
 			}
 
-			$maDinhDanh = "KHCL {$thangNam}";
+			$maDinhDanh = "{$thangNam}";
 			$compounda_order_no = $maDinhDanh;
-			$code = "KHCL{$thangNam}";
+			$code = str_replace(' ','',$thangNam);
 			$compounda_data['compounda_order_no'] = $compounda_order_no;
 				
 			$compounda_data['code'] = $code;

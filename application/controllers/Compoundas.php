@@ -1017,12 +1017,10 @@ class Compoundas extends Secure_Controller
 			$maDinhDanh = "KHCL {$thangNam}";
 			$compounda_order_no = $maDinhDanh;
 			$code = "KHCL{$maDinhDanh}";
-			$compounda_data = [
-				'compounda_order_no'=>$compounda_order_no,
+			$compounda_data['compounda_order_no'] = $compounda_order_no;
 				
-				'code'=>$code,
+			$compounda_data['code'] = $code;
 				
-			];
 			
 			//var_dump($item_orders); die();
 			if(!empty($failCodes)){ // Nếu xuất hiện lỗi, không làm gì cả, hiển thị thông báo lỗi tại dòng nào;

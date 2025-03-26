@@ -1016,7 +1016,7 @@ class Compoundas extends Secure_Controller
 
 			$maDinhDanh = "KHCL {$thangNam}";
 			$compounda_order_no = $maDinhDanh;
-			$code = "KHCL{$maDinhDanh}";
+			$code = "KHCL{$thangNam}";
 			$compounda_data['compounda_order_no'] = $compounda_order_no;
 				
 			$compounda_data['code'] = $code;

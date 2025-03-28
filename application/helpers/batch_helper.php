@@ -226,6 +226,303 @@ if (!function_exists('css_recipe')) {
 
 }
 
+if (!function_exists('css_can')) {
+	function css_can()
+	{
+		$html = <<<HTML
+				<style type="text/css">
+					.choLam { background-color: #FF9800 !important; color: white; } /* Cam - Chờ làm */
+					.dangLam { background-color: #2196F3 !important; color: white; } /* Xanh dương - Đang làm */
+					.choQC { background-color: #FFC107 !important; color: black; } /* Vàng - Chờ QC */
+					.dangQC { background-color: #9C27B0 !important; color: white; } /* Tím - Đang QC */
+					.qcNotOK { background-color: #F44336 !important; color: white; } /* Đỏ - QC không đạt */
+					.daQCOK { background-color: #4CAF50 !important; color: white; } /* Xanh lá - Đã QC OK */
+					.batDauCan { background-color: #795548 !important; color: white; } /* Nâu - Bắt đầu cân */
+					.daLam { background-color: #616161 !important; color: white; } /* Xám - Đã hoàn thành */
+
+
+					.btn-group-1,.btn-group-2,.btn-group-3,.btn-group-4,.btn-group-5  {
+						padding: 10px 15px;
+						border: none;
+						cursor: not-allowed;
+						opacity: 0.5; /* Mặc định làm mờ */
+						transition: all 0.3s ease;
+					}
+					
+					.btn-group-1.active,.btn-group-2.active,.btn-group-3.active,.btn-group-4.active,.btn-group-5.active {
+						cursor: pointer;
+						font-weight: bold;
+						
+						box-shadow: 0 0 10px rgba(255, 215, 0, 0.8); /* Ánh sáng vàng */
+						transform: scale(1.05); /* Phóng to nhẹ */
+					}
+					
+					
+					.btn-group-1 { background-color: #2E7D32; color: white; }
+					.btn-group-2 { background-color: #1565C0; color: white; }
+					.btn-group-3 { background-color: #F9A825; color: black; }
+					.btn-group-4 { background-color: #EF6C00; color: white; }
+					.btn-group-5 { background-color: #C62828; color: white; }
+
+					
+					.btn-group-1.active { background-color: #1B5E20; box-shadow: 0px 0px 10px #1B5E20; border: 3px solid #EE0C0C; /* Viền vàng nổi bật */}
+					.btn-group-2.active { background-color: #0D47A1; box-shadow: 0px 0px 10px #0D47A1; border: 3px solid #EE0C0C; /* Viền vàng nổi bật */}
+					.btn-group-3.active { background-color: #F57F17; box-shadow: 0px 0px 10px #F57F17; border: 3px solid #EE0C0C; /* Viền vàng nổi bật */}
+					.btn-group-4.active { background-color: #E65100; box-shadow: 0px 0px 10px #E65100; border: 3px solid #EE0C0C; /* Viền vàng nổi bật */}
+					.btn-group-5.active { background-color: #B71C1C; box-shadow: 0px 0px 10px #B71C1C; border: 3px solid #FFD700; /* Viền vàng nổi bật */}
+
+				
+
+
+
+				
+
+				.scan-wrapper {
+					display: flex;
+					align-items: center;
+					gap: 8px;
+					width: 100%;
+				}
+
+				.scan-wrapper input {
+					flex-grow: 1;
+					max-width: 300px;
+				}
+
+				.scan-wrapper button {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					background: transparent;
+					border: none;
+					cursor: pointer;
+					padding: 5px;
+				}
+
+				.scan-wrapper button svg {
+					width: 28px;
+					height: 28px;
+					color: #007bff;
+					transition: transform 0.2s ease-in-out;
+				}
+
+				.scan-wrapper button:hover svg {
+					transform: scale(1.1);
+					color: #0056b3;
+				}
+
+
+					.number{
+						text-align: right;
+					}
+					.code {
+						text-align: center;
+					}
+					.one{
+
+					}
+					.two{
+						
+					}
+					#recipe_basic_info {
+						width : 100%;
+					}
+
+					#recipe_basic_info table {
+						width : 100%;
+						border-collapse: collapse;
+					}
+
+					#recipe_basic_info table, th, td {
+						border: 1px solid;
+					}
+					#recipe-info td {
+						width: 20%;
+					}
+					#recipe-header-kneader-a, #recipe-header-kneader-b {
+						height: 40px;
+					}
+					#recipe-header-kneader-a td {
+						width: 20%;
+					}
+					#recipe-header-kneader-a td:first-child,#recipe-header-kneader-b td:first-child {
+						width: 20%;
+						font-weight: bold;
+					}
+
+					#recipe_basic_info table td{
+						padding: 5px;
+					}
+
+					.compounda-order-header-body-kneader-a td:first-child {
+						max-width: 35px;
+						text-align: center;
+					}
+					.compounda-order-header-body-kneader-a td:nth-child(2) {
+						
+						text-align: center;
+					}
+					.compounda-order-header-body-kneader-a td:nth-child(3) {
+						max-width: 45px;
+						text-align: center;
+					}
+					.compounda-order-header-body-kneader-a td:nth-child(4) {
+						max-width: 75px;
+						text-align: center;
+					}
+					.compounda-order-header-body-kneader-a td:nth-child(5) {
+						max-width: 75px;
+						text-align: center;
+					}
+					.compounda-order-header-body-kneader-a td:nth-child(6) {
+						max-width: 95px;
+						text-align: center;
+					}
+					.compounda-order-header-body-kneader-a td:nth-child(8) {
+						max-width: 95px;
+						text-align: center;
+					}
+					.compounda-order-header-body-kneader-a td:nth-child(9) {
+						max-width: 95px;
+						text-align: center;
+					}
+
+					.compounda-order-item-body-kneader-a td:first-child {
+						max-width: 35px;
+						text-align: center;
+					}
+					.compounda-order-item-body-kneader-a td:nth-child(2) {
+						width: 20%;
+					}
+					.compounda-order-item-body-kneader-a td:nth-child(3) {
+						max-width: 45px;
+						text-align: center;
+					}
+					.compounda-order-item-body-kneader-a td:nth-child(4) {
+						max-width: 75px;
+						text-align: right;
+					}
+					.compounda-order-item-body-kneader-a td:nth-child(5) {
+						max-width: 75px;
+						text-align: right;
+					}
+					.compounda-order-item-body-kneader-a td:nth-child(6) {
+						max-width: 95px;
+						text-align: center;
+					}
+					.compounda-order-item-body-kneader-a td:nth-child(7) {
+						max-width: 95px;
+						text-align: right;
+					}
+					.compounda-order-item-body-kneader-a td:nth-child(8) {
+						max-width: 95px;
+						text-align: right;
+					}
+					.compounda-order-item-body-kneader-a td:nth-child(9) {
+						max-width: 95px;
+						text-align: center;
+					}
+
+					.compounda-order-footer-body-kneader-a td:nth-child(1){
+						text-align: center;
+						font-weight: bold;
+					}
+
+					.compounda-order-footer-body-kneader-a td:nth-child(2){
+						text-align: right;
+						font-weight: bold;
+					}
+					.compounda-order-footer-body-kneader-a td:nth-child(3){
+						text-align: right;
+						font-weight: bold;
+					}
+					.compounda-order-footer-body-kneader-a td:nth-child(4){
+						text-align: right;
+						font-weight: bold;
+					}
+					.compounda-order-footer-body-kneader-a td:nth-child(5){
+						text-align: right;
+						font-weight: bold;
+					}
+					.compounda-order-footer-body-kneader-a td:nth-child(6){
+						text-align: right;
+						font-weight: bold;
+					}
+
+					
+
+					.compounda-order-title {
+						text-align: center;
+						font-size: 25px;
+						font-weight: bold;
+						height: 50px;
+					}
+
+					@media print {
+						body * {
+							visibility: hidden;
+						}
+						#recipe_basic_info * {
+							visibility: visible;
+						}
+						#recipe_basic_info {
+							/*position: absolute;
+							left: 0;
+							top: 0;
+							*/
+							/*width: 210mm;
+							height: 297mm;*/
+							width: 297mm;  /* Width of A4 in Landscape */
+							height: 210mm; /* Height of A4 in Landscape */
+							padding: 5mm;
+							box-sizing: border-box;
+							page-break-after: always;
+						}
+						#recipe_basic_info table {
+							width : 95%;
+							border-collapse: collapse;
+						}
+						#recipe_basic_info #recipe-header, #recipe_basic_info #compounda-order-title {
+							border: 0px solid;
+						}
+					}
+
+					/*
+					.name {
+						font-size: 20px;
+					}
+					.time {
+						font-size: 15px;
+					}
+					.customer_number,
+					.phone {
+						font-size: 16px;
+					}
+					#receipt_items {
+						font-size: 16px;
+					}
+					#receipt_items thead th:not(:first-child) {
+						display: none;
+					}
+					#receipt_items tbody th {
+						font-weight: normal;
+					}
+					#receipt_items td:not(:last-child) {
+						display: none;
+					}
+				
+					td[data-th]:before {
+						content: attr(data-th);
+					}
+					*/
+				</style>
+		
+		HTML;
+		return $html;
+	}
+
+}
+
 if (!function_exists('transform_data1')) {
     function transform_data1($items)
     {
@@ -270,6 +567,8 @@ if (!function_exists('transform_data')) {
 		switch ($step) {
 			case 3:
 				$_aStatusText = [
+					1 => "",
+					2 => "",
 					3 => "Chờ QC",
 					4 => "Đang QC",
 					5 => "QC Không đạt",
@@ -281,17 +580,21 @@ if (!function_exists('transform_data')) {
 				$baseLink = base_url("qccans/detail/"); // Tối ưu base_url()
 				$viewLinkRS = base_url("qccans/detail_rs/");
 				$_aStatusButton = [
-					3 => fn($uuid) => "<a href='{$baseLink}{$uuid}'>Bắt đầu QC</a>",
-					4 => fn($uuid) => "<a href='{$baseLink}{$uuid}'>Hoàn thành QC</a>",
-					5 => fn($uuid) => "<a href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>",
-					6 => fn($uuid) => "<a href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>",
-					7 => fn($uuid) => "<a href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>",
-					8 => fn($uuid) => "<a href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>"
+					1 => fn($uuid) => "",
+					2 => fn($uuid) => "",
+					3 => fn($uuid) => "<a class='btn btn-primary' href='{$baseLink}{$uuid}'>Bắt đầu QC</a>",
+					4 => fn($uuid) => "<a class='btn btn-primary' href='{$baseLink}{$uuid}'>Hoàn thành QC</a>",
+					5 => fn($uuid) => "<a class='btn btn-primary' href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>",
+					6 => fn($uuid) => "<a class='btn btn-primary' href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>",
+					7 => fn($uuid) => "<a class='btn btn-primary' href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>",
+					8 => fn($uuid) => "<a class='btn btn-primary' href='{$viewLinkRS}{$uuid}'>Xem kết quả QC</a>"
 				];
 				
 				break;
 			case 6:
 				$_aStatusText = [
+					1 => "",
+					2 => "",
 					3 => "",
 					4 => "",
 					5 => "QC chưa đạt",
@@ -304,14 +607,41 @@ if (!function_exists('transform_data')) {
 				$viewLinkRS = base_url("cpas/detail_rs/");
 				$NextLinkRS = base_url("cpas/detail_next/");
 				$_aStatusButton = [
+					1 => fn($uuid) => "",
+					2 => fn($uuid) => "",
 					3 => fn($uuid) => "",
 					4 => fn($uuid) => "",
 					5 => fn($uuid) => "",
-					6 => fn($uuid) => "<a href='{$baseLink}{$uuid}'>Bắt đầu cán</a>",
-					7 => fn($uuid) => "<a href='{$NextLinkRS}{$uuid}'>Xem thông tin</a>",
-					8 => fn($uuid) => "<a href='{$viewLinkRS}{$uuid}'>Xem thông tin</a>"
+					6 => fn($uuid) => "<a class='btn btn-primary' href='{$baseLink}{$uuid}'>Bắt đầu cán</a>",
+					7 => fn($uuid) => "<a class='btn btn-primary' href='{$NextLinkRS}{$uuid}'>Xem thông tin</a>",
+					8 => fn($uuid) => "<a class='btn btn-primary' href='{$viewLinkRS}{$uuid}'>Xem thông tin</a>"
+				];			
+				break;
+			case 2:
+				$_aStatusText = [
+					1 => "Chờ cân",
+					2 => "Đang cân",
+					3 => "Cân xong",
+					4 => "Đang QC",
+					5 => "QC chưa đạt",
+					6 => "QC đạt",
+					7 => "Bắt đầu cán",
+					8 => "Hoàn thành cán luyện"
 				];
-				
+			
+				$baseLink = base_url("cans/recan/"); // Tối ưu base_url()
+				$viewLinkRS = base_url("cans/detail_rs/");
+				$NextLinkRS = base_url("cans/detail_next/");
+				$_aStatusButton = [
+					1 => fn($uuid) => "",
+					2 => fn($uuid) => "",
+					3 => fn($uuid) => "",
+					4 => fn($uuid) => "",
+					5 => fn($uuid) => "<a class='btn btn-primary' href='{$baseLink}{$uuid}'>Bắt đầu cán</a>",
+					6 => fn($uuid) => "",
+					7 => fn($uuid) => "",
+					8 => fn($uuid) => ""
+				];	
 				break;
 			default:
 				// Thực hiện nếu không khớp với bất kỳ case nào
@@ -600,6 +930,56 @@ if (!function_exists('build_qc_rows_rs')) {
 				</tr>
 			HTML;
 		}
+		return $html;
+	}
+}
+
+if (!function_exists('build_batch_block_info')) {
+	// Hiển thị thông tin block of Batch info
+	function build_batch_block_info($item_info) {
+		
+		$started_date = $item_info->thoi_gian_can_luyen_bat_dau;
+		$completed_date = $item_info->thoi_gian_can_luyen_ket_thuc;
+		$qrcode = generate_qrcode($item_info->code);
+		$checker_name = $item_info->qc_cpa_document->qc_name;
+
+		
+		if($started_date == 0)
+		{
+			$started_date = 'Chưa bắt đầu';
+		} else {
+			$started_date = date('d/m/Y h:i',$started_date);
+		}
+
+		if($completed_date == 0)
+		{
+			$completed_date = 'Đang cán';
+		} else {
+			$completed_date = date('d/m/Y h:i',$completed_date);
+		}
+
+
+		$html = <<<HTML
+				<table id='block-batch-info'>
+				<tr>
+					<td class='code'>
+						<img src="data:image/png;base64,{$qrcode}" /><br/>{$item_info->code}
+					</td>
+					<td>
+						<span>Số LSX: {$item_info->lenh->order_number}</span><br>
+						<span>Mã sản phẩm: {$item_info->lenh->item_code}</span><br>
+						<span>Người cân: </span><br>
+						<span>Người kiểm tra: {$checker_name}</span><br>
+						<span>Người cán luyện: {$item_info->nguoi_can_luyen_name}</span><br>
+					</td>
+					<td>
+						Bắt đầu cán luyện: <b>{$started_date}</b><br/>
+						Kết thúc cán luyện: <b>{$completed_date}</b>
+					</td>
+				</tr>
+				</table>
+				HTML;
+
 		return $html;
 	}
 }

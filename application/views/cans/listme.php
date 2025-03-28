@@ -1,255 +1,7 @@
 
 <?php $this->load->view("partial/header"); ?>
 <script src="/dist/jquery.number.min.js"></script>
-<style type="text/css">
-	.choLam { background-color: #FF9800 !important; color: white; } /* Cam - Chờ làm */
-.dangLam { background-color: #2196F3 !important; color: white; } /* Xanh dương - Đang làm */
-.choQC { background-color: #FFC107 !important; color: black; } /* Vàng - Chờ QC */
-.dangQC { background-color: #9C27B0 !important; color: white; } /* Tím - Đang QC */
-.qcNotOK { background-color: #F44336 !important; color: white; } /* Đỏ - QC không đạt */
-.daQCOK { background-color: #4CAF50 !important; color: white; } /* Xanh lá - Đã QC OK */
-.batDauCan { background-color: #795548 !important; color: white; } /* Nâu - Bắt đầu cân */
-.daLam { background-color: #616161 !important; color: white; } /* Xám - Đã hoàn thành */
-
-.scan-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-}
-
-.scan-wrapper input {
-    flex-grow: 1;
-    max-width: 300px;
-}
-
-.scan-wrapper button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-}
-
-.scan-wrapper button svg {
-    width: 28px;
-    height: 28px;
-    color: #007bff;
-    transition: transform 0.2s ease-in-out;
-}
-
-.scan-wrapper button:hover svg {
-    transform: scale(1.1);
-    color: #0056b3;
-}
-
-
-	.number{
-		text-align: right;
-	}
-	.code {
-		text-align: center;
-	}
-	.one{
-
-	}
-	.two{
-		
-	}
-	#recipe_basic_info {
-		width : 100%;
-	}
-
-	#recipe_basic_info table {
-		width : 100%;
-		border-collapse: collapse;
-	}
-
-	#recipe_basic_info table, th, td {
-		border: 1px solid;
-	}
-	#recipe-info td {
-		width: 20%;
-	}
-	#recipe-header-kneader-a, #recipe-header-kneader-b {
-		height: 40px;
-	}
-	#recipe-header-kneader-a td {
-		width: 20%;
-	}
-	#recipe-header-kneader-a td:first-child,#recipe-header-kneader-b td:first-child {
-		width: 20%;
-		font-weight: bold;
-	}
-
-	#recipe_basic_info table td{
-		padding: 5px;
-	}
-
-	.compounda-order-header-body-kneader-a td:first-child {
-		max-width: 35px;
-		text-align: center;
-	}
-	.compounda-order-header-body-kneader-a td:nth-child(2) {
-		
-		text-align: center;
-	}
-	.compounda-order-header-body-kneader-a td:nth-child(3) {
-		max-width: 45px;
-		text-align: center;
-	}
-	.compounda-order-header-body-kneader-a td:nth-child(4) {
-		max-width: 75px;
-		text-align: center;
-	}
-	.compounda-order-header-body-kneader-a td:nth-child(5) {
-		max-width: 75px;
-		text-align: center;
-	}
-	.compounda-order-header-body-kneader-a td:nth-child(6) {
-		max-width: 95px;
-		text-align: center;
-	}
-	.compounda-order-header-body-kneader-a td:nth-child(8) {
-		max-width: 95px;
-		text-align: center;
-	}
-	.compounda-order-header-body-kneader-a td:nth-child(9) {
-		max-width: 95px;
-		text-align: center;
-	}
-
-	.compounda-order-item-body-kneader-a td:first-child {
-		max-width: 35px;
-		text-align: center;
-	}
-	.compounda-order-item-body-kneader-a td:nth-child(2) {
-		width: 20%;
-	}
-	.compounda-order-item-body-kneader-a td:nth-child(3) {
-		max-width: 45px;
-		text-align: center;
-	}
-	.compounda-order-item-body-kneader-a td:nth-child(4) {
-		max-width: 75px;
-		text-align: right;
-	}
-	.compounda-order-item-body-kneader-a td:nth-child(5) {
-		max-width: 75px;
-		text-align: right;
-	}
-	.compounda-order-item-body-kneader-a td:nth-child(6) {
-		max-width: 95px;
-		text-align: center;
-	}
-	.compounda-order-item-body-kneader-a td:nth-child(7) {
-		max-width: 95px;
-		text-align: right;
-	}
-	.compounda-order-item-body-kneader-a td:nth-child(8) {
-		max-width: 95px;
-		text-align: right;
-	}
-	.compounda-order-item-body-kneader-a td:nth-child(9) {
-		max-width: 95px;
-		text-align: center;
-	}
-
-	.compounda-order-footer-body-kneader-a td:nth-child(1){
-		text-align: center;
-		font-weight: bold;
-	}
-
-	.compounda-order-footer-body-kneader-a td:nth-child(2){
-		text-align: right;
-		font-weight: bold;
-	}
-	.compounda-order-footer-body-kneader-a td:nth-child(3){
-		text-align: right;
-		font-weight: bold;
-	}
-	.compounda-order-footer-body-kneader-a td:nth-child(4){
-		text-align: right;
-		font-weight: bold;
-	}
-	.compounda-order-footer-body-kneader-a td:nth-child(5){
-		text-align: right;
-		font-weight: bold;
-	}
-	.compounda-order-footer-body-kneader-a td:nth-child(6){
-		text-align: right;
-		font-weight: bold;
-	}
-
-	
-
-	.compounda-order-title {
-		text-align: center;
-		font-size: 25px;
-		font-weight: bold;
-		height: 50px;
-	}
-
-	@media print {
-		body * {
-            visibility: hidden;
-        }
-        #recipe_basic_info * {
-            visibility: visible;
-        }
-        #recipe_basic_info {
-            /*position: absolute;
-            left: 0;
-            top: 0;
-            */
-            /*width: 210mm;
-            height: 297mm;*/
-            width: 297mm;  /* Width of A4 in Landscape */
-        	height: 210mm; /* Height of A4 in Landscape */
-            padding: 5mm;
-            box-sizing: border-box;
-            page-break-after: always;
-        }
-		#recipe_basic_info table {
-			width : 95%;
-			border-collapse: collapse;
-		}
-		#recipe_basic_info #recipe-header, #recipe_basic_info #compounda-order-title {
-			border: 0px solid;
-		}
-	}
-
-	/*
-	.name {
-        font-size: 20px;
-    }
-    .time {
-        font-size: 15px;
-    }
-    .customer_number,
-    .phone {
-        font-size: 16px;
-    }
-    #receipt_items {
-        font-size: 16px;
-    }
-    #receipt_items thead th:not(:first-child) {
-        display: none;
-    }
-    #receipt_items tbody th {
-        font-weight: normal;
-    }
-    #receipt_items td:not(:last-child) {
-        display: none;
-    }
-   
-    td[data-th]:before {
-        content: attr(data-th);
-    }
-	*/
-</style>
+<?php echo css_can(); ?>
 <div id="recipe_basic_info" width="100%">
 	
 	<!-- #region recipe-title-->
@@ -301,9 +53,7 @@
 			<td >
 				Thông tin đơn pha chế
 			</td>
-			<td >
-				
-			</td>
+			
 		</tr>
 
 		<tr class="code">
@@ -313,15 +63,47 @@
 				Tổng số đã QC đạt: <?=$aCount_by_status['daQCOK']?><br>
 				Tổng số QC chưa đạt: <?=$aCount_by_status['qcNotOK']?><br>
 				Tổng số chờ QC: <?=$aCount_by_status['choQC']?><br>
-
-				Chờ làm	🟠 Cam (#FF9800) - Đang đợi sản xuất<br>
-				Đang làm	🔵 Xanh dương (#2196F3) - Đang xử lý<br>
-				Chờ QC	🟡 Vàng (#FFC107) - Cần kiểm tra<br>
-				Đang QC	🟣 Tím (#9C27B0) - Đang kiểm tra chất lượng<br>
-				QC không OK	🔴 Đỏ (#F44336) - Lỗi, cần kiểm tra lại<br>
-				Đã QC OK	🟢 Xanh lá (#4CAF50) - Đạt tiêu chuẩn<br>
-				Bắt đầu cán	🟤 Nâu (#795548) - Giai đoạn cân đo<br>
-				Đã làm	⚫ Xám đậm (#616161) - Hoàn thành<br>
+				<table>
+					<?php foreach($doingBatches as $_oBatch): ?>
+					<tr>
+						<td>
+							<?php $qrcode = generate_qrcode($_oBatch->code); ?>
+							<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/>
+									<?=$_oBatch->code ?>
+						</td>
+						<td>
+						<?php
+                // Lấy trạng thái hiện tại của batch
+							
+					$colors = [
+						'#2E7D32', // Nhóm 1 - Xanh lá cây (Bắt đầu, an toàn)
+						'#1565C0', // Nhóm 2 - Xanh dương (Đang tiến hành)
+						'#F9A825', // Nhóm 3 - Vàng (Cần chú ý, sắp hoàn thành)
+						'#EF6C00', // Nhóm 4 - Cam (Giai đoạn quan trọng, kiểm tra)
+						'#C62828'  // Nhóm 5 - Đỏ (Hoàn thành hoặc cảnh báo)
+					];
+					$weighing_count = $_oBatch->weighing_count; // Lấy số lần cân hiện tại
+					$max_weighing = 5; // Số lần cân tối đa
+		
+					for ($i = 1; $i <= $max_weighing; $i++):
+                    $disabled = ($i < $weighing_count) ? 'disabled' : ''; // Khóa các nút trước đó
+                    $active = ($i == $weighing_count) ? 'active' : ''; // Chỉ nút tiếp theo sáng lên
+                    $locked = ($i > $weighing_count) ? 'disabled' : ''; // Chặn các nút lớn hơn
+                    $color = $colors[$i - 1]; // Lấy màu theo nhóm
+            ?>
+                <button 
+                    class="weighing-btn btn-group-<?=$i?> <?= $active ?>" 
+                    data-uuid="<?= $_oBatch->compounda_order_item_completed_uuid ?>" 
+                    data-weighing="<?= $i ?>"
+                    <?= $disabled ?> <?= $locked ?>
+                >
+                    Nhóm <?= $i ?>
+                </button>
+            <?php endfor; ?>
+						</td>
+					</tr>
+					<?php endforeach; ?>
+				</table>
 			</td>
 			<td class="code">
 			<?php // Hiển thị thông tin recipe với mác nguyên liệu
@@ -329,8 +111,6 @@
 								echo $recipe_body_A;
 								echo $recipe_body_B;
 							?>
-			</td>
-			<td>
 			</td>
 		</tr>
 		</thead>
@@ -365,9 +145,10 @@
 							</td>
 							
 							<td rowspan="1">
-								<?=$statusText[$batch->status]?>
+								<?=$batch->status_text?>
 							</td>
 							<td rowspan="1">
+								<?=$batch->button?>
 							</td>
 						</tr>
 					
@@ -511,6 +292,40 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 			$row.addClass(status);
 		});
+	$(".weighing-btn").click(function () {
+        let btn = $(this);
+        let batchId = btn.data("uuid");
+        let currentWeighing = btn.data("weighing");
+
+      
+        // Lấy trạng thái hiện tại (nút cuối cùng đã được nhấn trước đó)
+        //let currentWeighing = parseInt(btn.closest("td").find("button[disabled]").last().data("weighing")) || 0;
+        console.log("currentWeighing:", currentWeighing);
+
+        // Chỉ cho phép nhấn nút tiếp theo
+        /*if (newWeighing !== currentWeighing + 1) {
+            alert("Bạn chỉ có thể nhấn vào nút tiếp theo!");
+            return;
+        }*/
+		let newWeighing = currentWeighing + 1;
+        // Gửi AJAX cập nhật trạng thái
+        $.post("<?=base_url('cans/ajax_update_weighing')?>", { uuid: batchId, weighing_count: newWeighing }, function (response) {
+            if (response.success) {
+                // Cập nhật giao diện sau khi cập nhật thành công
+                btn.prop("disabled", true).removeClass("active").addClass("inactive-btn");
+				console.log(`Next: ${currentWeighing + 1}`);
+				let nextBtn = btn.closest("td").find(`button[data-weighing="${currentWeighing + 1}"]`);
+				console.log(nextBtn);
+				if (nextBtn.length) {
+					nextBtn.prop("disabled", false).removeClass("inactive-btn").addClass("active");
+				} else {
+					alert("Cân mẻ này đã hoàn thành!");
+				}
+            } else {
+                alert("Lỗi cập nhật trạng thái!");
+            }
+        }, "json");
+    });
 		
 	})(jQuery);
 </script>

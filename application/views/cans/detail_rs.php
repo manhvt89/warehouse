@@ -199,6 +199,11 @@
     }
 	*/
 </style>
+<div id="search_tool">
+	<div class="panel-info">
+		Hãy nhập thông tin mẻ 
+	</div>
+</div>
 <?php if(!empty($item_info)): ?>
 <div id="recipe_basic_info" width="100%">
 	
@@ -208,21 +213,33 @@
 		<tr>
 			<td>
 				<div class="compounda-order-title">
-						Công đoạn cán luyện
+						Công đoạn QC hóa chất
 					</div>
 			</td>
 		</tr>
+
 	</table>
 	<!-- #endregion -->
 	<!-- #region recipe-info-->
-		<?=build_batch_block_info($item_info)?>
+	<table id="compounda-order-info">
+		<tr>
+			<td class="code">
+				<?php $qrcode = generate_qrcode($item_info->code); ?>
+				<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/><?=$item_info->code?>
+			</td>
+			
+			<td>Bắt đầu: <b><?=$started_date?></b></td>
+			<td>Kết thúc: <b><?=$completed_date?></b></td>
+		</tr>
+	</table>
 	<!-- #endregion -->
 	<!-- #region recipe-body-kneader-a-->
-	<?php echo form_open($controller_name."/back", ['id' => 'back', 'class' => 'form-horizontal panel panel-default']); ?>
+	<?php echo form_open($controller_name."/re_completed", ['id' => 'back', 'class' => 'form-horizontal panel panel-default']); ?>
+	<?=$form_qc_cpa?>
 	<div class="form-group">
 			<div class="col-md-4">
 				<input id="batch_uuid" name="batch_uuid" value="<?=$item_info->compounda_order_item_completed_uuid?>" type="hidden" />
-				<button id="button1id" name="button1id" class="btn btn-success">Quay lại</button>
+				<button id="button1id" name="button1id" class="btn btn-success">Hoàn thành cân lại</button>
 			</div>
 		</div>
 	<?php echo form_close(); ?>

@@ -266,15 +266,15 @@ class Cpas extends Secure_Controller
 		//$_aRecipeItemA = $data['item_info']->qc_cpa_document->tieu_chi['A'];
 		//$_aRecipeItemB = $data['item_info']->qc_cpa_document->tieu_chi['B'];
 		$data['form_qc_cpa'] = form_qc_cpa_rs($data['item_info']);
-		$started_date = $data['item_info']->started_at;
-		$ended_date = $data['item_info']->completed_at;
+		$started_date = $data['item_info']->thoi_gian_can_luyen_bat_dau;
+		$ended_date = $data['item_info']->thoi_gian_can_luyen_ket_thuc;
 		if($ended_date == '' || $ended_date == 0)
 		{
 			$ended_date = 'Đang cán ...';
 		} else {
 			$ended_date = date('d/m/Y H:i',$ended_date);
 		}
-		if($started_date == '')
+		if($started_date == '' || $started_date == 0)
 		{
 			$started_date = 'Chưa bắt đầu ...';
 		} else {
@@ -302,8 +302,8 @@ class Cpas extends Secure_Controller
 		//$_aRecipeItemB = $data['item_info']->qc_cpa_document->tieu_chi['B'];
 		$data['form_qc_cpa'] = form_qc_cpa_rs($data['item_info']);
 
-		$started_date = $data['item_info']->started_at;
-		$ended_date = $data['item_info']->completed_at;
+		$started_date = $data['item_info']->thoi_gian_can_luyen_bat_dau;
+		$ended_date = $data['item_info']->thoi_gian_can_luyen_ket_thuc;
 
 		if($ended_date == '' || $ended_date == 0)
 		{
@@ -329,6 +329,7 @@ class Cpas extends Secure_Controller
 		//$person_id = $this->person_id;
 		
 		$data['is_qc'] = $this->Employee->has_grant($this->module_id.'_is_qc');
+		$_oTheUser = $this->Employee->get_info($this->person_id);
 		
 
 		$item_info = $this->Batch->get_info($item_id);
@@ -349,7 +350,10 @@ class Cpas extends Secure_Controller
 			$batch = [
 				'batch_id'   => $item_info->compounda_order_item_completed_id,
 				'updated_at' => $time,
-				'status'     => $item_info->status
+				'status'     => $item_info->status,
+				'thoi_gian_can_luyen_bat_dau'=>$time,
+				'nguoi_can_luyen_id' => $_oTheUser->person_id,
+				'nguoi_can_luyen_name' => "{$_oTheUser->last_name} {$_oTheUser->first_name}"
 			];
 
 			$this->Batch->make_doing_cpas($batch); // update thời gian bắt đầu Cán và status của mẻ đang làm

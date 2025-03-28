@@ -134,6 +134,7 @@ class Batch extends CI_Model
 			$item_obj = $query->row();
 			$item_obj->qc_cpa_document = $this->Compounda->get_qc_cpa_info_by_batch_id($item_obj->{$this->id});
 			$item_obj->recipe = $this->Recipe->get_info_by_ms($item_obj->ms);
+			$item_obj->lenh = $this->Compounda->get_info_lenh($item_obj->compounda_order_item_id);
 			return $item_obj;
 		}
 		else
@@ -656,8 +657,10 @@ class Batch extends CI_Model
 			$this->db->where('compounda_order_item_completed_id', $batch['batch_id'])
 				->update('compounda_order_item_completed', [
 					'updated_at' => $time,
-					'started_at' => $time,
-					'status' => 7
+					'status' => 7,
+					'thoi_gian_can_luyen_bat_dau'=>$batch['thoi_gian_can_luyen_bat_dau'],
+					'nguoi_can_luyen_id' => $batch['nguoi_can_luyen_id'],
+					'nguoi_can_luyen_name' => $batch['nguoi_can_luyen_name']
 				]);
 
 			$this->db->trans_complete();
@@ -679,6 +682,7 @@ class Batch extends CI_Model
 				->update('compounda_order_item_completed', [
 					'updated_at' => $time,
 					'completed_at' => $time,
+					'thoi_gian_can_luyen_ket_thuc'=>$time,
 					'status' => 8
 				]);
 
@@ -689,6 +693,163 @@ class Batch extends CI_Model
 		}
 	}
 
+	public function make_doing_can($batch)
+	{
+		
+		$time = time();
+		if($batch['status'] == 1)
+		{
+			$this->db->trans_start();
+
+			$this->db->where('compounda_order_item_completed_id', $batch['batch_id'])
+				->update('compounda_order_item_completed', [
+					'updated_at' => $time,
+					'started_at' => $time,
+					'status' => 2,
+					'thoi_gian_can'=>$batch['thoi_gian_can'],
+					'nguoi_can_id' => $batch['nguoi_can_id'],
+					'nguoi_can_name' => $batch['nguoi_can_name']
+				]);
+
+			$this->db->trans_complete();
+			return $this->db->trans_status();
+		} else {
+			return 0; // không thực hiện gì nếu khác 6
+		}
+	}
+	/**
+	 * Lấy Bacth theo mã
+	 * @param mixed $code
+	 */
+	public function get_info_by_code($code)
+	{
+		$this->db->select('*');
+		//$this->db->select('suppliers.company_name');
+		$this->db->from($this->table);
+		//$this->db->join('suppliers', 'suppliers.person_id = items.supplier_id', 'left');
+		
+		$this->db->where("code", $code); // support version cũ
+		
+		$query = $this->db->get();
+
+		if($query->num_rows() == 1)
+		{
+			$item_obj = $query->row();
+			$item_obj->qc_cpa_document = $this->Compounda->get_qc_cpa_info_by_batch_id($item_obj->{$this->id});
+			$item_obj->recipe = $this->Recipe->get_info_by_ms($item_obj->ms);
+			$item_obj->lenh = $this->Compounda->get_info_lenh($item_obj->compounda_order_item_id);
+			return $item_obj;
+		}
+		else
+		{
+			//Get empty base parent object, as $item_id is NOT an item
+			$item_obj = new stdClass();
+
+			//Get all the fields from items table
+			foreach($this->db->list_fields($this->table) as $field)
+			{
+				$item_obj->$field = '';
+			}
+			$_sFieldID = "{$this->table}_id"; 
+			$item_obj->$_sFieldID = 0;
+			$item_obj->qc_cpa_document = [];
+			$item_obj->recipe = [];
+			$item_obj->lenh = []; // parent
+			return $item_obj;
+		}
+	}
+	/**
+	 * Lây danh sách Batch theo status
+	 * @param mixed $status array
+	 */
+	public function get_list_batches_by_status($status)
+	{
+		if(!is_array($status))
+		{
+			return [];
+		}
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$this->db->where_in('status', $status);
+		
+		$query = $this->db->get();
+
+		if ($query->num_rows() > 0) {
+			foreach ($query->result() as $item_obj) {
+				$item_obj->qc_cpa_document = $this->Compounda->get_qc_cpa_info_by_batch_id($item_obj->{$this->id});
+				$item_obj->recipe = $this->Recipe->get_info_by_ms($item_obj->ms);
+				$item_obj->lenh = $this->Compounda->get_info_lenh($item_obj->compounda_order_item_id);
+			}
+			return $query->result();
+		}
+		
+		return [];
+	}
+
+	public function make_weighing_count($batch,$weighing_count)
+	{
+		$time = time();
+		$id = $batch->compounda_order_item_completed_id;
+		
+		$thoi_gian_can = [];
+		if($batch->thoi_gian_can == 0)
+		{ 
+		} else {
+			$thoi_gian_can = json_decode($batch->thoi_gian_can,true);
+		}
+		$thoi_gian_can[] = [
+			'started'=>0,
+			'ended'=>$time
+		];
+		return $this->db->where('compounda_order_item_completed_id', $id)
+		->update('compounda_order_item_completed', [
+			'updated_at' => $time,
+			'weighing_count' => $weighing_count,
+			'thoi_gian_can'=>json_encode($thoi_gian_can)
+		]);
+	}
+
+	public function completed_weighing($batch,$weighing_count)
+	{
+		$time = time();
+		$id = $batch->compounda_order_item_completed_id;
+		$thoi_gian_can = json_decode($batch->thoi_gian_can,true);
+		$thoi_gian_can[] = [
+			'started'=>0,
+			'ended'=>$time
+		];
+
+		return $this->db->where('compounda_order_item_completed_id', $id)
+		->update('compounda_order_item_completed', [
+			'updated_at' => $time,
+			'weighing_count' => $weighing_count,
+			'status'=>3, // cân xong
+			'thoi_gian_can'=>json_encode($thoi_gian_can)
+		]);
+	}
+
+	public function re_completed_weighing($batch)
+	{
+		$time = time();
+		$id = $batch->compounda_order_item_completed_id;
+		$thoi_gian_can = [];
+		if($batch->thoi_gian_can == 0)
+		{ 
+		} else {
+			$thoi_gian_can = json_decode($batch->thoi_gian_can,true);
+		}
+		$thoi_gian_can[] = [
+			'started'=>0,
+			'ended'=>$time
+		];
+
+		return $this->db->where('compounda_order_item_completed_id', $id)
+		->update('compounda_order_item_completed', [
+			'updated_at' => $time,
+			'status'=>3, // cân xong
+			'thoi_gian_can'=>json_encode($thoi_gian_can)
+		]);
+	}
 	
 }
 ?>

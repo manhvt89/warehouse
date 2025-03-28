@@ -1022,6 +1022,26 @@ class Compounda extends CI_Model
 		
 		return [];
 	}
+
+	public function make_running_lenh($lenh)
+	{
+		$time = time();
+		if($lenh->status == 4 )
+		{
+			$this->db->trans_start();
+
+			$this->db->where('compounda_order_item_id', $lenh->compounda_order_item_id)
+				->update('compounda_order_item', [
+					'start_at' => $time,
+					'running' => 1
+				]);
+
+			$this->db->trans_complete();
+			return $this->db->trans_status();
+		} else {
+			return 0; // không làm gì cả
+		}
+	}
 	
 }
 ?>

@@ -563,6 +563,19 @@ CREATE TABLE `ospos_qc_cpa_documents` (
   PRIMARY KEY (`qc_cpa_document_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+ALTER TABLE `ospos_compounda_order_item_completed`
+ADD COLUMN `weighing_count` int(2) NOT NULL DEFAULT 1,
+ADD COLUMN `nguoi_can_id` int(11) NOT NULL DEFAULT 0,
+ADD COLUMN `nguoi_can_name` varchar(50) NOT NULL DEFAULT '',
+ADD COLUMN `nguoi_can_luyen_id` int(11) NOT NULL DEFAULT 0,
+
+ADD COLUMN `nguoi_can_luyen_name` varchar(50) NOT NULL DEFAULT '',
+ADD COLUMN `thoi_gian_can` int(11) NOT NULL DEFAULT 0,
+ADD COLUMN `thoi_gian_can_luyen_bat_dau` int(11) NOT NULL DEFAULT 0,
+ADD COLUMN `thoi_gian_can_luyen_ket_thuc` int(11) NOT NULL DEFAULT 0;
+
+
+
 
 
 

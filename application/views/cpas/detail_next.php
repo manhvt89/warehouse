@@ -216,17 +216,7 @@
 	</table>
 	<!-- #endregion -->
 	<!-- #region recipe-info-->
-	<table id="compounda-order-info">
-		<tr>
-			<td class="code">
-				<?php $qrcode = generate_qrcode($item_info->code); ?>
-				<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/><?=$item_info->code?>
-			</td>
-			
-			<td>Bắt đầu: <b><?=$started_date?></b></td>
-			<td>Kết thúc: <b><?=$completed_date?></b></td>
-		</tr>
-	</table>
+	<?=build_batch_block_info($item_info)?>
 	<!-- #endregion -->
 	<!-- #region recipe-body-kneader-a-->
 	<?php echo form_open($controller_name."/completed", ['id' => 'back', 'class' => 'form-horizontal panel panel-default']); ?>

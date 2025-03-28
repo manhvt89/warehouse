@@ -1766,4 +1766,13 @@ if (!function_exists('generate_qrcode')) {
        
     }
 }
+// Sắp xếp thư tự theo status với order = [3,5,6,7, 4]
+if (!function_exists('sortByCustomOrder')) {
+    function sortByCustomOrder($array, $order=[1,2,3,4,5,6,7,8]) {
+        usort($array, function ($a, $b) use ($order) {
+            return array_search($a->status, $order) - array_search($b->status, $order);
+        });
+        return $array;
+    }
+}
 ?>

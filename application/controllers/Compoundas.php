@@ -787,9 +787,10 @@ class Compoundas extends Secure_Controller
 
 			$i = 6;
 			$data = $sheet_data[$i];
+			/*
 			$thangNam = trim($data[8]);
 			$thangNam = str_replace('/',"",$maDinhDanh);
-			/*
+			
 			$thangNam = date('mY'); // Lấy tháng và năm hiện tại
 			*/
 			//$maDinhDanh = "KHCL {$thangNam}";

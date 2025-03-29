@@ -565,7 +565,6 @@ CREATE TABLE `ospos_qc_cpa_documents` (
 
 ALTER TABLE `ospos_compounda_order_item_completed`
 ADD COLUMN `batch_qc_round` int(2) NOT NULL DEFAULT 1,
-
 ADD COLUMN `weighing_count` int(2) NOT NULL DEFAULT 1,
 ADD COLUMN `nguoi_can_id` int(11) NOT NULL DEFAULT 0,
 ADD COLUMN `nguoi_can_name` varchar(50) NOT NULL DEFAULT '',
@@ -587,8 +586,7 @@ DROP TABLE IF EXISTS `ospos_qc_cpa_document_results`;
 CREATE TABLE `ospos_qc_cpa_document_results` (
   `qc_cpa_document_result_id` int(10) NOT NULL AUTO_INCREMENT,
   `qc_cpa_document_result_uuid` varchar(36) NOT NULL DEFAULT uuid(),
-
-   `qc_cpa_document_id` int(11) NOT NULL DEFAULT 0,
+  `qc_cpa_document_id` int(11) NOT NULL DEFAULT 0,
   `compounda_order_item_completed_id` int(11) NOT NULL DEFAULT 0,
   `compounda_order_id` int(11) NOT NULL DEFAULT 0,
   `compounda_order_item_id` int(11) NOT NULL DEFAULT 0,

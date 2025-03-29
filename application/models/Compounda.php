@@ -985,6 +985,7 @@ class Compounda extends CI_Model
 		if($query->num_rows() == 1)
 		{
 			$item_obj = $query->row();
+			$item_obj->results = $this->get_qc_result_by_qc_doc_id($item_obj->qc_cpa_document_id);
 			return $item_obj;
 		}
 		else
@@ -1040,6 +1041,28 @@ class Compounda extends CI_Model
 			return $this->db->trans_status();
 		} else {
 			return 0; // không làm gì cả
+		}
+	}
+
+	public function get_qc_result_by_qc_doc_id($qc_cpa_document_id)
+	{
+		$this->db->select('qc_cpa_document_results.*');
+		$this->db->from('qc_cpa_document_results');
+		
+		$this->db->where('qc_cpa_document_id', $qc_cpa_document_id);
+		
+		$query = $this->db->get();
+
+		if($query->num_rows() > 0)
+		{
+			$_aItem_obj = $query->result();
+			return $_aItem_obj;
+		}
+		else
+		{
+			//Get empty array
+	
+			return [];
 		}
 	}
 	

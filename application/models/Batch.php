@@ -524,7 +524,7 @@ class Batch extends CI_Model
 		}
 	}
 
-	public function completed($batch, $qc_cpa_document)
+	public function completed($batch, $qc_cpa_document, $qc_cpa_document_result)
 	{
 		$this->db->trans_start();
 
@@ -542,6 +542,17 @@ class Batch extends CI_Model
 					'status' => $qc_cpa_document['status'],
 					'results' => $qc_cpa_document['results']
 				]);
+			
+		
+		$this->db->where('qc_cpa_document_result_id', $qc_cpa_document_result['qc_cpa_document_result_id'])
+		->update('qc_cpa_document_results', [
+			'end_at' => $qc_cpa_document_result['end_at'],
+			'qc_status' => $qc_cpa_document_result['qc_status'],
+			'results' => $qc_cpa_document_result['results'],
+			'qc_id'=>$qc_cpa_document_result['qc_id'],
+			'qc_name'=>$qc_cpa_document_result['qc_name'],
+		]);
+		
 
 		$this->db->trans_complete();
 
@@ -552,15 +563,17 @@ class Batch extends CI_Model
 	{
 		$_oQC_cpa_document = $batch->qc_cpa_document;
 		$time = time();
-		if($_oQC_cpa_document->status < 4) // Chỉ thực hiện khi < 4;
+		if($batch->status < 4) // Chỉ thực hiện khi < 4;
 		{
-			
+			$_batch_qc_round = $batch->batch_qc_round + 1;
+			//echo $_batch_qc_round;
 			$this->db->trans_start();
 
 			$this->db->where('compounda_order_item_completed_id', $batch->compounda_order_item_completed_id)
 				->update('compounda_order_item_completed', [
 					'updated_at' => $time,
-					'status' => 4
+					'status' => 4,
+					'batch_qc_round'=>$_batch_qc_round,
 				]);
 
 
@@ -576,7 +589,7 @@ class Batch extends CI_Model
 			$_aQCResult['compounda_order_item_completed_id'] = $_oQC_cpa_document->compounda_order_item_completed_id;
 			$_aQCResult['compounda_order_id'] = $_oQC_cpa_document->compounda_order_id;
 			$_aQCResult['compounda_order_item_id'] = $_oQC_cpa_document->compounda_order_item_id;
-			$_aQCResult['qc_round'] = 1;
+			$_aQCResult['qc_round'] = $_batch_qc_round;
 			$_aQCResult['qc_name'] = "{$user->last_name} {$user->first_name}";
 			$_aQCResult['qc_id'] = $user->person_id;
 			$_aQCResult['qc_status'] = 4;
@@ -585,7 +598,11 @@ class Batch extends CI_Model
 			$this->db->insert('qc_cpa_document_results', $_aQCResult);
 
 			$this->db->trans_complete();
-			return $this->db->trans_status();
+			if (!$this->db->trans_status()) {
+				echo "Giao dịch thất bại! Lỗi: " . $this->db->error()['message']; die();
+			} else {
+				return $this->db->trans_status();
+			}
 		} else {
 			return 0; // Không thực hiện gì nếu khác 3
 		}
@@ -861,12 +878,26 @@ class Batch extends CI_Model
 			'ended'=>$time
 		];
 
-		return $this->db->where('compounda_order_item_completed_id', $id)
-		->update('compounda_order_item_completed', [
-			'updated_at' => $time,
-			'status'=>3, // cân xong
-			'thoi_gian_can'=>json_encode($thoi_gian_can)
-		]);
+		if($batch->status == 5)
+		{
+
+			$this->db->trans_start();	
+			$this->db->where('compounda_order_item_completed_id', $id)
+			->update('compounda_order_item_completed', [
+				'updated_at' => $time,
+				'status'=>3, // cân xong
+				'thoi_gian_can'=>json_encode($thoi_gian_can)
+			]);
+
+			$this->db->where('qc_cpa_document_id', $batch->qc_cpa_document->qc_cpa_document_id)
+			->update('qc_cpa_documents', [
+				'status'=>3, // cân xong
+			]);
+
+			$this->db->trans_complete();
+			return $this->db->trans_status();
+		}
+
 	}
 	
 }

@@ -338,10 +338,12 @@ class Qccans extends Secure_Controller
 		
 
 		$item_info = $this->Batch->get_info($item_id);
-
-		$this->Batch->make_doing_qc($item_info, $this->oTheUser); // update thời gian bắt đầu QC và status đang làm vào bảng QC, Batch
+		//echo $item_info->batch_qc_round;
+		$rs = $this->Batch->make_doing_qc($item_info, $this->oTheUser); // update thời gian bắt đầu QC và status đang làm vào bảng QC, Batch
+		//var_dump($rs);die();
 		//var_dump($item_info->qc_cpa_document);die();
 		$item_info = $this->Batch->get_info($item_id);
+		//echo $item_info->batch_qc_round;die();
 		foreach(get_object_vars($item_info) as $property => $value)
 		{
 			if(!is_object($value) && !is_array($value))
@@ -350,6 +352,7 @@ class Qccans extends Secure_Controller
 			}
 		}
 
+		//var_dump($item_info->qc_cpa_document->results); die();
 		$data['item_info'] = transform_batch_info($item_info);
 		//$_aRecipeItemA = $data['item_info']->qc_cpa_document->tieu_chi['A'];
 		//$_aRecipeItemB = $data['item_info']->qc_cpa_document->tieu_chi['B'];
@@ -426,8 +429,10 @@ class Qccans extends Secure_Controller
 	{
 		$batch_uuid = $this->input->post('batch_uuid');
 		$batch_info = $this->Batch->get_info($batch_uuid);
+		//echo $batch_info->batch_qc_round; die();
+		//var_dump($batch_info->qc_cpa_document->results);
 		
-		if (!$batch_info || !$batch_info->qc_cpa_document) {
+		if (!$batch_info || !$batch_info->qc_cpa_document || !$batch_info->qc_cpa_document->results) {
 			show_error('Dữ liệu batch không hợp lệ.', 400);
 			return;
 		}
@@ -439,6 +444,8 @@ class Qccans extends Secure_Controller
 		// Trạng thái QC
 		$status = (empty($names_a) && empty($names_b)) ? 6 : 5;
 
+		$_sResult = ($status == 5) ? result_json($batch_info, $names_a, $names_b) : json_encode([]);
+
 		$batch = [
 			'batch_id'   => $batch_info->compounda_order_item_completed_id,
 			'updated_at' => $time,
@@ -449,11 +456,24 @@ class Qccans extends Secure_Controller
 			'qc_cpa_document_id' => $batch_info->qc_cpa_document->qc_cpa_document_id,
 			'completed_at'       => $time,
 			'status'             => $status,
-			'results'            => ($status === 5) ? result_json($batch_info, $names_a, $names_b) : json_encode([])
+			'results'            => $_sResult,
+			
+		];
+
+		$_oResult = get_result_doing($batch_info);
+		//var_dump($_oResult);
+		$qc_cpa_document_result = [
+			'qc_cpa_document_result_id' => $_oResult->qc_cpa_document_result_id,
+			'end_at'       => $time,
+			'qc_status'             => $status,
+			'results'            => $_sResult,
+			'qc_id'=>$this->oTheUser->person_id,
+			'qc_name'=>"{$this->oTheUser->last_name} {$this->oTheUser->first_name}",
+			'qc_round'=>$batch_info->batch_qc_round
 		];
 		//var_dump($names_b);die();
 		// Gọi hàm xử lý cập nhật
-		$this->Batch->completed($batch, $qc_cpa_document);
+		$this->Batch->completed($batch, $qc_cpa_document, $qc_cpa_document_result);
 		redirect(base_url('qccans/index'));
 	}
 

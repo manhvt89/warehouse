@@ -683,8 +683,12 @@ if (!function_exists('transform_batch_info')) {
         ];
 
         if (!empty($item->qc_cpa_document)) {
+			//var_dump($item->qc_cpa_document->tieu_chi); die();
             $item->qc_cpa_document->tieu_chi = json_decode($item->qc_cpa_document->tieu_chi ?? "[]", true);
-            $item->qc_cpa_document->result = json_decode($item->qc_cpa_document->result ?? "[]", true);
+			//var_dump($item->qc_cpa_document->results);
+			//var_dump(getLastQcResult($item->qc_cpa_document->results));
+			//die();
+            $item->qc_cpa_document->result = json_decode(getLastQcResult($item->qc_cpa_document->results)->results ?? "[]", true);
         }
 
         return $item;
@@ -798,6 +802,9 @@ if (!function_exists('build_qc_rows')) {
 if (!function_exists('result_json'))
 {
 	function result_json($batch, $result_a, $result_b) {
+
+		//var_dump($batch->qc_cpa_document->tieu_chi); die();
+
 		$batch = transform_batch_info($batch);
 		
 		if (!$batch || empty($batch->qc_cpa_document->tieu_chi)) {
@@ -813,7 +820,6 @@ if (!function_exists('result_json'))
 			'A' => process_qc_criteria($tieu_chi['A'] ?? [], $result_a),
 			'B' => process_qc_criteria($tieu_chi['B'] ?? [], $result_b)
 		];
-	
 		return json_encode($_aReturn);
 	}
 }
@@ -858,7 +864,8 @@ if (!function_exists('form_qc_cpa_rs')) {
 	function form_qc_cpa_rs($batch, $grand = 3) {
 		$CI =& get_instance();
 		$item = $batch->qc_cpa_document->tieu_chi;
-		$_aResuleQC = json_decode($batch->qc_cpa_document->results ?? [],true);
+		//var_dump($batch->qc_cpa_document->results); die();
+		$_aResuleQC = json_decode(getLastQcResult($batch->qc_cpa_document->results)->results ?? [],true);
 		if($_aResuleQC == null)
 		{
 			$result_a = [];
@@ -982,4 +989,31 @@ if (!function_exists('build_batch_block_info')) {
 
 		return $html;
 	}
+}
+if (!function_exists('get_result_doing')) {
+	// Hiển thị thông tin block of Batch info
+	function get_result_doing($batch_info) {
+		$_aResults = $batch_info->qc_cpa_document->results;
+		//var_dump($_aResults);
+		foreach($_aResults as $result)
+		{
+			if($result->qc_status == 4)
+			{
+				return $result;
+			}
+			
+		}
+		return null;
+	}
+}
+
+function getLastQcResult($qc_results) {
+    if (empty($qc_results)) return null;
+
+    // Sắp xếp mảng theo 'qc_round' giảm dần
+    usort($qc_results, function($a, $b) {
+        return $b->qc_round - $a->qc_round;
+    });
+
+    return $qc_results[0]; // Trả về phần tử đầu tiên sau khi sắp xếp
 }

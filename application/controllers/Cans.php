@@ -807,16 +807,16 @@ class Cans extends Secure_Controller
 
 				if($this->Batch->make_weighing_count($_oBatchInfo,$weighing_count))
 				{
-					echo json_encode(["success" => true]);
+					echo json_encode(["success" => true,"message" => "thực hiện thành công"]);
 				} else {
-					echo json_encode(["success" => false]);
+					echo json_encode(["success" => false,"message" => "Không thể update thành công"]);
 				}
 			} else {
 				if($this->Batch->completed_weighing($_oBatchInfo,$weighing_count))
 				{
-					echo json_encode(["success" => true]);
+					echo json_encode(["success" => true,"message" => "Hoàn thành bước cuối cân"]);
 				} else {
-					echo json_encode(["success" => false]);
+					echo json_encode(["success" => false,"message" => "Không thể  hoàn thành bước cuối"]);
 				}
 			}
 		}

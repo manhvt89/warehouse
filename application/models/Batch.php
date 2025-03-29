@@ -813,7 +813,12 @@ class Batch extends CI_Model
 	{
 		$time = time();
 		$id = $batch->compounda_order_item_completed_id;
-		$thoi_gian_can = json_decode($batch->thoi_gian_can,true);
+		$thoi_gian_can = [];
+		if($batch->thoi_gian_can == 0)
+		{ 
+		} else {
+			$thoi_gian_can = json_decode($batch->thoi_gian_can,true);
+		}
 		$thoi_gian_can[] = [
 			'started'=>0,
 			'ended'=>$time

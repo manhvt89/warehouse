@@ -86,9 +86,9 @@
 					$max_weighing = 5; // Số lần cân tối đa
 		
 					for ($i = 1; $i <= $max_weighing; $i++):
-                    $disabled = ($i < $weighing_count+1) ? 'disabled' : ''; // Khóa các nút trước đó
-                    $active = ($i == $weighing_count+1) ? 'active' : ''; // Chỉ nút tiếp theo sáng lên
-                    $locked = ($i > $weighing_count+1) ? 'disabled' : ''; // Chặn các nút lớn hơn
+                    $disabled = ($i < $weighing_count) ? 'disabled' : ''; // Khóa các nút trước đó
+                    $active = ($i == $weighing_count) ? 'active' : ''; // Chỉ nút tiếp theo sáng lên
+                    $locked = ($i > $weighing_count) ? 'disabled' : ''; // Chặn các nút lớn hơn
                     $color = $colors[$i - 1]; // Lấy màu theo nhóm
             ?>
                 <button 
@@ -256,7 +256,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 		// **1. Lấy danh sách tất cả các dòng và sắp xếp**
 		let rows = $tableBody.find("tr.one").get();
-		console.log(rows);
+		//console.log(rows);
 		rows.forEach(row => {
     console.log($(row).data("status")); // Kiểm tra giá trị data-status của từng dòng
 });
@@ -314,15 +314,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // Cập nhật giao diện sau khi cập nhật thành công
                 btn.prop("disabled", true).removeClass("active").addClass("inactive-btn");
 				console.log(`Next: ${currentWeighing + 1}`);
-				let nextBtn = btn.closest("td").find(`button[data-weighing="${currentWeighing + 1}"]`);
+				let nextBtn = btn.closest("td").find(`button[data-weighing="${newWeighing}"]`);
 				console.log(nextBtn);
 				if (nextBtn.length) {
 					nextBtn.prop("disabled", false).removeClass("inactive-btn").addClass("active");
 				} else {
 					alert("Cân mẻ này đã hoàn thành!");
+					btn.closest("tr").fadeOut(300, function() { 
+						$(this).remove(); 
+					});
+
 				}
             } else {
-                alert("Lỗi cập nhật trạng thái!");
+                alert(response.message);
             }
         }, "json");
     });

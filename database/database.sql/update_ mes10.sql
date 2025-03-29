@@ -574,6 +574,13 @@ ADD COLUMN `thoi_gian_can` int(11) NOT NULL DEFAULT 0,
 ADD COLUMN `thoi_gian_can_luyen_bat_dau` int(11) NOT NULL DEFAULT 0,
 ADD COLUMN `thoi_gian_can_luyen_ket_thuc` int(11) NOT NULL DEFAULT 0;
 
+ALTER TABLE `ospos_compounda_order_item`
+ADD COLUMN `kh_tg_start` int(11) NOT NULL DEFAULT 0,
+ADD COLUMN `kh_tg_end` int(11) NOT NULL DEFAULT 0;
+
+
+
+
 
 
 

@@ -2,6 +2,26 @@
 <?php $this->load->view("partial/header"); ?>
 <script src="/dist/jquery.number.min.js"></script>
 <style type="text/css">
+	.progress-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.progress-wrapper meter {
+    width: 100px;
+    height: 20px;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    font-weight: bold;
+    color: #000; /* Hoặc chọn màu phù hợp */
+}
+
 	.number{
 		text-align: right;
 	}
@@ -391,13 +411,13 @@ Used
 								<?=number_format($lenh->kl_cuoi_ky) ?>
 							</td>
 							<td>
-								<?=$lenh->start_at == 0 ? '': $lenh->start_at?>
+								<?=$lenh->start_at == 0 ? '': date('d/m/Y h:i',$lenh->start_at)?>
 							</td>
 							<td>
-								<?=$lenh->end_at == 0 ? '': $lenh->end_at?>
+								<?=$lenh->end_at == 0 ? '': date('d/m/Y h:i',$lenh->end_at)?>
 							</td>
 							<td>
-								<?=($lenh->end_at -  $lenh->start_at) == 0 ? '': ($lenh->end_at -  $lenh->start_at)?>
+								<?=($lenh->end_at -  $lenh->start_at) == 0 ? '': ($lenh->end_at -  $lenh->start_at)/60 ?> (phút)
 							</td>
 							<td>
 								<?=$lenh->phan_cong ?>
@@ -427,7 +447,11 @@ Used
 								
 							</td>
 							<td class="code">
-								<?=" {$completed_batches[$lenh->compounda_order_item_id]}/{$lenh->so_luong_batch} Mẻ" ?>
+								<div class="progress-wrapper">
+									<meter value="<?=$completed_batches[$lenh->compounda_order_item_id]?>" min="0" max="<?=$lenh->so_luong_batch?>"></meter>
+									<span class="progress-text"><?="{$completed_batches[$lenh->compounda_order_item_id]}/{$lenh->so_luong_batch}Mẻ" ?></span>
+								</div>
+								
 							</td>
 							<td>
 								

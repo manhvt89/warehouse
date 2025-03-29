@@ -86,9 +86,9 @@
 					$max_weighing = 5; // Số lần cân tối đa
 		
 					for ($i = 1; $i <= $max_weighing; $i++):
-                    $disabled = ($i < $weighing_count) ? 'disabled' : ''; // Khóa các nút trước đó
-                    $active = ($i == $weighing_count) ? 'active' : ''; // Chỉ nút tiếp theo sáng lên
-                    $locked = ($i > $weighing_count) ? 'disabled' : ''; // Chặn các nút lớn hơn
+                    $disabled = ($i < $weighing_count+1) ? 'disabled' : ''; // Khóa các nút trước đó
+                    $active = ($i == $weighing_count+1) ? 'active' : ''; // Chỉ nút tiếp theo sáng lên
+                    $locked = ($i > $weighing_count+1) ? 'disabled' : ''; // Chặn các nút lớn hơn
                     $color = $colors[$i - 1]; // Lấy màu theo nhóm
             ?>
                 <button 

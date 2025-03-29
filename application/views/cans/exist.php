@@ -204,7 +204,7 @@
 	<table id="compounda-order-info">
 		<tr>
 			<td rowspan="3">
-				Đã có lệnh đang cán luyện chưa hoàn thành, hãy kiểm tra lại và hoàn thành <a href="<?=$back_url?>">tại đây</a>
+				Chưa tìm thấy mã mẻ, hãy kiểm tra lại <a href="<?=$back_url?>">tại đây</a>
 			</td>
 			
 		</tr>

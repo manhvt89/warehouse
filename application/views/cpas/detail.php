@@ -202,21 +202,10 @@
 	</table>
 	<!-- #endregion -->
 	<!-- #region recipe-info-->
-	<table id="compounda-order-info">
-		<tr>
-			<td rowspan="3">
-				<?php $qrcode = generate_qrcode($item_info->code); ?>
-				<img src='data:image/png;base64,<?php echo $qrcode; ?>' /><br/>
-			</td>
-			
-			<td>Bắt đầu: <b><?=$started_date?></b></td>
-			<td>Kết thúc: <b><?=$completed_date?></b></td>
-		</tr>
-	</table>
+	<?=build_batch_block_info($item_info)?>
 	<!-- #endregion -->
 	<!-- #region recipe-body-kneader-a-->
 	<?php echo form_open($controller_name."/completed", ['id' => 'completed', 'class' => 'form-horizontal panel panel-default']); ?>
-	<?=$form_qc_cpa?>
 	<div class="form-group">
 			<div class="col-md-4">
 				<input id="batch_uuid" name="batch_uuid" value="<?=$item_info->compounda_order_item_completed_uuid?>" type="hidden" />

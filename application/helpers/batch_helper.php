@@ -936,8 +936,8 @@ if (!function_exists('build_qc_rows_rs')) {
 
 if (!function_exists('build_batch_block_info')) {
 	// Hiển thị thông tin block of Batch info
-	function build_batch_block_info($item_info) {
-		
+	function build_batch_block_info($batch) {
+		$item_info = $batch;
 		$started_date = $item_info->thoi_gian_can_luyen_bat_dau;
 		$completed_date = $item_info->thoi_gian_can_luyen_ket_thuc;
 		$qrcode = generate_qrcode($item_info->code);
@@ -968,7 +968,7 @@ if (!function_exists('build_batch_block_info')) {
 					<td>
 						<span>Số LSX: {$item_info->lenh->order_number}</span><br>
 						<span>Mã sản phẩm: {$item_info->lenh->item_code}</span><br>
-						<span>Người cân: </span><br>
+						<span>Người cân: {$item_info->nguoi_can_name}</span><br>
 						<span>Người kiểm tra: {$checker_name}</span><br>
 						<span>Người cán luyện: {$item_info->nguoi_can_luyen_name}</span><br>
 					</td>

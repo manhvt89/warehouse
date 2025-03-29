@@ -612,7 +612,7 @@ if (!function_exists('transform_data')) {
 					3 => fn($uuid) => "",
 					4 => fn($uuid) => "",
 					5 => fn($uuid) => "",
-					6 => fn($uuid) => "<a class='btn btn-primary' href='{$baseLink}{$uuid}'>Bắt đầu cán</a>",
+					6 => fn($uuid) => "<a class='btn btn-primary' href='{$baseLink}{$uuid}'>Bắt đầu cân lại</a>",
 					7 => fn($uuid) => "<a class='btn btn-primary' href='{$NextLinkRS}{$uuid}'>Xem thông tin</a>",
 					8 => fn($uuid) => "<a class='btn btn-primary' href='{$viewLinkRS}{$uuid}'>Xem thông tin</a>"
 				];			

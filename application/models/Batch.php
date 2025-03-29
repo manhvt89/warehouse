@@ -552,7 +552,7 @@ class Batch extends CI_Model
 	{
 		$_oQC_cpa_document = $batch->qc_cpa_document;
 		$time = time();
-		if($_oQC_cpa_document->status != 4)
+		if($_oQC_cpa_document->status < 4) // Chỉ thực hiện khi < 4;
 		{
 			
 			$this->db->trans_start();
@@ -571,6 +571,19 @@ class Batch extends CI_Model
 						'qc_id'=>$user->person_id,
 						'qc_name'=>"{$user->last_name} {$user->first_name}",
 					]);
+			// Khởi tạo bản ghi kết quả QC
+			$_aQCResult['qc_cpa_document_id'] = $_oQC_cpa_document->qc_cpa_document_id;
+			$_aQCResult['compounda_order_item_completed_id'] = $_oQC_cpa_document->compounda_order_item_completed_id;
+			$_aQCResult['compounda_order_id'] = $_oQC_cpa_document->compounda_order_id;
+			$_aQCResult['compounda_order_item_id'] = $_oQC_cpa_document->compounda_order_item_id;
+			$_aQCResult['qc_round'] = 1;
+			$_aQCResult['qc_name'] = "{$user->last_name} {$user->first_name}";
+			$_aQCResult['qc_id'] = $user->person_id;
+			$_aQCResult['qc_status'] = 4;
+			$_aQCResult['results'] = "";
+			$_aQCResult['start_at'] = $time;
+			$this->db->insert('qc_cpa_document_results', $_aQCResult);
+
 			$this->db->trans_complete();
 			return $this->db->trans_status();
 		} else {

@@ -339,7 +339,7 @@ class Qccans extends Secure_Controller
 
 		$item_info = $this->Batch->get_info($item_id);
 
-		$this->Batch->make_doing_qc($item_info, $this->oTheUser); // update thời gian bắt đầu QC và stauts đang làm
+		$this->Batch->make_doing_qc($item_info, $this->oTheUser); // update thời gian bắt đầu QC và status đang làm vào bảng QC, Batch
 		//var_dump($item_info->qc_cpa_document);die();
 		$item_info = $this->Batch->get_info($item_id);
 		foreach(get_object_vars($item_info) as $property => $value)

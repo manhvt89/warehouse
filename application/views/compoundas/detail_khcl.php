@@ -2,14 +2,17 @@
 <?php $this->load->view("partial/header"); ?>
 <script src="/dist/jquery.number.min.js"></script>
 <style type="text/css">
-	.progress-wrapper {
+.progress-wrapper {
     position: relative;
     display: inline-block;
+    white-space: nowrap; /* Ngăn chữ xuống dòng */
 }
 
 .progress-wrapper meter {
     width: 100px;
     height: 20px;
+	border-radius: 10px; /* Giữ bo tròn hai đầu */
+    position: relative;
 }
 
 .progress-text {
@@ -19,8 +22,10 @@
     transform: translate(-50%, -50%);
     font-size: 14px;
     font-weight: bold;
-    color: #000; /* Hoặc chọn màu phù hợp */
+    color: #000;
+    white-space: nowrap;
 }
+
 
 	.number{
 		text-align: right;
@@ -427,7 +432,7 @@ Used
 								$status = '';
 								if($lenh->status == 4)
 								{
-									$status = ($lenh->running == 1) ? 'Đang cán' : 'Chờ cán';
+									$status = ($lenh->running == 1) ? 'Đang thực hiện' : 'Chờ thực hiện';
 								} else {
 									$status = 'Chờ phê duyệt';
 								}
@@ -449,7 +454,7 @@ Used
 							<td class="code">
 								<div class="progress-wrapper">
 									<meter value="<?=$completed_batches[$lenh->compounda_order_item_id]?>" min="0" max="<?=$lenh->so_luong_batch?>"></meter>
-									<span class="progress-text"><?="{$completed_batches[$lenh->compounda_order_item_id]}/{$lenh->so_luong_batch}Mẻ" ?></span>
+									<span class="progress-text"><?="{$completed_batches[$lenh->compounda_order_item_id]}/{$lenh->so_luong_batch} mẻ" ?></span>
 								</div>
 								
 							</td>
@@ -519,7 +524,11 @@ Used
 	//$(document).ready(function()
 	(function($)
 	{
-		
+		$("meter").each(function() {
+			if ($(this).val() == 0) {
+				$(this).css("background", "#ADD8E6");
+			}
+		});
 
 		$("#submit").click(function() {
 			stay_open = false;

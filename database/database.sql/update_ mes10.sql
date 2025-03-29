@@ -564,6 +564,8 @@ CREATE TABLE `ospos_qc_cpa_documents` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 ALTER TABLE `ospos_compounda_order_item_completed`
+ADD COLUMN `batch_qc_round` int(2) NOT NULL DEFAULT 1,
+
 ADD COLUMN `weighing_count` int(2) NOT NULL DEFAULT 1,
 ADD COLUMN `nguoi_can_id` int(11) NOT NULL DEFAULT 0,
 ADD COLUMN `nguoi_can_name` varchar(50) NOT NULL DEFAULT '',
@@ -577,6 +579,41 @@ ADD COLUMN `thoi_gian_can_luyen_ket_thuc` int(11) NOT NULL DEFAULT 0;
 ALTER TABLE `ospos_compounda_order_item`
 ADD COLUMN `kh_tg_start` int(11) NOT NULL DEFAULT 0,
 ADD COLUMN `kh_tg_end` int(11) NOT NULL DEFAULT 0;
+
+
+DROP TABLE IF EXISTS `ospos_qc_cpa_document_results`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ospos_qc_cpa_document_results` (
+  `qc_cpa_document_result_id` int(10) NOT NULL AUTO_INCREMENT,
+  `qc_cpa_document_result_uuid` varchar(36) NOT NULL DEFAULT uuid(),
+
+   `qc_cpa_document_id` int(11) NOT NULL DEFAULT 0,
+  `compounda_order_item_completed_id` int(11) NOT NULL DEFAULT 0,
+  `compounda_order_id` int(11) NOT NULL DEFAULT 0,
+  `compounda_order_item_id` int(11) NOT NULL DEFAULT 0,
+  `qc_round` int(1) NOT NULL DEFAULT 0,
+  `qc_id` int(11) NOT NULL DEFAULT 0,
+  `qc_name` varchar(150) NOT NULL DEFAULT '',
+  `end_at` int(11) NOT NULL DEFAULT 0,
+  `start_at` int(11) NOT NULL DEFAULT 0,
+  `qc_status` tinyint(1) NOT NULL DEFAULT 1,
+  `results` text NOT NULL DEFAULT '',
+  PRIMARY KEY (`qc_cpa_document_result_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

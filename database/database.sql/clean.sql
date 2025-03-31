@@ -32,6 +32,33 @@ delete from ospos_people where person_id IN (select person_id from ospos_supplie
 delete from ospos_suppliers;
 
 
+ALTER TABLE ospos_daily_total AUTO_INCREMENT = 1;
+ALTER TABLE ospos_inventory AUTO_INCREMENT = 1;
+ALTER TABLE ospos_item_quantities AUTO_INCREMENT = 1;
+ALTER TABLE ospos_items AUTO_INCREMENT = 1;
+ALTER TABLE ospos_items_taxes AUTO_INCREMENT = 1;
+ALTER TABLE ospos_messages AUTO_INCREMENT = 1;
+ALTER TABLE ospos_customers AUTO_INCREMENT = 1;
+ALTER TABLE ospos_receivings AUTO_INCREMENT = 1;
+ALTER TABLE ospos_receivings_items AUTO_INCREMENT = 1;
+ALTER TABLE ospos_reminders AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sales AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sessions AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sales_items_taxes AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sales_payments AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sales_suspended AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sales_suspended_items AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sales_suspended_items_taxes AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sales_suspended_payments AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sessions AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sms_sale AUTO_INCREMENT = 1;
+ALTER TABLE ospos_total AUTO_INCREMENT = 1;
+ALTER TABLE ospos_sales_items AUTO_INCREMENT = 1;
+ALTER TABLE ospos_test AUTO_INCREMENT = 1;
+ALTER TABLE ospos_purchases_items AUTO_INCREMENT = 1;
+ALTER TABLE ospos_purchases AUTO_INCREMENT = 1;
+ALTER TABLE ospos_suppliers AUTO_INCREMENT = 1;
+
 /*ALTER TABLE `ospos_items` ADD `ref_item_id` INT(10) NOT NULL DEFAULT '0' AFTER `code`; 
 
 ALTER TABLE `ospos_items` ADD COLUMN IF NOT EXISTS `category_code` VARCHAR(255) NOT NULL DEFAULT '0' AFTER `item_id`;

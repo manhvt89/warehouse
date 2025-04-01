@@ -422,7 +422,11 @@ Used
 								<?=$lenh->end_at == 0 ? '': date('d/m/Y h:i',$lenh->end_at)?>
 							</td>
 							<td>
-								<?=($lenh->end_at -  $lenh->start_at) == 0 ? '': ($lenh->end_at -  $lenh->start_at)/60 ?> (phút)
+								<?php if($lenh->end_at -  $lenh->start_at < 0): ?>
+									Chưa hoàn thành
+								<?php else : ?>
+									<?=($lenh->end_at -  $lenh->start_at) == 0 ? '': ($lenh->end_at -  $lenh->start_at)/60 ?> (phút)
+								<?php endif; ?>	
 							</td>
 							<td>
 								<?=$lenh->phan_cong ?>

@@ -637,7 +637,7 @@ if (!function_exists('transform_data')) {
 					2 => fn($uuid) => "",
 					3 => fn($uuid) => "",
 					4 => fn($uuid) => "",
-					5 => fn($uuid) => "<a class='btn btn-primary' href='{$baseLink}{$uuid}'>Bắt đầu cán</a>",
+					5 => fn($uuid) => "<a class='btn btn-primary' href='{$baseLink}{$uuid}'>Bắt đầu cân lại</a>",
 					6 => fn($uuid) => "",
 					7 => fn($uuid) => "",
 					8 => fn($uuid) => ""
